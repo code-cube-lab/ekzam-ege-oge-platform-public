@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "states": {
+    "anonymous": { "canUseCoachApi": false, "canUseTeacherApi": false },
+    "free": { "canUseCoachApi": false, "canUseTeacherApi": false },
+    "invoice_pending": { "canUseCoachApi": false, "canUseTeacherApi": false },
+    "paid": { "canUseCoachApi": true, "canUseTeacherApi": false },
+    "expired_or_refunded": { "canUseCoachApi": false, "canUseTeacherApi": false },
+    "admin": { "canUseCoachApi": true, "canUseTeacherApi": true }
+  },
+  "sourceOfTruth": "D1 server session plus HttpOnly session id",
+  "forbiddenSourcesOfTruth": ["localStorage", "hidden DOM", "query parameter", "invoice close event"]
+}

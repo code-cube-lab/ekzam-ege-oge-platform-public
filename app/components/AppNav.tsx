@@ -11,7 +11,7 @@ export function AppNav({ active, name = "Алексей" }: AppNavProps) {
       <nav className="side-links" aria-label="Кабинет">
         <a className={`side-link ${active === "home" ? "active" : ""}`} href="/dashboard"><span>⌂</span>Главная</a>
         <a className={`side-link ${active === "diagnostic" ? "active" : ""}`} href="/dashboard#diagnostic"><span>◎</span>Диагностика</a>
-        <a className={`side-link ${active === "coach" ? "active" : ""}`} href="/dashboard#coach"><span>✦</span>AI-наставник</a>
+        <a className={`side-link ${active === "coach" ? "active" : ""}`} href="/dashboard#coach"><span>✦</span>AI-помощник</a>
         <a className={`side-link ${active === "teacher" ? "active" : ""}`} href="/teacher"><span>▦</span>Учитель</a>
       </nav>
       <div className="side-bottom">

@@ -21,7 +21,11 @@ export type TelegramStudent = {
   lastScore: number;
   remindersEnabled: boolean;
   lastDailySent: string | null;
+  consentActor: "adult_student" | "parent" | null;
+  consentedAt: string | null;
 };
+
+const TELEGRAM_CONSENT_VERSION = "2026-07-22";
 
 function bindings() {
   return env as unknown as Record<string, string> & { DB?: D1Database };
@@ -52,6 +56,9 @@ async function ensureTelegramSchema() {
       reminders_enabled INTEGER NOT NULL DEFAULT 1,
       reminder_hour INTEGER NOT NULL DEFAULT 10,
       last_daily_sent TEXT,
+      consent_actor TEXT,
+      consent_version TEXT,
+      consented_at TEXT,
       updated_at TEXT NOT NULL
     )`),
     d1.prepare(`CREATE TABLE IF NOT EXISTS telegram_answers (
@@ -80,6 +87,9 @@ async function ensureTelegramSchema() {
   for (const sql of [
     "ALTER TABLE telegram_students ADD COLUMN exam_track TEXT NOT NULL DEFAULT 'ege'",
     "ALTER TABLE telegram_students ADD COLUMN subject_track TEXT NOT NULL DEFAULT 'russian'",
+    "ALTER TABLE telegram_students ADD COLUMN consent_actor TEXT",
+    "ALTER TABLE telegram_students ADD COLUMN consent_version TEXT",
+    "ALTER TABLE telegram_students ADD COLUMN consented_at TEXT",
   ]) {
     try { await d1.prepare(sql).run(); } catch { /* column already exists */ }
   }
@@ -101,6 +111,8 @@ function rowToStudent(row: Record<string, unknown>): TelegramStudent {
     lastScore: Number(row.last_score ?? 0),
     remindersEnabled: Number(row.reminders_enabled ?? 1) === 1,
     lastDailySent: row.last_daily_sent ? String(row.last_daily_sent) : null,
+    consentActor: row.consent_actor === "parent" ? "parent" : row.consent_actor === "adult_student" ? "adult_student" : null,
+    consentedAt: row.consent_version === TELEGRAM_CONSENT_VERSION && row.consented_at ? String(row.consented_at) : null,
   };
 }
 
@@ -143,9 +155,25 @@ export async function setReminders(telegramId: string, enabled: boolean) {
     .bind(enabled ? 1 : 0, new Date().toISOString(), telegramId).run();
 }
 
+export async function recordTelegramConsent(telegramId: string, actor: "adult_student" | "parent") {
+  await ensureTelegramSchema();
+  await database().prepare("UPDATE telegram_students SET consent_actor = ?, consent_version = ?, consented_at = ?, updated_at = ? WHERE telegram_id = ?")
+    .bind(actor, TELEGRAM_CONSENT_VERSION, new Date().toISOString(), new Date().toISOString(), telegramId).run();
+  return getTelegramStudent(telegramId);
+}
+
+export async function deleteTelegramStudent(telegramId: string) {
+  await ensureTelegramSchema();
+  await database().batch([
+    database().prepare("DELETE FROM telegram_answers WHERE telegram_id = ?").bind(telegramId),
+    database().prepare("DELETE FROM telegram_mastery WHERE telegram_id = ?").bind(telegramId),
+    database().prepare("DELETE FROM telegram_students WHERE telegram_id = ?").bind(telegramId),
+  ]);
+}
+
 export async function listReminderStudents() {
   await ensureTelegramSchema();
-  const result = await database().prepare("SELECT * FROM telegram_students WHERE reminders_enabled = 1 ORDER BY updated_at DESC LIMIT 500").all<Record<string, unknown>>();
+  const result = await database().prepare("SELECT * FROM telegram_students WHERE reminders_enabled = 1 AND consented_at IS NOT NULL ORDER BY updated_at DESC LIMIT 500").all<Record<string, unknown>>();
   return result.results.map(rowToStudent);
 }
 

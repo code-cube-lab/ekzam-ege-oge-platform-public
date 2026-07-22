@@ -5,7 +5,8 @@ import Link from "next/link";
 import { AppNav } from "./AppNav";
 
 type State = "anonymous" | "free" | "invoice_pending" | "paid" | "expired_or_refunded" | "admin";
-type Session = { name: string; state: State; role: string; diagnosticScore: number; weakTopics: string[] };
+type ConsentActor = "adult_student" | "parent";
+type Session = { name: string; state: State; role: string; diagnosticScore: number; weakTopics: string[]; hasConsent: boolean; consentActor: ConsentActor | null };
 type Result = { score: number; correct: number; total: number; weakTopics: string[]; nextLesson: string };
 
 const questions = [
@@ -26,7 +27,7 @@ const stateLabels: Record<State, string> = {
 };
 
 export function DashboardClient() {
-  const [session, setSession] = useState<Session>({ name: "Гость", state: "anonymous", role: "student", diagnosticScore: 0, weakTopics: [] });
+  const [session, setSession] = useState<Session>({ name: "Гость", state: "anonymous", role: "student", diagnosticScore: 0, weakTopics: [], hasConsent: false, consentActor: null });
   const [loading, setLoading] = useState(true);
   const [quizOpen, setQuizOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -36,6 +37,10 @@ export function DashboardClient() {
   const [coachText, setCoachText] = useState("Я считаю, что верность принципам помогает человеку сохранить уважение к себе, потому что именно убеждения определяют его выбор.");
   const [coach, setCoach] = useState<{ strength: string; issue: string; nextStep: string; note: string } | null>(null);
   const [coachLoading, setCoachLoading] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [consentActor, setConsentActor] = useState<ConsentActor | null>(null);
+  const [personalDataAccepted, setPersonalDataAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -55,11 +60,41 @@ export function DashboardClient() {
     const data = await response.json();
     setSession(data.session);
     setLoading(false);
+    return data.session as Session;
   }
 
   async function beginDiagnostic() {
+    if (!session.hasConsent) {
+      setConsentOpen(true); setError("");
+      return;
+    }
+    await openDiagnostic();
+  }
+
+  async function openDiagnostic() {
     if (session.state === "anonymous") await switchState("free");
     setQuizOpen(true); setStep(0); setAnswers([]); setResult(null); setError("");
+    window.location.hash = "diagnostic";
+  }
+
+  async function acceptConsent() {
+    if (!consentActor || !personalDataAccepted || !termsAccepted) {
+      setError("Выберите свою роль и поставьте две отдельные отметки.");
+      return;
+    }
+    setLoading(true); setError("");
+    if (session.state === "anonymous") await switchState("free");
+    const response = await fetch("/api/consent", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ consentActor, actor: consentActor, personalDataAccepted, termsAccepted }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      setError(data.error ?? "Не удалось сохранить согласие"); setLoading(false); return;
+    }
+    setSession(data.session); setConsentOpen(false); setLoading(false);
+    setQuizOpen(true); setStep(0); setAnswers([]); setResult(null);
     window.location.hash = "diagnostic";
   }
 
@@ -155,7 +190,7 @@ export function DashboardClient() {
             {session.state === "paid" || session.state === "admin" ? (
               <div className="coach-form"><textarea aria-label="Фрагмент сочинения" value={coachText} onChange={(event) => setCoachText(event.target.value)} /><button className="button button-violet button-full" disabled={coachLoading} onClick={askCoach}>{coachLoading ? "Разбираю…" : "Разобрать фрагмент"}</button>{coach && <div className="coach-response" data-testid="coach-response"><p><b>Сильная сторона:</b> {coach.strength}</p><p><b>Что улучшить:</b> {coach.issue}</p><p><b>Следующий шаг:</b> {coach.nextStep}</p><small>{coach.note}</small></div>}</div>
             ) : (
-              <div className="coach-lock"><div className="lock-icon">AI</div><h3>{session.state === "expired_or_refunded" ? "Доступ завершён" : session.state === "invoice_pending" ? "Проверяем оплату" : "Наставник в тарифе «Маршрут»"}</h3><p>{session.state === "invoice_pending" ? "Платный режим откроется только после серверного подтверждения." : "Показывает причину ошибки и предлагает один следующий шаг."}</p><button className="button button-violet button-full" onClick={() => switchState(session.state === "invoice_pending" ? "paid" : "invoice_pending")}>{session.state === "invoice_pending" ? "Подтвердить в демо" : "Открыть демо оплаты"}</button></div>
+              <div className="coach-lock"><div className="lock-icon">AI</div><h3>{session.state === "expired_or_refunded" ? "Доступ завершён" : session.state === "invoice_pending" ? "Проверяем оплату" : "Помощник в тарифе «Маршрут»"}</h3><p>{session.state === "invoice_pending" ? "Платный режим откроется только после серверного подтверждения." : "Работает по базе преподавателя: показывает причину ошибки и предлагает один следующий шаг."}</p><button className="button button-violet button-full" onClick={() => switchState(session.state === "invoice_pending" ? "paid" : "invoice_pending")}>{session.state === "invoice_pending" ? "Подтвердить в демо" : "Открыть демо оплаты"}</button></div>
             )}
             {error && <p className="error-note">{error}</p>}
           </section>
@@ -168,6 +203,23 @@ export function DashboardClient() {
           </section>
         </div>
       </main>
+      {consentOpen && <div className="consent-backdrop" role="presentation">
+        <section className="consent-dialog" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+          <button className="consent-close" aria-label="Закрыть" onClick={() => { setConsentOpen(false); setError(""); }}>×</button>
+          <div className="section-kicker">Перед личной диагностикой</div>
+          <h2 id="consent-title">Кто даёт согласие?</h2>
+          <p>Открытый урок доступен без профиля. Для сохранения ответов и личного маршрута нужно отдельно подтвердить возрастную роль и обработку данных.</p>
+          <div className="consent-role-grid">
+            <button className={consentActor === "parent" ? "selected" : ""} onClick={() => setConsentActor("parent")}><b>Я родитель</b><span>или законный представитель ученика младше 18 лет</span></button>
+            <button className={consentActor === "adult_student" ? "selected" : ""} onClick={() => setConsentActor("adult_student")}><b>Мне 18 лет или больше</b><span>даю согласие за себя</span></button>
+          </div>
+          <label className="consent-check"><input type="checkbox" checked={personalDataAccepted} onChange={(event) => setPersonalDataAccepted(event.target.checked)} /><span>Отдельно даю <Link href="/consent" target="_blank">согласие на обработку персональных данных</Link> и ознакомился(ась) с <Link href="/privacy" target="_blank">политикой</Link>.</span></label>
+          <label className="consent-check"><input type="checkbox" checked={termsAccepted} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>Принимаю <Link href="/terms" target="_blank">условия пилота</Link> и понимаю, что реальная оплата сейчас не принимается.</span></label>
+          {error && <p className="error-note">{error}</p>}
+          <button className="button button-primary button-full" disabled={loading} onClick={acceptConsent}>{loading ? "Сохраняем…" : "Согласиться и начать"}</button>
+          <Link className="consent-open-link" href="/learn">Сначала посмотреть открытый урок без профиля</Link>
+        </section>
+      </div>}
     </div>
   );
 }

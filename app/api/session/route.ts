@@ -16,6 +16,8 @@ export async function GET(request: Request) {
       state: "anonymous",
       diagnosticScore: 0,
       weakTopics: [],
+      hasConsent: false,
+      consentActor: null,
     },
     verification: "server-session",
   });

@@ -3,15 +3,15 @@ import {
   getTelegramStudent,
   recordTelegramAnswer,
   selectTaskForStudent,
-  upsertTelegramStudent,
   verifyTelegramInitData,
 } from "../../../lib/telegram";
 
 async function authenticatedStudent(initData: string) {
   const verified = await verifyTelegramInitData(initData);
   if (!verified.ok) return { error: verified.error } as const;
-  const student = (await getTelegramStudent(String(verified.user.id))) ?? (await upsertTelegramStudent(verified.user));
+  const student = await getTelegramStudent(String(verified.user.id));
   if (!student) return { error: "Student profile unavailable" } as const;
+  if (!student.consentedAt) return { error: "Сначала подтвердите согласие в чате бота командой /start" } as const;
   return { student } as const;
 }
 

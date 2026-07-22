@@ -15,7 +15,12 @@ export type DemoSession = {
   state: SessionState;
   diagnosticScore: number;
   weakTopics: string[];
+  hasConsent: boolean;
+  consentActor: "adult_student" | "parent" | null;
 };
+
+export type ConsentActor = "adult_student" | "parent";
+export const CONSENT_VERSION = "2026-07-22";
 
 const COOKIE_NAME = "slovo_demo_session";
 
@@ -41,6 +46,16 @@ async function ensureSchema() {
       ),
     d1.prepare(
       "CREATE INDEX IF NOT EXISTS demo_sessions_updated_idx ON demo_sessions(updated_at)",
+    ),
+    d1.prepare(
+      `CREATE TABLE IF NOT EXISTS consent_records (
+        session_id TEXT PRIMARY KEY,
+        actor_role TEXT NOT NULL,
+        personal_data_version TEXT NOT NULL,
+        terms_version TEXT NOT NULL,
+        consented_at TEXT NOT NULL,
+        user_agent TEXT
+      )`,
     ),
   ]);
 }
@@ -80,6 +95,8 @@ function rowToSession(row: Record<string, unknown>): DemoSession {
     state: toState(String(row.role), String(row.entitlement)),
     diagnosticScore: Number(row.diagnostic_score ?? 0),
     weakTopics,
+    hasConsent: false,
+    consentActor: null,
   };
 }
 
@@ -91,7 +108,18 @@ export async function getSession(request: Request): Promise<DemoSession | null> 
     .prepare("SELECT * FROM demo_sessions WHERE id = ? LIMIT 1")
     .bind(id)
     .first<Record<string, unknown>>();
-  return row ? rowToSession(row) : null;
+  if (!row) return null;
+  const session = rowToSession(row);
+  const consent = await db()
+    .prepare("SELECT actor_role, personal_data_version, terms_version FROM consent_records WHERE session_id = ? LIMIT 1")
+    .bind(id)
+    .first<{ actor_role?: string; personal_data_version?: string; terms_version?: string }>();
+  const actor = consent?.actor_role === "parent" ? "parent" : consent?.actor_role === "adult_student" ? "adult_student" : null;
+  return {
+    ...session,
+    consentActor: actor,
+    hasConsent: Boolean(actor && consent?.personal_data_version === CONSENT_VERSION && consent?.terms_version === CONSENT_VERSION),
+  };
 }
 
 export async function setDemoState(
@@ -152,6 +180,33 @@ export async function saveDiagnostic(
     )
     .bind(score, JSON.stringify(weakTopics), new Date().toISOString(), sessionId)
     .run();
+}
+
+export async function recordConsent(request: Request, actor: ConsentActor) {
+  const id = sessionCookie(request);
+  if (!id) throw new Error("Session is required before consent");
+  await ensureSchema();
+  const session = await getSession(request);
+  if (!session) throw new Error("Session not found");
+  await db().prepare(
+    `INSERT INTO consent_records
+      (session_id, actor_role, personal_data_version, terms_version, consented_at, user_agent)
+     VALUES (?, ?, ?, ?, ?, ?)
+     ON CONFLICT(session_id) DO UPDATE SET
+      actor_role = excluded.actor_role,
+      personal_data_version = excluded.personal_data_version,
+      terms_version = excluded.terms_version,
+      consented_at = excluded.consented_at,
+      user_agent = excluded.user_agent`,
+  ).bind(
+    id,
+    actor,
+    CONSENT_VERSION,
+    CONSENT_VERSION,
+    new Date().toISOString(),
+    request.headers.get("user-agent"),
+  ).run();
+  return getSession(request);
 }
 
 export async function listStudents() {

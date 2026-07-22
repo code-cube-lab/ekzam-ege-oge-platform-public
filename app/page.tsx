@@ -7,9 +7,10 @@ export default function Home() {
           <span>СЛОВО</span>
         </a>
         <div className="top-links">
-          <a href="#method">Методика</a>
-          <a href="#program">Программа</a>
-          <a href="#plans">Тарифы</a>
+          <a href="#parents">Родителям</a>
+          <a href="#method">Как работает</a>
+          <a href="/teachers">Преподаватели</a>
+          <a href="#plans">Стоимость</a>
         </div>
         <a className="button button-small button-ghost" href="/dashboard">
           Демо-кабинет
@@ -18,23 +19,23 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="hero-copy">
-          <div className="eyebrow"><span /> Методика Елены Николаевны Михайличенко</div>
-          <h1>Понимать,<br />а не <em>угадывать.</em></h1>
+          <div className="eyebrow"><span /> Подготовка к ОГЭ и ЕГЭ без ежедневных споров</div>
+          <h1>Маме — спокойно.<br />Ребёнку — <em>понятно.</em></h1>
           <p className="hero-lead">
-            «Слово» соединяет знания преподавателя Елены Николаевны Михайличенко,
-            проверенную базу материалов и AI-помощника: определяет уровень и собирает маршрут по русскому языку и литературе к ОГЭ или ЕГЭ.
+            «Слово» показывает, где ребёнок теряет баллы, даёт короткий план на день и разбирает ошибки простым языком.
+            В основе — материалы и контроль преподавателя Елены Николаевны Михайличенко; AI только помогает применять их каждый день.
           </p>
           <div className="hero-actions">
             <a className="button button-primary" href="/dashboard" data-testid="hero-start">
-              Пройти диагностику <span>↗</span>
+              Узнать пробелы ребёнка <span>↗</span>
             </a>
             <a className="text-link" href="#method">Как это работает <span>↓</span></a>
             <a className="text-link" href="/learn">Открытый видеоурок <span>↗</span></a>
           </div>
           <div className="trust-row">
-            <div><strong>12 мин</strong><span>на диагностику</span></div>
-            <div><strong>4 уровня</strong><span>от стартового до высокого</span></div>
-            <div><strong>1 цель</strong><span>понятный прогресс</span></div>
+            <div><strong>1 шаг в день</strong><span>без перегруза</span></div>
+            <div><strong>Виден прогресс</strong><span>по темам и ошибкам</span></div>
+            <div><strong>Учитель в контуре</strong><span>AI не решает сам</span></div>
           </div>
         </div>
 
@@ -46,25 +47,25 @@ export default function Home() {
           </div>
           <div className="score-orbit">
             <div className="score-ring"><span>78</span><small>прогноз</small></div>
-            <div className="orbit-note orbit-one">+12 баллов<br /><small>за 8 недель</small></div>
-            <div className="orbit-note orbit-two">3 темы<br /><small>в фокусе</small></div>
+            <div className="orbit-note orbit-one">−1 пробел<br /><small>после разбора</small></div>
+            <div className="orbit-note orbit-two">Повтор<br /><small>назначен завтра</small></div>
           </div>
           <div className="today-card">
-            <div className="today-meta"><span>Сегодня · 24 минуты</span><b>01</b></div>
-            <h3>Запятые при обособленных определениях</h3>
+            <div className="today-meta"><span>Сегодня · 12 минут</span><b>01</b></div>
+            <h3>Одно объяснение и три задания по слабой теме</h3>
             <div className="lesson-progress"><span /></div>
-            <div className="today-footer"><span>Теория · 7 мин</span><span>Практика · 12 заданий</span></div>
+            <div className="today-footer"><span>Объяснение · 4 мин</span><span>Практика · 3 задания</span></div>
           </div>
-          <div className="coach-bubble"><span>AI</span><p>Разберём по базе и методике преподавателя, почему здесь нужна запятая?</p></div>
+          <div className="coach-bubble"><span>ЕМ</span><p>Родитель видит не часы в приложении, а тему, ошибку и следующий шаг ребёнка.</p></div>
         </div>
       </section>
 
       <section className="problem-strip" aria-label="Преимущества">
-        <p>Не ещё один сборник тестов.</p>
+        <p>Не нужно каждый вечер выяснять, что учить.</p>
         <div className="strip-points">
-          <span>✦ Видит причину ошибки</span>
-          <span>✦ Помнит ваш прогресс</span>
-          <span>✦ Передаёт важное преподавателю</span>
+          <span>✦ Ребёнок получает один ясный шаг</span>
+          <span>✦ Мама видит реальный прогресс</span>
+          <span>✦ Сложные случаи уходят преподавателю</span>
         </div>
       </section>
 
@@ -73,7 +74,7 @@ export default function Home() {
         <div className="method-grid">
           <div>
             <h2>От ошибки —<br />к <span className="marker">пониманию</span></h2>
-            <p className="section-intro">Каждая тема проходит один и тот же ясный цикл. Ученик не остаётся один на один с красной отметкой.</p>
+            <p className="section-intro">Каждая тема проходит ясный цикл. Ребёнок понимает причину ошибки, а родитель видит, что будет сделано дальше.</p>
           </div>
           <ol className="method-steps">
             <li><b>01</b><div><h3>Диагностика</h3><p>Определяем не только неверный ответ, но и тип затруднения.</p></div></li>
@@ -106,29 +107,44 @@ export default function Home() {
             <h2>Методика Елены<br />Николаевны Михайличенко</h2>
             <blockquote>«ИИ должен освобождать время учителя для главного — разговора, обратной связи и роста ученика».</blockquote>
             <p>В платформе преподаватель задаёт логику объяснений, критерии проверки и маршрут повторения. AI помогает применять эту систему каждый день.</p>
+            <p><a className="text-link" href="/teachers">Открыть реестр преподавателей <span>↗</span></a></p>
           </div>
         </div>
       </section>
 
-      <section className="section plans-section" id="plans">
-        <div className="section-kicker">04 — Тарифы</div>
-        <div className="plans-head"><h2>Начните бесплатно.<br />Добавляйте поддержку, когда она нужна.</h2><p>Цены в прототипе — гипотеза для проверки, не публичная оферта.</p></div>
-        <div className="plans-grid">
-          <article className="plan-card"><div><span>СТАРТ</span><strong>0 ₽</strong><small>навсегда</small></div><ul><li>Диагностика знаний</li><li>Прогноз балла</li><li>3 пробных урока</li><li className="muted">AI: 5 запросов</li></ul><a href="/dashboard" className="button button-dark">Попробовать</a></article>
-          <article className="plan-card featured"><div className="popular">Выбор для самостоятельной подготовки</div><div><span>МАРШРУТ</span><strong>1 990 ₽</strong><small>в месяц</small></div><ul><li>Полный курс</li><li>Персональный план</li><li>AI-наставник</li><li>Повторение слабых тем</li></ul><a href="/dashboard" className="button button-primary">Открыть демо</a></article>
-          <article className="plan-card"><div><span>С УЧИТЕЛЕМ</span><strong>4 990 ₽</strong><small>в месяц</small></div><ul><li>Всё из «Маршрута»</li><li>Проверка сочинений</li><li>Групповые занятия</li><li>Личные рекомендации</li></ul><a href="/support" className="button button-dark">В лист ожидания</a></article>
+      <section className="section parent-section" id="parents">
+        <div className="section-kicker">04 — Что получает семья</div>
+        <div className="parent-head">
+          <h2>Платите не за доступ<br />к ещё одному <span className="marker">тесту.</span></h2>
+          <p>Оплата — за организованный учебный процесс: понятный план, своевременное повторение, объяснение ошибок и контроль преподавателя там, где алгоритма недостаточно.</p>
+        </div>
+        <div className="parent-grid">
+          <article className="parent-card"><span>Для ребёнка</span><h3>Не «учи всё», а один выполнимый шаг</h3><p>Короткое объяснение, задание сразу после него и разбор ответа без стыда и перегруза.</p></article>
+          <article className="parent-card"><span>Для мамы</span><h3>Прогресс, который можно увидеть</h3><p>Какие темы проседают, что уже закреплено, сколько сделано и какой следующий шаг выбран.</p></article>
+          <article className="parent-card"><span>Для результата</span><h3>Повторение по ошибкам, а не по календарю</h3><p>Слабая тема возвращается вовремя; уверенно освоенное не отнимает лишние часы.</p></article>
         </div>
       </section>
 
+      <section className="section plans-section" id="plans">
+        <div className="section-kicker">05 — Стоимость и ценность</div>
+        <div className="plans-head"><h2>Сначала посмотрите пробелы.<br />Платите только за нужный уровень поддержки.</h2><p>Оплата в демонстрационной версии пока не принимается. Состав и цены показаны, чтобы родителю было понятно, что входит в каждый месяц.</p></div>
+        <div className="plans-grid">
+          <article className="plan-card"><div><span>ПОНЯТЬ СТАРТ</span><strong>0 ₽</strong><small>до решения об оплате</small></div><ul><li>Диагностика по навыкам</li><li>Карта сильных и слабых тем</li><li>Открытый видеоурок с заданием</li><li className="muted">Можно оценить подход без карты</li></ul><a href="/dashboard" className="button button-dark">Проверить бесплатно</a></article>
+          <article className="plan-card featured"><div className="popular">Если ребёнок занимается самостоятельно</div><div><span>ЛИЧНЫЙ МАРШРУТ</span><strong>1 990 ₽</strong><small>за 30 дней доступа</small></div><ul><li>Ежедневный план на 10–25 минут</li><li>Объяснение сразу после ошибки</li><li>AI-помощник по базе преподавателя</li><li>Повторение слабых тем и отчёт прогресса</li></ul><a href="/dashboard" className="button button-primary">Посмотреть демо</a></article>
+          <article className="plan-card"><div><span>С ПРЕПОДАВАТЕЛЕМ</span><strong>4 990 ₽</strong><small>за 30 дней поддержки</small></div><ul><li>Всё из «Личного маршрута»</li><li>Проверка сочинений человеком</li><li>Групповые занятия по расписанию</li><li>Личные рекомендации родителю и ученику</li></ul><a href="/support" className="button button-dark">В лист ожидания</a></article>
+        </div>
+        <p className="plans-legal">До подключения оплаты предложения являются предварительными. Условия будущей покупки описаны в <a href="/offer">проекте оферты</a>.</p>
+      </section>
+
       <section className="final-cta">
-        <div><span className="section-kicker light">Начать сейчас</span><h2>Ваш следующий балл<br />начинается с <em>одного ответа.</em></h2></div>
-        <a href="/dashboard" className="button button-primary">Пройти диагностику <span>↗</span></a>
+        <div><span className="section-kicker light">Начать без оплаты</span><h2>Сначала узнайте,<br />где ребёнку нужна <em>помощь.</em></h2></div>
+        <a href="/dashboard" className="button button-primary">Узнать пробелы <span>↗</span></a>
       </section>
 
       <footer>
         <a className="brand brand-light" href="#top"><span className="brand-mark">С</span><span>СЛОВО</span></a>
-        <p>Образовательный MVP. AI помогает преподавателю, но не заменяет его.</p>
-        <div><a href="/terms">Условия</a><a href="/support">Поддержка</a><a href="/teacher">Преподавателю</a></div>
+        <p>Образовательный MVP. Преподаватель задаёт методику; AI помогает применять её и не заменяет учителя.</p>
+        <div><a href="/teachers">Преподаватели</a><a href="/offer">Оферта</a><a href="/privacy">Политика данных</a><a href="/consent">Согласие</a><a href="/terms">Условия</a><a href="/support">Поддержка</a></div>
       </footer>
     </main>
   );

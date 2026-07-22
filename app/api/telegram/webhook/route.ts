@@ -1,8 +1,10 @@
 import {
+  deleteTelegramStudent,
   findTelegramTask,
   getTelegramStudent,
   miniAppUrl,
   recordTelegramAnswer,
+  recordTelegramConsent,
   sendTaskMessage,
   setReminders,
   setStudentTrack,
@@ -41,12 +43,17 @@ export async function POST(request: Request) {
 
 async function handleMessage(message: Message, requestUrl: string) {
   if (!message.from) return;
-  const student = await upsertTelegramStudent(message.from, String(message.chat.id));
-  if (!student) return;
   const command = (message.text ?? "").split(/\s+/)[0].split("@")[0].toLowerCase();
   const appUrl = miniAppUrl(requestUrl);
+  const existing = await getTelegramStudent(String(message.from.id));
 
   if (command === "/start") {
+    if (!existing?.consentedAt) {
+      await sendConsentPrompt(String(message.chat.id), requestUrl);
+      return;
+    }
+    const student = await upsertTelegramStudent(message.from, String(message.chat.id));
+    if (!student) return;
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
       text: `Здравствуйте, ${student.firstName}! Я бот платформы «Слово». Каждый день дам одно короткое задание, разберу ответ и подберу следующий шаг.\n\nСначала выберите свой экзамен и предмет:`,
@@ -64,6 +71,21 @@ async function handleMessage(message: Message, requestUrl: string) {
     });
     return;
   }
+  if (command === "/terms" && !existing?.consentedAt) {
+    await telegramApi("sendMessage", { chat_id: String(message.chat.id), text: `Условия использования: ${new URL("/terms", requestUrl).toString()}` });
+    return;
+  }
+  if ((command === "/support" || command === "/paysupport") && !existing?.consentedAt) {
+    const path = command === "/paysupport" ? "/paysupport" : "/support";
+    await telegramApi("sendMessage", { chat_id: String(message.chat.id), text: `Поддержка: ${new URL(path, requestUrl).toString()}` });
+    return;
+  }
+  if (!existing?.consentedAt) {
+    await sendConsentPrompt(String(message.chat.id), requestUrl);
+    return;
+  }
+  const student = await upsertTelegramStudent(message.from, String(message.chat.id));
+  if (!student) return;
   if (command === "/track") {
     await telegramApi("sendMessage", { chat_id: student.chatId, text: `Сейчас выбрано: ${studentTrackLabel(student)}. Можно изменить:`, reply_markup: trackKeyboard() });
     return;
@@ -77,6 +99,14 @@ async function handleMessage(message: Message, requestUrl: string) {
   if (command === "/remind_off") {
     await setReminders(student.telegramId, false);
     await telegramApi("sendMessage", { chat_id: student.chatId, text: "Напоминания выключены. Вернуть их можно командой /remind_on." });
+    return;
+  }
+  if (command === "/delete_data") {
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: "Удалить профиль, ответы, прогресс и расписание повторений? Это действие нельзя отменить.",
+      reply_markup: { inline_keyboard: [[{ text: "Да, удалить мои данные", callback_data: "delete:confirm" }], [{ text: "Отмена", callback_data: "delete:cancel" }]] },
+    });
     return;
   }
   if (command === "/terms") {
@@ -95,10 +125,46 @@ async function handleMessage(message: Message, requestUrl: string) {
   });
 }
 
+async function sendConsentPrompt(chatId: string, requestUrl: string) {
+  await telegramApi("sendMessage", {
+    chat_id: chatId,
+    text: "Перед созданием личного маршрута нужно отдельное согласие на обработку минимальных данных: Telegram ID и имя, ответы, ошибки и прогресс.\n\nЕсли ученику меньше 18 лет, согласие даёт родитель или законный представитель. Выбор кнопки ниже означает согласие по опубликованному тексту.",
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "Я родитель / представитель", callback_data: "consent:parent" }],
+        [{ text: "Мне 18 лет или больше", callback_data: "consent:adult_student" }],
+        [{ text: "Текст согласия", url: new URL("/consent", requestUrl).toString() }, { text: "Политика", url: new URL("/privacy", requestUrl).toString() }],
+      ],
+    },
+  });
+}
+
 async function handleCallback(callback: Callback) {
   const chatId = callback.message?.chat.id ?? callback.from.id;
-  const student = (await getTelegramStudent(String(callback.from.id))) ?? (await upsertTelegramStudent(callback.from, String(chatId)));
-  if (!student) return;
+  const consentMatch = callback.data?.match(/^consent:(parent|adult_student)$/);
+  if (consentMatch) {
+    const created = await upsertTelegramStudent(callback.from, String(chatId));
+    if (!created) return;
+    const student = await recordTelegramConsent(created.telegramId, consentMatch[1] as "parent" | "adult_student");
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Согласие сохранено" });
+    if (student) await telegramApi("sendMessage", { chat_id: student.chatId, text: `Спасибо, ${student.firstName}. Теперь выберите экзамен и предмет:`, reply_markup: trackKeyboard() });
+    return;
+  }
+  const student = await getTelegramStudent(String(callback.from.id));
+  if (!student?.consentedAt) {
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Сначала подтвердите согласие через /start", show_alert: true });
+    return;
+  }
+  if (callback.data === "delete:cancel") {
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Удаление отменено" });
+    return;
+  }
+  if (callback.data === "delete:confirm") {
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Данные удалены" });
+    await deleteTelegramStudent(student.telegramId);
+    await telegramApi("sendMessage", { chat_id: student.chatId, text: "Ваш профиль, ответы и прогресс удалены. Открытые материалы остаются доступны. Чтобы начать заново, отправьте /start." });
+    return;
+  }
   const trackMatch = callback.data?.match(/^track:(oge|ege):(russian|literature)$/);
   if (trackMatch) {
     const updated = await setStudentTrack(student.telegramId, trackMatch[1] as "oge" | "ege", trackMatch[2] as "russian" | "literature");

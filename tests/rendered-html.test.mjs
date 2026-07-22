@@ -5,17 +5,30 @@ import test from "node:test";
 test("landing contains the product promise and primary path", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
-  assert.match(page, /Понимать/);
-  assert.match(page, /Пройти диагностику/);
+  assert.match(page, /Маме — спокойно/);
+  assert.match(page, /Узнать пробелы ребёнка/);
   assert.match(page, /Елены/);
   assert.match(layout, /Слово — AI-подготовка к ОГЭ и ЕГЭ/);
   assert.doesNotMatch(`${page}\n${layout}`, /codex-preview|react-loading-skeleton/i);
 });
 
 test("required support pages exist", async () => {
-  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx"]) {
+  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx", "../app/offer/page.tsx", "../app/privacy/page.tsx", "../app/consent/page.tsx"]) {
     await access(new URL(path, import.meta.url));
   }
+});
+
+test("personal data consent is separate and accounts for minors", async () => {
+  const [dashboard, consentApi, consentPage] = await Promise.all([
+    readFile(new URL("../app/components/DashboardClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/consent/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/consent/page.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(dashboard, /personalDataAccepted/);
+  assert.match(dashboard, /termsAccepted/);
+  assert.match(dashboard, /Я родитель/);
+  assert.match(consentApi, /Нужны две отдельные отметки/);
+  assert.match(consentPage, /родитель или иной законный представитель/);
 });
 
 test("coach route checks identity and entitlement before returning content", async () => {
@@ -66,4 +79,15 @@ test("knowledge base names the teacher, levels and lesson cycle", async () => {
   assert.match(lesson, /youtubeId/);
   assert.match(lesson, /explanation/);
   assert.match(lesson, /nextStep/);
+});
+
+test("faculty registry is explicit about evidence and participation", async () => {
+  const [registry, page] = await Promise.all([
+    readFile(new URL("../knowledge-base/teachers/teacher-registry.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/teachers/page.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.equal((registry.match(/skillSlug: "/g) ?? []).length, 16);
+  assert.match(registry, /official-archive-profile/);
+  assert.match(registry, /not-confirmed/);
+  assert.match(page, /публикация в реестре не означает участие/);
 });

@@ -67,9 +67,12 @@ async function ensureSchema() {
         updated_at TEXT NOT NULL
       )`,
     ),
-    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('trainer', 'Тренажёр', 390, 'Самостоятельная подготовка и отчёт родителю', datetime('now'))"),
-    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('group', 'Группа', 1290, 'Занятия по предмету и проверка работ', datetime('now'))"),
-    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('mentor', 'С преподавателем', 2490, 'Личный маршрут и контроль преподавателя', datetime('now'))"),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('trainer', 'Тренажёр', 1490, 'Самостоятельная подготовка и отчёт родителю', datetime('now'))"),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('group', 'Группа', 4490, 'Еженедельный урок и проверка работ', datetime('now'))"),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('mentor', 'Мини-группа + наставник', 7990, 'Личный маршрут и две проверки в неделю', datetime('now'))"),
+    d1.prepare("UPDATE school_plans SET monthly_price = 1490, updated_at = datetime('now') WHERE id = 'trainer' AND monthly_price = 390"),
+    d1.prepare("UPDATE school_plans SET monthly_price = 4490, promise = 'Еженедельный урок и проверка работ', updated_at = datetime('now') WHERE id = 'group' AND monthly_price = 1290"),
+    d1.prepare("UPDATE school_plans SET monthly_price = 7990, name = 'Мини-группа + наставник', promise = 'Личный маршрут и две проверки в неделю', updated_at = datetime('now') WHERE id = 'mentor' AND monthly_price = 2490"),
   ]);
 }
 
@@ -159,7 +162,7 @@ export async function setDemoState(
         : state === "expired_or_refunded"
           ? "expired"
           : "free";
-  const name = state === "director" ? "Олег · директор" : state === "admin" ? "Елена Николаевна" : "Алексей";
+  const name = state === "director" ? "Администратор" : state === "admin" ? "Елена Николаевна" : "Алексей";
   const updatedAt = new Date().toISOString();
 
   await db()
@@ -250,13 +253,15 @@ export async function getDirectorReport() {
   const active = students.filter((student) => student.state !== "expired_or_refunded").length;
   const average = students.filter((student) => student.score > 0);
   const averageScore = average.length ? Math.round(average.reduce((sum, student) => sum + student.score, 0) / average.length) : 0;
+  const groupPlan = plansResult.results.find((row) => String(row.id) === "group");
+  const groupPrice = Number(groupPlan?.monthly_price ?? 4490);
   return {
     metrics: {
       activeStudents: active,
       paidStudents: paid,
       trialToPaid: students.length ? Math.round((paid / students.length) * 100) : 0,
       averageScore,
-      revenue: paid * 1290,
+      revenue: paid * groupPrice,
     },
     plans: plansResult.results.map((row) => ({
       id: String(row.id),

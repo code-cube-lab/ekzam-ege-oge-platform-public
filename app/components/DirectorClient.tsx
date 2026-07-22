@@ -17,7 +17,7 @@ export function DirectorClient() {
   async function load() {
     const response = await fetch("/api/director", { cache: "no-store" });
     const data = await response.json();
-    if (!response.ok) { setError(data.error ?? "Нужна роль директора"); return; }
+    if (!response.ok) { setError(data.error ?? "Нужен доступ администратора"); return; }
     setReport(data); setDraft(Object.fromEntries(data.plans.map((plan: Plan) => [plan.id, plan.monthlyPrice]))); setError("");
   }
 
@@ -41,20 +41,20 @@ export function DirectorClient() {
       .then(async (response) => ({ response, data: await response.json() }))
       .then(({ response, data }) => {
         if (cancelled) return;
-        if (!response.ok) { setError(data.error ?? "Нужна роль директора"); return; }
+        if (!response.ok) { setError(data.error ?? "Нужен доступ администратора"); return; }
         setReport(data);
         setDraft(Object.fromEntries(data.plans.map((plan: Plan) => [plan.id, plan.monthlyPrice])));
         setError("");
       })
-      .catch(() => { if (!cancelled) setError("Не удалось загрузить отчёт директора"); });
+      .catch(() => { if (!cancelled) setError("Не удалось загрузить отчёт школы"); });
     return () => { cancelled = true; };
   }, []);
 
   return <div className="app-shell director-shell">
-    <AppNav active="director" name="Олег · директор" />
+    <AppNav active="director" name="Администратор" />
     <main className="app-main">
-      <header className="app-top"><div><span className="exam-label">Управление школой</span><h1>Кабинет директора</h1><p>Ученики, предметы, преподаватели, цены и деньги — на одном экране.</p></div><div className="top-actions"><span className="status-pill">Владелец</span><Link className="button button-ghost button-small" href="/">На сайт</Link></div></header>
-      {error && !report ? <section className="panel empty-state"><h2>Войдите как директор школы</h2><p>Демо-роль создаётся на сервере и открывает отчёты и управление ценами.</p><button className="button button-red" onClick={openDemo}>Открыть кабинет Олега</button></section> : report && <>
+      <header className="app-top"><div><span className="exam-label">Служебный раздел</span><h1>Управление школой</h1><p>Ученики, предметы, преподаватели, цены и деньги — на одном экране.</p></div><div className="top-actions"><span className="status-pill">Администратор</span><Link className="button button-ghost button-small" href="/">На сайт</Link></div></header>
+      {error && !report ? <section className="panel empty-state"><h2>Нужен административный доступ</h2><p>Демо-роль открывает отчёты и управление ценами без привязки к персональному имени.</p><button className="button button-red" onClick={openDemo}>Открыть демо управления</button></section> : report && <>
         <section className="director-metrics">
           <article><span>Активные ученики</span><strong>{report.metrics.activeStudents}</strong><small>в демо-базе</small></article>
           <article><span>Оплатили</span><strong>{report.metrics.paidStudents}</strong><small>подтверждённые состояния</small></article>
@@ -67,7 +67,7 @@ export function DirectorClient() {
             <div className="director-plans">{report.plans.map((plan) => <article key={plan.id}><div><b>{plan.name}</b><p>{plan.promise}</p></div><label><span>₽ / месяц</span><input type="number" min="0" max="50000" value={draft[plan.id] ?? plan.monthlyPrice} onChange={(event) => setDraft((items) => ({ ...items, [plan.id]: Number(event.target.value) }))} /></label><button disabled={saving === plan.id} onClick={() => savePrice(plan)}>{saving === plan.id ? "Сохраняю…" : "Сохранить"}</button></article>)}</div>
             {error && <p className="error-note">{error}</p>}
           </div>
-          <div className="panel subject-report"><div className="panel-head"><div><h2>Предметы запуска</h2><p>Первый ответственный профиль по каждому направлению.</p></div><Link href="/subjects">13 направлений ↗</Link></div>
+          <div className="panel subject-report"><div className="panel-head"><div><h2>Предметы запуска</h2><p>Статус программы и преподавателя по каждому направлению.</p></div><Link href="/subjects">15 предметов ↗</Link></div>
             {[['Русский язык','ЕМ','в работе'],['Математика','СД','подготовка'],['Информатика','АХ','подготовка'],['Физика','ЕЛ','подготовка'],['Химия','ЕК','подготовка'],['Биология','МН','подготовка']].map(([subject, initials, state]) => <div className="subject-row" key={subject}><span>{initials}</span><b>{subject}</b><small>{state}</small></div>)}
           </div>
           <div className="panel students-panel director-students"><div className="panel-head"><div><h2>Ученики</h2><p>Кому нужна помощь прямо сейчас</p></div><span className="panel-tag">{report.students.length}</span></div>

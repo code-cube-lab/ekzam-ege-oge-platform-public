@@ -23,7 +23,7 @@ const LANGUAGES = "https://www.stpku.ru/index.php/uchebnyj-protsess/otdelnye-dis
 const RUSSIAN_ARCHIVE = "https://arhive.stpku.ru/index.php?Itemid=257&id=888&option=com_content&view=article";
 
 export const subjectLeads: SubjectLead[] = [
-  { slug: "russian", subject: "Русский язык", exam: "обязательный ЕГЭ", teacher: "Елена Николаевна Михайличенко", initials: "ЕМ", department: "Русский язык и литература", publicEvidence: "Архивный профиль и публикации СПКУ; кандидатура основного эксперта дана владельцем платформы.", sourceUrl: RUSSIAN_ARCHIVE, status: "archive-owner-brief", participation: "not-confirmed", skillSlug: "russian-ege-mikhaylichenko" },
+  { slug: "russian", subject: "Русский язык", exam: "обязательный ЕГЭ", teacher: "Елена Николаевна Михайличенко", initials: "ЕМ", department: "Русский язык и литература", publicEvidence: "Архивный профиль и публикации СПКУ подтверждают работу с лексикой, речью и текстом.", sourceUrl: RUSSIAN_ARCHIVE, status: "archive-owner-brief", participation: "not-confirmed", skillSlug: "russian-ege-mikhaylichenko" },
   { slug: "literature", subject: "Литература", exam: "ЕГЭ по выбору", teacher: "Роман Сергеевич Горбунов", initials: "РГ", department: "Русский язык и литература", publicEvidence: "Публичные материалы действующего сайта СПКУ о литературном лектории и исследовательской работе с текстом.", sourceUrl: RUSSIAN, status: "current-publication", participation: "not-confirmed", skillSlug: "literature-ege-gorbunov" },
   { slug: "math", subject: "Математика", exam: "база и профиль", teacher: "Сергей Геннадьевич Дедов", initials: "СД", department: "Математика, информатика и ИКТ", publicEvidence: "Руководитель дисциплины упомянут в действующих публикациях СПКУ о математической грамотности и подготовке.", sourceUrl: MATH, status: "current-publication", participation: "not-confirmed", skillSlug: "math-ege-dedov" },
   { slug: "informatics", subject: "Информатика", exam: "компьютерный ЕГЭ", teacher: "Александр Филиппович Ханов", initials: "АХ", department: "Математика, информатика и ИКТ", publicEvidence: "Действующая публикация СПКУ называет преподавателем информатики и автором открытых занятий.", sourceUrl: MATH, status: "current-publication", participation: "not-confirmed", skillSlug: "informatics-ege-khanov" },
@@ -39,6 +39,11 @@ export const subjectLeads: SubjectLead[] = [
 ];
 
 export const verifiedTeacherPhotos: Record<string, { src: string; sourceUrl: string; alt: string }> = {
+  "russian-ege-mikhaylichenko": {
+    src: "/teachers/elena-mikhaylichenko-class.jpg",
+    sourceUrl: "https://www.stpku.ru/index.php/news/novosti/svoi-i-chuzhie-iskonno-russkie-i-zaimstvovannye-slova-izuchali-kadety-spku",
+    alt: "Елена Николаевна Михайличенко проводит занятие по русскому языку",
+  },
   "math-ege-dedov": {
     src: "/teachers/sergey-dedov.jpg",
     sourceUrl: "https://www.stpku.ru/dedov",
@@ -48,6 +53,16 @@ export const verifiedTeacherPhotos: Record<string, { src: string; sourceUrl: str
     src: "/teachers/elena-kazanovskaya-class.jpg",
     sourceUrl: "https://stpku.ru/index.php/news/novosti/sedobnoe-nesedobnoe-integrirovannyj-urok-anglijskogo-yazyka-i-khimii-proshjol-u-vosmiklassnikov",
     alt: "Елена Борисовна Казановская на интегрированном уроке химии",
+  },
+  "biology-ege-nosenko": {
+    src: "/teachers/maria-nosenko-class.jpg",
+    sourceUrl: "https://stpku.ru/index.php/news/novosti/o-meditsinskoj-etike-rassuzhdali-kadety-khimiko-biologicheskogo-profilya-spku",
+    alt: "Мария Александровна Носенко проводит занятие с кадетами",
+  },
+  "social-ege-belomestnaya": {
+    src: "/teachers/lilia-belomestnaya-class.jpg",
+    sourceUrl: "https://www.stpku.ru/index.php/news/novosti/vse-dorogi-vedut-v-rim-otkrytyj-urok-istorii-proshjol-u-pervokursnikov-spku",
+    alt: "Лилия Александровна Беломестная проводит открытый урок",
   },
   "geography-ege-shcherbakova": {
     src: "/teachers/elena-shcherbakova.jpg",

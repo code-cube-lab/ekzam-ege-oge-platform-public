@@ -13,7 +13,7 @@ export function AppNav({ active, name = "Алексей" }: AppNavProps) {
         <a className={`side-link ${active === "diagnostic" ? "active" : ""}`} href="/dashboard#diagnostic"><span>◎</span>Диагностика</a>
         <a className={`side-link ${active === "coach" ? "active" : ""}`} href="/dashboard#coach"><span>✦</span>AI-помощник</a>
         <a className={`side-link ${active === "teacher" ? "active" : ""}`} href="/teacher"><span>▦</span>Учитель</a>
-        <a className={`side-link ${active === "director" ? "active" : ""}`} href="/director"><span>₽</span>Директор</a>
+        <a className={`side-link ${active === "director" ? "active" : ""}`} href="/director"><span>₽</span>Управление</a>
       </nav>
       <div className="side-bottom">
         <div className="user-mini"><span className="avatar">{name.slice(0, 1)}</span><div><p>{name}</p><small>Демо-профиль</small></div></div>

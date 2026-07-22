@@ -213,7 +213,9 @@ export async function verifyTelegramInitData(initData: string, maxAgeSeconds = 8
   const receivedHash = params.get("hash") ?? "";
   const authDate = Number(params.get("auth_date") ?? 0);
   params.delete("hash");
-  params.delete("signature");
+  // Telegram's bot-token HMAC covers every received field except `hash`.
+  // The newer `signature` field is excluded only by the separate Ed25519
+  // third-party verification flow, so it must remain in this check string.
   const dataCheckString = [...params.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => `${key}=${value}`).join("\n");
   const encoder = new TextEncoder();
   const webAppKey = await crypto.subtle.importKey("raw", encoder.encode("WebAppData"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);

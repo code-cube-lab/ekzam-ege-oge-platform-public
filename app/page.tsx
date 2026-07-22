@@ -18,21 +18,22 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="hero-copy">
-          <div className="eyebrow"><span /> Русский язык и литература</div>
+          <div className="eyebrow"><span /> Методика Елены Николаевны Михайличенко</div>
           <h1>Понимать,<br />а не <em>угадывать.</em></h1>
           <p className="hero-lead">
-            «Слово» находит пробелы, объясняет ошибки простым языком и собирает
-            маршрут к вашему баллу — вместе с преподавателем, а не вместо него.
+            «Слово» соединяет знания преподавателя Елены Николаевны Михайличенко,
+            проверенную базу материалов и AI-помощника: определяет уровень и собирает маршрут по русскому языку и литературе к ОГЭ или ЕГЭ.
           </p>
           <div className="hero-actions">
             <a className="button button-primary" href="/dashboard" data-testid="hero-start">
               Пройти диагностику <span>↗</span>
             </a>
             <a className="text-link" href="#method">Как это работает <span>↓</span></a>
+            <a className="text-link" href="/learn">Открытый видеоурок <span>↗</span></a>
           </div>
           <div className="trust-row">
             <div><strong>12 мин</strong><span>на диагностику</span></div>
-            <div><strong>5 шагов</strong><span>до личного плана</span></div>
+            <div><strong>4 уровня</strong><span>от стартового до высокого</span></div>
             <div><strong>1 цель</strong><span>понятный прогресс</span></div>
           </div>
         </div>
@@ -54,7 +55,7 @@ export default function Home() {
             <div className="lesson-progress"><span /></div>
             <div className="today-footer"><span>Теория · 7 мин</span><span>Практика · 12 заданий</span></div>
           </div>
-          <div className="coach-bubble"><span>AI</span><p>Разберём, почему здесь нужна запятая — без заучивания?</p></div>
+          <div className="coach-bubble"><span>AI</span><p>Разберём по базе и методике преподавателя, почему здесь нужна запятая?</p></div>
         </div>
       </section>
 
@@ -87,12 +88,12 @@ export default function Home() {
         <div className="section-kicker light">02 — Что внутри</div>
         <div className="program-head">
           <h2>Один ритм.<br />Вся подготовка.</h2>
-          <p>Русский и литература соединены в едином расписании: диагностика, уроки, сочинения и повторение.</p>
+          <p>Русский и литература — первый модуль будущей платформы по всем школьным предметам: диагностика, уроки, сочинения и повторение.</p>
         </div>
         <div className="feature-grid">
           <article className="feature-card lime"><span className="feature-no">01</span><div className="feature-icon">↗</div><h3>Точный прогноз</h3><p>Баллы считаются по навыкам, а не по ощущению «вроде получается».</p></article>
-          <article className="feature-card violet"><span className="feature-no">02</span><div className="feature-icon">AI</div><h3>Наставник рядом</h3><p>Объясняет ошибку и задаёт наводящий вопрос, сохраняя роль учителя.</p></article>
-          <article className="feature-card paper"><span className="feature-no">03</span><div className="feature-icon">✓</div><h3>План на сегодня</h3><p>Короткий набор действий вместо бесконечного каталога уроков.</p></article>
+          <article className="feature-card violet"><span className="feature-no">02</span><div className="feature-icon">AI</div><h3>AI + преподаватель</h3><p>AI объясняет по утверждённой базе, а учитель контролирует критерии и спорные ответы.</p></article>
+          <article className="feature-card paper"><span className="feature-no">03</span><div className="feature-icon">✓</div><h3>Четыре уровня</h3><p>Стартовый, базовый, экзаменационный и высокий — сложность меняется по ответам.</p></article>
           <article className="feature-card coral"><span className="feature-no">04</span><div className="feature-icon">◎</div><h3>Сочинение по шагам</h3><p>Тезис, аргумент, связь и речевая точность проверяются отдельно.</p></article>
         </div>
       </section>

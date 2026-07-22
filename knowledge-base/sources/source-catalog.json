@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-07-22",
+  "policy": "Official exam facts outrank video and commercial course claims. Video contributes teaching patterns only unless independently verified.",
+  "sources": [
+    {"id": "fipi-ege-2026", "kind": "official", "authority": 1, "url": "https://fipi.ru/ege/demoversii-specifikacii-kodifikatory", "use": "демоверсии, спецификации, кодификаторы ЕГЭ"},
+    {"id": "fipi-oge-2026", "kind": "official", "authority": 1, "url": "https://fipi.ru/oge/demoversii-specifikacii-kodifikatory", "use": "демоверсии, спецификации, кодификаторы ОГЭ"},
+    {"id": "fipi-ege-method", "kind": "official", "authority": 1, "url": "https://fipi.ru/ege/analiticheskie-i-metodicheskie-materialy", "use": "типичные ошибки и методические материалы ЕГЭ"},
+    {"id": "fipi-oge-method", "kind": "official", "authority": 1, "url": "https://fipi.ru/oge/dlya-predmetnyh-komissiy-subektov-rf", "use": "материалы предметных комиссий ОГЭ"},
+    {"id": "youtube-ege-orthography", "kind": "video-transcript-verified", "authority": 3, "url": "https://www.youtube.com/watch?v=XO36kybhZ0I", "author": "Ася Русичка | ЕГЭLAND", "durationSeconds": 6985, "use": "структура теория → классификация → практика → самопроверка", "copyright": "do-not-copy-transcript"},
+    {"id": "youtube-ege-theory-playlist", "kind": "video-metadata", "authority": 4, "url": "https://youtube.com/playlist?list=PLICMqW3-oG4iaB_NNOP0RZfVDhKxT5Y6v", "use": "разделение теории и нарешивания; содержание требует поурочной проверки"},
+    {"id": "research-retrieval", "kind": "scientific", "authority": 2, "url": "https://doi.org/10.1111/j.1467-9280.2006.01693.x", "citation": "Roediger & Karpicke, 2006", "use": "попытка извлечения перед повторным изучением"},
+    {"id": "research-spacing", "kind": "scientific", "authority": 2, "url": "https://doi.org/10.1037/0033-2909.132.3.354", "citation": "Cepeda et al., 2006", "use": "распределённое повторение"},
+    {"id": "research-feedback", "kind": "scientific", "authority": 2, "url": "https://doi.org/10.3102/003465430298487", "citation": "Hattie & Timperley, 2007", "use": "цель → текущий результат → следующий шаг"},
+    {"id": "research-writing", "kind": "scientific-report", "authority": 2, "url": "https://carnegie.org/publication/writing-next-effective-strategies-to-improve-writing-of-adolescents-in-middle-and-high-schools/", "citation": "Graham & Perin, 2007", "use": "планирование, написание, редактирование, стратегия письма"},
+    {"id": "research-awe", "kind": "scientific-meta-analysis", "authority": 2, "url": "https://eric.ed.gov/?id=EJ1380424", "citation": "Zhai & Ma, 2023", "use": "границы автоматической обратной связи по письму"}
+  ]
+}

@@ -1,12 +1,22 @@
 import { env } from "cloudflare:workers";
-import { chooseDailyTask, findTask, type DailyTask } from "./task-bank";
+import {
+  chooseDailyTask,
+  findTask,
+  trackLabel,
+  type DailyTask,
+  type ExamTrack,
+  type SubjectTrack,
+  type TopicStat,
+} from "./task-bank";
 
 type TelegramUser = { id: number; first_name?: string; username?: string };
-type TelegramStudent = {
+export type TelegramStudent = {
   telegramId: string;
   chatId: string;
   firstName: string;
   username: string | null;
+  exam: ExamTrack;
+  subject: SubjectTrack;
   weakTopics: string[];
   lastScore: number;
   remindersEnabled: boolean;
@@ -23,17 +33,9 @@ function database() {
   return value;
 }
 
-export function botToken() {
-  return bindings().TELEGRAM_BOT_TOKEN ?? "";
-}
-
-export function webhookSecret() {
-  return bindings().TELEGRAM_WEBHOOK_SECRET ?? "";
-}
-
-export function cronSecret() {
-  return bindings().CRON_SECRET ?? "";
-}
+export function botToken() { return bindings().TELEGRAM_BOT_TOKEN ?? ""; }
+export function webhookSecret() { return bindings().TELEGRAM_WEBHOOK_SECRET ?? ""; }
+export function cronSecret() { return bindings().CRON_SECRET ?? ""; }
 
 async function ensureTelegramSchema() {
   const d1 = database();
@@ -43,6 +45,8 @@ async function ensureTelegramSchema() {
       chat_id TEXT NOT NULL,
       first_name TEXT NOT NULL,
       username TEXT,
+      exam_track TEXT NOT NULL DEFAULT 'ege',
+      subject_track TEXT NOT NULL DEFAULT 'russian',
       weak_topics TEXT NOT NULL DEFAULT '[]',
       last_score INTEGER NOT NULL DEFAULT 0,
       reminders_enabled INTEGER NOT NULL DEFAULT 1,
@@ -58,8 +62,27 @@ async function ensureTelegramSchema() {
       is_correct INTEGER NOT NULL,
       answered_at TEXT NOT NULL
     )`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS telegram_mastery (
+      telegram_id TEXT NOT NULL,
+      topic TEXT NOT NULL,
+      mastery REAL NOT NULL DEFAULT 0.5,
+      correct_count INTEGER NOT NULL DEFAULT 0,
+      error_count INTEGER NOT NULL DEFAULT 0,
+      streak INTEGER NOT NULL DEFAULT 0,
+      last_seen TEXT NOT NULL,
+      next_review_at TEXT,
+      PRIMARY KEY (telegram_id, topic)
+    )`),
     d1.prepare("CREATE INDEX IF NOT EXISTS telegram_answers_user_idx ON telegram_answers(telegram_id, answered_at)"),
   ]);
+
+  // Safe upgrade for students created by the first prototype revision.
+  for (const sql of [
+    "ALTER TABLE telegram_students ADD COLUMN exam_track TEXT NOT NULL DEFAULT 'ege'",
+    "ALTER TABLE telegram_students ADD COLUMN subject_track TEXT NOT NULL DEFAULT 'russian'",
+  ]) {
+    try { await d1.prepare(sql).run(); } catch { /* column already exists */ }
+  }
 }
 
 function parseTopics(value: unknown) {
@@ -72,6 +95,8 @@ function rowToStudent(row: Record<string, unknown>): TelegramStudent {
     chatId: String(row.chat_id),
     firstName: String(row.first_name),
     username: row.username ? String(row.username) : null,
+    exam: row.exam_track === "oge" ? "oge" : "ege",
+    subject: row.subject_track === "literature" ? "literature" : "russian",
     weakTopics: parseTopics(row.weak_topics),
     lastScore: Number(row.last_score ?? 0),
     remindersEnabled: Number(row.reminders_enabled ?? 1) === 1,
@@ -102,6 +127,16 @@ export async function getTelegramStudent(telegramId: string) {
   return row ? rowToStudent(row) : null;
 }
 
+export async function setStudentTrack(telegramId: string, exam: ExamTrack, subject: SubjectTrack) {
+  await ensureTelegramSchema();
+  await database().batch([
+    database().prepare("UPDATE telegram_students SET exam_track = ?, subject_track = ?, weak_topics = '[]', updated_at = ? WHERE telegram_id = ?")
+      .bind(exam, subject, new Date().toISOString(), telegramId),
+    database().prepare("DELETE FROM telegram_mastery WHERE telegram_id = ?").bind(telegramId),
+  ]);
+  return getTelegramStudent(telegramId);
+}
+
 export async function setReminders(telegramId: string, enabled: boolean) {
   await ensureTelegramSchema();
   await database().prepare("UPDATE telegram_students SET reminders_enabled = ?, updated_at = ? WHERE telegram_id = ?")
@@ -119,18 +154,56 @@ export async function markDailySent(telegramId: string, day: string) {
     .bind(day, new Date().toISOString(), telegramId).run();
 }
 
+async function topicStats(telegramId: string) {
+  await ensureTelegramSchema();
+  const result = await database().prepare("SELECT topic, mastery, error_count, streak, next_review_at FROM telegram_mastery WHERE telegram_id = ?")
+    .bind(telegramId).all<Record<string, unknown>>();
+  return Object.fromEntries(result.results.map((row) => [String(row.topic), {
+    mastery: Number(row.mastery ?? 0.5),
+    errorCount: Number(row.error_count ?? 0),
+    streak: Number(row.streak ?? 0),
+    nextReviewAt: row.next_review_at ? String(row.next_review_at) : null,
+  } satisfies TopicStat]));
+}
+
+function isoAfter(days: number) {
+  const value = new Date();
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
 export async function recordTelegramAnswer(student: TelegramStudent, task: DailyTask, answerIndex: number) {
   await ensureTelegramSchema();
   const correct = answerIndex === task.correctIndex;
+  const current = (await topicStats(student.telegramId))[task.topic] ?? { mastery: 0.5, errorCount: 0, streak: 0, nextReviewAt: null };
+  const streak = correct ? (current.streak >= 0 ? current.streak + 1 : 1) : (current.streak <= 0 ? current.streak - 1 : -1);
+  const mastery = Math.max(0, Math.min(1, current.mastery + (correct ? 0.1 : -0.08)));
+  const correctCountDelta = correct ? 1 : 0;
+  const errorCountDelta = correct ? 0 : 1;
+  const nextReviewAt = isoAfter(correct ? (streak >= 2 ? 7 : 3) : 1);
   const weak = new Set(student.weakTopics);
-  if (correct) weak.delete(task.topic); else weak.add(task.topic);
+  if (correct && mastery >= 0.65) weak.delete(task.topic);
+  if (!correct) weak.add(task.topic);
+  const now = new Date().toISOString();
+
   await database().batch([
     database().prepare("INSERT INTO telegram_answers (telegram_id, task_key, answer_index, is_correct, answered_at) VALUES (?, ?, ?, ?, ?)")
-      .bind(student.telegramId, task.key, answerIndex, correct ? 1 : 0, new Date().toISOString()),
+      .bind(student.telegramId, task.key, answerIndex, correct ? 1 : 0, now),
     database().prepare("UPDATE telegram_students SET weak_topics = ?, updated_at = ? WHERE telegram_id = ?")
-      .bind(JSON.stringify([...weak]), new Date().toISOString(), student.telegramId),
+      .bind(JSON.stringify([...weak]), now, student.telegramId),
+    database().prepare(`INSERT INTO telegram_mastery
+      (telegram_id, topic, mastery, correct_count, error_count, streak, last_seen, next_review_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(telegram_id, topic) DO UPDATE SET
+        mastery = excluded.mastery,
+        correct_count = telegram_mastery.correct_count + excluded.correct_count,
+        error_count = telegram_mastery.error_count + excluded.error_count,
+        streak = excluded.streak,
+        last_seen = excluded.last_seen,
+        next_review_at = excluded.next_review_at`)
+      .bind(student.telegramId, task.topic, mastery, correctCountDelta, errorCountDelta, streak, now, nextReviewAt),
   ]);
-  return { correct, weakTopics: [...weak] };
+  return { correct, weakTopics: [...weak], mastery, nextReviewAt };
 }
 
 export async function verifyTelegramInitData(initData: string, maxAgeSeconds = 86400) {
@@ -183,18 +256,20 @@ export function miniAppUrl(requestUrl: string) {
   return `${configured || new URL(requestUrl).origin}/telegram`;
 }
 
-export function selectTaskForStudent(student: TelegramStudent) {
-  return chooseDailyTask(student.weakTopics, student.telegramId);
+export async function selectTaskForStudent(student: TelegramStudent, excludeKey?: string) {
+  return chooseDailyTask(student.weakTopics, student.telegramId, student.exam, student.subject, await topicStats(student.telegramId), excludeKey);
 }
 
-export async function sendTaskMessage(student: TelegramStudent, task = selectTaskForStudent(student)) {
-  const keyboard = task.options.map((option, index) => [{ text: `${String.fromCharCode(65 + index)}. ${option}`, callback_data: `a:${task.key}:${index}` }]);
+export async function sendTaskMessage(student: TelegramStudent, task?: DailyTask, excludeKey?: string) {
+  const selected = task ?? await selectTaskForStudent(student, excludeKey);
+  const keyboard = selected.options.map((option, index) => [{ text: `${String.fromCharCode(65 + index)}. ${option}`, callback_data: `a:${selected.key}:${index}` }]);
   await telegramApi("sendMessage", {
     chat_id: student.chatId,
-    text: `📚 ${task.title}\n\n${task.question}\n\nОтветьте кнопкой — я учту результат в следующем задании.`,
+    text: `📚 ${trackLabel(selected.exam, selected.subject)} · ${selected.estimatedMinutes} мин\n${selected.title}\n\n${selected.question}\n\nОтветьте кнопкой — следующий шаг изменится по вашему ответу.`,
     reply_markup: { inline_keyboard: keyboard },
   });
-  return task;
+  return selected;
 }
 
 export function findTelegramTask(key: string) { return findTask(key); }
+export function studentTrackLabel(student: TelegramStudent) { return trackLabel(student.exam, student.subject); }

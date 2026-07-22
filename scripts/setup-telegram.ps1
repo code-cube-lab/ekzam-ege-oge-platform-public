@@ -10,6 +10,7 @@ $site = $PublicUrl.TrimEnd('/')
 $commands = @(
     @{ command = 'start'; description = 'Открыть платформу' },
     @{ command = 'today'; description = 'Задание на сегодня' },
+    @{ command = 'track'; description = 'Выбрать экзамен и предмет' },
     @{ command = 'remind_on'; description = 'Включить ежедневные задания' },
     @{ command = 'remind_off'; description = 'Выключить напоминания' },
     @{ command = 'help'; description = 'Помощь' },

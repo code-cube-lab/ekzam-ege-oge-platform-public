@@ -1,98 +1,39 @@
-# vinext-starter
+# «Слово» — умная подготовка к ОГЭ и ЕГЭ
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Первый рабочий модуль будущей мультипредметной платформы: русский язык и литература по методике преподавателя Елены Николаевны Михайличенко. AI является помощником преподавателя, а не самостоятельным источником экзаменационных правил.
 
-## Prerequisites
+## Уже работает
 
-- Node.js `>=22.13.0`
+- лендинг, кабинет ученика и кабинет преподавателя;
+- серверная диагностика и защищённые состояния доступа;
+- Telegram-бот и Mini App с четырьмя маршрутами: ОГЭ/ЕГЭ × русский/литература;
+- ежедневное микро-задание, адаптация по ошибкам, освоение темы и дата повторения;
+- открытый урок по циклу `видео → объяснение → задание → разбор`;
+- четыре уровня: стартовый, базовый, экзаменационный, высокий;
+- версия базы знаний в `knowledge-base/`.
 
-## Quick Start
+## Где хранить знания
 
-```bash
-npm install
-npm run dev
-npm run build
+Каноническая папка преподавателя:
+
+`C:\!_1_WB\Скилы учитель\knowledge-base`
+
+Сайт развёртывается из версионированного снимка `knowledge-base/` внутри проекта. После утверждения новых материалов преподавателем синхронизируйте их:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\sync-teacher-knowledge.ps1
 ```
 
-This starter does not use `wrangler.jsonc`.
+Новая тема считается готовой, когда содержит источник, теорию, примеры, типичные ошибки, практику, контроль, повторение и статус проверки преподавателем.
 
-## Included Shape
+## Локальный запуск
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+Требуется Node.js 22.13+ и pnpm.
 
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```powershell
+pnpm install
+pnpm dev
+pnpm test
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+Переменные Telegram описаны в `.env.example`. Секреты хранятся только в окружении хостинга и не входят в репозиторий.

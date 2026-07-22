@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Task = { key: string; topic: string; title: string; question: string; options: string[] };
+type Task = { key: string; exam: "oge" | "ege"; subject: "russian" | "literature"; topic: string; title: string; question: string; options: string[]; estimatedMinutes: number };
 type Result = { correct: boolean; explanation: string; skillHint: string };
 
 declare global {
@@ -74,7 +74,7 @@ export function TelegramMiniAppClient() {
 
   async function nextTask() {
     setBusy(true); setResult(null);
-    const response = await fetch("/api/telegram/task", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ initData }) });
+    const response = await fetch("/api/telegram/task", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ initData, excludeTaskKey: task?.key }) });
     const data = await response.json(); setTask(data.task); setBusy(false);
   }
 
@@ -84,8 +84,8 @@ export function TelegramMiniAppClient() {
 
   return <main className="telegram-app">
     <header className="telegram-header"><div><span className="telegram-logo">С</span><div><b>СЛОВО</b><small>личный маршрут</small></div></div><span className="streak">🔥 4 дня</span></header>
-    <section className="telegram-welcome"><span>Сегодня · 5 минут</span><h1>{firstName}, одно точное действие</h1><p>Задание выбрано по вашим последним ответам.</p></section>
-    {task && <section className="telegram-task" data-testid="telegram-task"><div className="telegram-topic">{task.topic}</div><h2>{task.title}</h2><p>{task.question}</p><div className="telegram-options">{task.options.map((option, index) => <button key={option} disabled={busy || !!result} onClick={() => answer(index)}><span>{String.fromCharCode(65 + index)}</span>{option}</button>)}</div></section>}
+    <section className="telegram-welcome"><span>Сегодня · {task?.estimatedMinutes ?? 5} минут</span><h1>{firstName}, одно точное действие</h1><p>Задание выбрано по вашим последним ответам.</p></section>
+    {task && <section className="telegram-task" data-testid="telegram-task"><div className="telegram-topic">{task.exam.toUpperCase()} · {task.subject === "russian" ? "Русский" : "Литература"} · {task.topic}</div><h2>{task.title}</h2><p>{task.question}</p><div className="telegram-options">{task.options.map((option, index) => <button key={option} disabled={busy || !!result} onClick={() => answer(index)}><span>{String.fromCharCode(65 + index)}</span>{option}</button>)}</div></section>}
     {result && <section className={`telegram-result ${result.correct ? "correct" : "incorrect"}`}><span>{result.correct ? "✓" : "↗"}</span><div><h3>{result.correct ? "Верно" : "Разберём"}</h3><p>{result.explanation}</p><small>{result.skillHint}</small></div></section>}
     {result && <button className="button button-dark button-full" disabled={busy} onClick={nextTask}>Следующее задание</button>}
     <footer className="telegram-foot"><span>AI помогает преподавателю, но не заменяет его.</span><a href="/support">Поддержка</a></footer>

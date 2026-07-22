@@ -134,7 +134,7 @@ export function DashboardClient() {
 
         <div className="app-grid">
           <section className="panel journey-panel">
-            <div className="panel-head"><div><h2>Траектория к цели</h2><p>Прогноз обновляется после каждого блока</p></div><span className="panel-tag">ЕГЭ 2027</span></div>
+            <div className="panel-head"><div><h2>Траектория к цели</h2><p>Прогноз обновляется после каждого блока</p></div><span className="panel-tag">ОГЭ / ЕГЭ</span></div>
             <div className="journey-score"><div className="mini-ring"><strong>{score}</strong></div><div className="journey-copy"><h3>Цель: 85+ баллов</h3><p>До цели — {Math.max(0, 85 - score)} баллов. Фокус недели: пунктуация и аргументация.</p><div className="tiny-progress"><span style={{ width: `${Math.min(100, score)}%` }} /></div></div></div>
           </section>
 
@@ -145,13 +145,13 @@ export function DashboardClient() {
 
           <section className="panel">
             <div className="panel-head"><div><h2>План на сегодня</h2><p>47 минут · можно пройти частями</p></div><button className="button button-dark button-small" onClick={beginDiagnostic}>Диагностика</button></div>
-            <div className="next-lesson"><span className="lesson-icon">01</span><div><h3>Обособленные определения</h3><p>Короткое правило + 8 заданий</p></div><span className="lesson-time">18 мин</span></div>
+            <Link href="/learn" className="next-lesson"><span className="lesson-icon">01</span><div><h3>Гласные в корне</h3><p>Видео + объяснение + задание + разбор</p></div><span className="lesson-time">12 мин</span></Link>
             <div className="next-lesson"><span className="lesson-icon">02</span><div><h3>Связь примера с тезисом</h3><p>Практикум по сочинению</p></div><span className="lesson-time">21 мин</span></div>
             <div className="next-lesson"><span className="lesson-icon">03</span><div><h3>Повторение: ударения</h3><p>Интервальная тренировка</p></div><span className="lesson-time">8 мин</span></div>
           </section>
 
           <section className="panel coach-panel" id="coach">
-            <div className="panel-head"><div><h2>AI-наставник</h2><p>Разбор по методике преподавателя</p></div><span className="panel-tag">DEMO</span></div>
+            <div className="panel-head"><div><h2>AI-помощник преподавателя</h2><p>Разбор по базе знаний и методике Елены Николаевны</p></div><span className="panel-tag">DEMO</span></div>
             {session.state === "paid" || session.state === "admin" ? (
               <div className="coach-form"><textarea aria-label="Фрагмент сочинения" value={coachText} onChange={(event) => setCoachText(event.target.value)} /><button className="button button-violet button-full" disabled={coachLoading} onClick={askCoach}>{coachLoading ? "Разбираю…" : "Разобрать фрагмент"}</button>{coach && <div className="coach-response" data-testid="coach-response"><p><b>Сильная сторона:</b> {coach.strength}</p><p><b>Что улучшить:</b> {coach.issue}</p><p><b>Следующий шаг:</b> {coach.nextStep}</p><small>{coach.note}</small></div>}</div>
             ) : (

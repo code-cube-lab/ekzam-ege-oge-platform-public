@@ -8,6 +8,8 @@ export async function POST(request: Request) {
   return Response.json({
     student: {
       firstName: student?.firstName ?? verified.user.first_name ?? "Ученик",
+      exam: student?.exam ?? "ege",
+      subject: student?.subject ?? "russian",
       weakTopics: student?.weakTopics ?? [],
       lastScore: student?.lastScore ?? 0,
       remindersEnabled: student?.remindersEnabled ?? true,

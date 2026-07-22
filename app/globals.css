@@ -317,6 +317,52 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .telegram-foot { display: flex; justify-content: space-between; gap: 16px; padding: 22px 4px 6px; color: var(--tg-theme-hint-color, var(--muted)); font-size: 10px; }
 .telegram-foot a { color: var(--tg-theme-link-color, var(--violet)); font-weight: 800; }
 
+/* Knowledge-driven lesson */
+.lesson-shell { min-height: 100vh; background: #f4f2e9; color: var(--ink); padding-bottom: 90px; }
+.lesson-top { width: min(1180px, calc(100% - 40px)); height: 84px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid var(--line); }
+.lesson-top > div { text-align: center; }
+.lesson-top > div span, .lesson-top > div b { display: block; }
+.lesson-top > div span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .11em; }
+.lesson-top > div b { margin-top: 4px; font-size: 13px; }
+.lesson-top > a:last-child { justify-self: end; }
+.lesson-hero { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 70px 0 44px; display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+.lesson-hero h1 { max-width: 820px; font: 500 clamp(48px, 7vw, 88px)/.95 Georgia, serif; letter-spacing: -.06em; margin: 22px 0; }
+.lesson-hero p { max-width: 760px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+.lesson-track { flex: 0 0 auto; background: var(--ink); color: var(--lime); padding: 12px 16px; border-radius: 40px; font-weight: 850; letter-spacing: .08em; }
+.level-switch { width: min(1180px, calc(100% - 40px)); margin: 0 auto 18px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; background: #e7e4da; border-radius: 18px; }
+.level-switch button { min-height: 48px; border: 0; border-radius: 14px; background: transparent; color: #596059; font-weight: 800; cursor: pointer; }
+.level-switch button.active { background: white; color: var(--ink); box-shadow: 0 7px 20px rgba(23,34,26,.08); }
+.lesson-grid { width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+.lesson-panel { background: white; border: 1px solid var(--line); border-radius: 28px; padding: 24px; box-shadow: 0 14px 35px rgba(23,34,26,.04); }
+.lesson-panel-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 20px; }
+.lesson-panel-head > span { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 12px; display: grid; place-items: center; background: var(--ink); color: var(--lime); font-size: 11px; font-weight: 900; }
+.lesson-panel-head h2 { margin: 1px 0 3px; font-size: 20px; letter-spacing: -.025em; }
+.lesson-panel-head p { margin: 0; color: var(--muted); font-size: 11px; }
+.video-frame { position: relative; overflow: hidden; border-radius: 20px; background: #0e1711; aspect-ratio: 16 / 9; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.source-note { margin-top: 14px; color: #596059; font-size: 11px; line-height: 1.45; }
+.source-note a { color: var(--violet); font-weight: 800; }
+.source-note small { display: block; margin-top: 7px; color: #7a827b; }
+.theory-panel ol { padding-left: 23px; margin: 0; display: grid; gap: 12px; }
+.theory-panel li { padding-left: 5px; line-height: 1.55; color: #465047; }
+.worked-example { margin-top: 20px; background: #eefabf; border-radius: 18px; padding: 17px; }
+.worked-example p { margin: 7px 0 0; line-height: 1.5; }
+.task-instruction { display: inline-block; padding: 8px 10px; margin: 0 0 14px; background: #efecff; color: #5d48d7; border-radius: 10px; font-size: 11px; font-weight: 800; }
+.task-panel h3 { font-size: 25px; line-height: 1.2; margin: 0 0 18px; }
+.review-panel { min-height: 360px; }
+.review-panel.waiting { background: #f8f7f2; }
+.review-panel.correct { background: #ecf9c6; border-color: #bfd569; }
+.review-panel.incorrect { background: #fff0eb; border-color: #efac9c; }
+.review-wait { min-height: 230px; display: grid; place-content: center; text-align: center; color: var(--muted); }
+.review-wait b { color: var(--ink); font-size: 23px; }
+.review-content > b { font: 500 36px/1 Georgia, serif; }
+.review-content p { line-height: 1.55; }
+.subjects-roadmap { width: min(1180px, calc(100% - 40px)); margin: 70px auto 0; padding: 40px; display: grid; grid-template-columns: .8fr 1.2fr; gap: 40px; background: var(--ink); color: white; border-radius: 32px; }
+.subjects-roadmap h2 { font: 500 46px/1.02 Georgia, serif; letter-spacing: -.045em; margin: 18px 0 0; }
+.subject-pills { display: flex; align-content: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
+.subject-pills span { align-self: center; border: 1px solid rgba(255,255,255,.22); color: #c7cec8; border-radius: 30px; padding: 11px 14px; font-size: 12px; }
+.subject-pills span.active { background: var(--lime); color: var(--ink); border-color: var(--lime); font-weight: 850; }
+
 @media (max-width: 980px) {
   .top-links { display: none; }
   .topbar { grid-template-columns: 1fr auto; }
@@ -330,6 +376,7 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .plan-card.featured { transform: none; }
   .app-grid { grid-template-columns: 1fr; }
   .demo-switcher { grid-column: auto; }
+  .lesson-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {
@@ -382,6 +429,17 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .teacher-grid { grid-template-columns: 1fr; }
   .students-panel { grid-column: auto; overflow-x: auto; }
   .students-table { min-width: 620px; }
+  .lesson-top { width: min(100% - 28px, 1180px); grid-template-columns: 1fr auto; }
+  .lesson-top > div { display: none; }
+  .lesson-hero { width: min(100% - 28px, 1180px); padding-top: 45px; align-items: flex-start; flex-direction: column; }
+  .lesson-hero h1 { font-size: clamp(46px, 14vw, 66px); }
+  .lesson-hero p { font-size: 15px; }
+  .level-switch { width: min(100% - 28px, 1180px); grid-template-columns: 1fr 1fr; }
+  .lesson-grid { width: min(100% - 28px, 1180px); }
+  .lesson-panel { border-radius: 22px; padding: 18px; }
+  .subjects-roadmap { width: min(100% - 28px, 1180px); grid-template-columns: 1fr; padding: 27px 22px; }
+  .subjects-roadmap h2 { font-size: 38px; }
+  .subject-pills { justify-content: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {

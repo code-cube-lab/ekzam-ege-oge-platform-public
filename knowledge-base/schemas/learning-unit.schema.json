@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Slovo learning unit",
+  "type": "object",
+  "required": ["id", "track", "examYear", "topic", "level", "theory", "examples", "typicalErrors", "practice", "control", "review", "sources", "teacherApproval"],
+  "properties": {
+    "id": {"type": "string"},
+    "track": {"enum": ["oge-russian", "oge-literature", "ege-russian", "ege-literature"]},
+    "examYear": {"type": "integer"},
+    "topic": {"type": "string"},
+    "level": {"enum": ["foundation", "basic", "exam", "advanced"]},
+    "theory": {"type": "string", "minLength": 20},
+    "exceptions": {"type": "array", "items": {"type": "string"}},
+    "examples": {"type": "array", "minItems": 1},
+    "typicalErrors": {"type": "array", "minItems": 1},
+    "practice": {"type": "array", "minItems": 1},
+    "control": {"type": "object"},
+    "review": {"type": "object"},
+    "sources": {"type": "array", "minItems": 1},
+    "teacherApproval": {"enum": ["draft", "reviewed", "approved"]}
+  },
+  "additionalProperties": true
+}

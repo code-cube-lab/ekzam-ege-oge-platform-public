@@ -1,0 +1,26 @@
+{
+  "id": "slovo-russian-literature",
+  "version": "0.2.0",
+  "status": "verified-seed",
+  "language": "ru",
+  "expert": "Елена Николаевна Михайличенко",
+  "expertRole": "преподаватель русского языка и литературы",
+  "tracks": ["oge-russian", "oge-literature", "ege-russian", "ege-literature"],
+  "examSourceYear": 2026,
+  "nextExamYear": 2027,
+  "sourceCheckedAt": "2026-07-22",
+  "runtimeEntry": "tasks/task-bank.ts",
+  "contentCounts": {
+    "dailyTasks": 12,
+    "seedRules": 11,
+    "levels": 4
+  },
+  "completion": {
+    "dailyBot": "ready-for-live-test",
+    "fullRussianCourse": "in-progress",
+    "fullLiteratureCourse": "in-progress",
+    "teacherVoice": "requires-recorded-interview-and-approval",
+    "oge2027Alignment": "awaiting-official-fipi-publication",
+    "ege2027Alignment": "awaiting-official-fipi-publication"
+  }
+}

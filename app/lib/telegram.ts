@@ -26,6 +26,19 @@ export type TelegramStudent = {
 };
 
 const TELEGRAM_CONSENT_VERSION = "2026-07-22";
+export const TELEGRAM_PRODUCT = {
+  code: "practice_30d",
+  title: "ЭКЗАМ · практика 30 дней",
+  description: "Персональные ежедневные задания, разбор ошибок и план повторения на 30 дней.",
+  currency: "XTR" as const,
+  amount: 199,
+  accessDays: 30,
+};
+
+export type TelegramAccess = {
+  status: "free" | "invoice_pending" | "paid" | "expired";
+  expiresAt: string | null;
+};
 
 function bindings() {
   return env as unknown as Record<string, string> & { DB?: D1Database };
@@ -40,6 +53,7 @@ function database() {
 export function botToken() { return bindings().TELEGRAM_BOT_TOKEN ?? ""; }
 export function webhookSecret() { return bindings().TELEGRAM_WEBHOOK_SECRET ?? ""; }
 export function cronSecret() { return bindings().CRON_SECRET ?? ""; }
+export function telegramAdminSecret() { return bindings().TELEGRAM_ADMIN_SECRET ?? ""; }
 
 async function ensureTelegramSchema() {
   const d1 = database();
@@ -80,7 +94,38 @@ async function ensureTelegramSchema() {
       next_review_at TEXT,
       PRIMARY KEY (telegram_id, topic)
     )`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS telegram_orders (
+      id TEXT PRIMARY KEY,
+      telegram_id TEXT NOT NULL,
+      product_code TEXT NOT NULL,
+      currency TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      invoice_payload TEXT NOT NULL UNIQUE,
+      invoice_link TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS telegram_payments (
+      telegram_payment_charge_id TEXT PRIMARY KEY,
+      order_id TEXT NOT NULL,
+      telegram_id TEXT NOT NULL,
+      currency TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      paid_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS telegram_entitlements (
+      telegram_id TEXT NOT NULL,
+      product_code TEXT NOT NULL,
+      status TEXT NOT NULL,
+      starts_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      order_id TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (telegram_id, product_code)
+    )`),
     d1.prepare("CREATE INDEX IF NOT EXISTS telegram_answers_user_idx ON telegram_answers(telegram_id, answered_at)"),
+    d1.prepare("CREATE INDEX IF NOT EXISTS telegram_orders_user_idx ON telegram_orders(telegram_id, created_at)"),
   ]);
 
   // Safe upgrade for students created by the first prototype revision.
@@ -279,6 +324,131 @@ export async function telegramApi(method: string, payload: Record<string, unknow
   const data = await response.json() as { ok?: boolean; description?: string; result?: unknown };
   if (!response.ok || !data.ok) throw new Error(data.description || `Telegram API ${method} failed`);
   return data.result;
+}
+
+export async function getTelegramAccess(telegramId: string): Promise<TelegramAccess> {
+  await ensureTelegramSchema();
+  const entitlement = await database().prepare("SELECT status, expires_at FROM telegram_entitlements WHERE telegram_id = ? AND product_code = ? LIMIT 1")
+    .bind(telegramId, TELEGRAM_PRODUCT.code).first<Record<string, unknown>>();
+  if (entitlement?.status === "active") {
+    const expiresAt = String(entitlement.expires_at);
+    if (Date.parse(expiresAt) > Date.now()) return { status: "paid", expiresAt };
+    await database().prepare("UPDATE telegram_entitlements SET status = 'expired', updated_at = ? WHERE telegram_id = ? AND product_code = ?")
+      .bind(new Date().toISOString(), telegramId, TELEGRAM_PRODUCT.code).run();
+    return { status: "expired", expiresAt };
+  }
+  const pending = await database().prepare("SELECT id FROM telegram_orders WHERE telegram_id = ? AND product_code = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1")
+    .bind(telegramId, TELEGRAM_PRODUCT.code).first();
+  return { status: pending ? "invoice_pending" : "free", expiresAt: null };
+}
+
+export async function hasPaidTelegramAccess(telegramId: string) {
+  return (await getTelegramAccess(telegramId)).status === "paid";
+}
+
+export async function createTelegramStarsInvoice(student: TelegramStudent) {
+  await ensureTelegramSchema();
+  const access = await getTelegramAccess(student.telegramId);
+  if (access.status === "paid") return { status: "paid" as const, invoiceLink: null, access };
+  const pending = await database().prepare("SELECT id, invoice_link FROM telegram_orders WHERE telegram_id = ? AND product_code = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1")
+    .bind(student.telegramId, TELEGRAM_PRODUCT.code).first<Record<string, unknown>>();
+  if (pending?.invoice_link) return { status: "invoice_pending" as const, invoiceLink: String(pending.invoice_link), access };
+
+  const orderId = crypto.randomUUID();
+  const payload = `ekzam:${orderId}`;
+  const now = new Date().toISOString();
+  await database().prepare(`INSERT INTO telegram_orders
+    (id, telegram_id, product_code, currency, amount, status, invoice_payload, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?)`)
+    .bind(orderId, student.telegramId, TELEGRAM_PRODUCT.code, TELEGRAM_PRODUCT.currency, TELEGRAM_PRODUCT.amount, payload, now, now).run();
+  try {
+    const invoiceLink = String(await telegramApi("createInvoiceLink", {
+      title: TELEGRAM_PRODUCT.title,
+      description: TELEGRAM_PRODUCT.description,
+      payload,
+      currency: TELEGRAM_PRODUCT.currency,
+      prices: [{ label: "Доступ на 30 дней", amount: TELEGRAM_PRODUCT.amount }],
+    }));
+    await database().prepare("UPDATE telegram_orders SET invoice_link = ?, updated_at = ? WHERE id = ?")
+      .bind(invoiceLink, new Date().toISOString(), orderId).run();
+    return { status: "invoice_pending" as const, invoiceLink, access: { status: "invoice_pending" as const, expiresAt: null } };
+  } catch (error) {
+    await database().prepare("UPDATE telegram_orders SET status = 'failed', updated_at = ? WHERE id = ?")
+      .bind(new Date().toISOString(), orderId).run();
+    throw error;
+  }
+}
+
+export async function answerTelegramPreCheckout(query: { id: string; from: { id: number }; currency: string; total_amount: number; invoice_payload: string }) {
+  await ensureTelegramSchema();
+  const order = await database().prepare("SELECT * FROM telegram_orders WHERE invoice_payload = ? LIMIT 1")
+    .bind(query.invoice_payload).first<Record<string, unknown>>();
+  const valid = Boolean(order
+    && String(order.telegram_id) === String(query.from.id)
+    && String(order.currency) === query.currency
+    && Number(order.amount) === query.total_amount
+    && String(order.product_code) === TELEGRAM_PRODUCT.code
+    && String(order.status) === "pending");
+  await telegramApi("answerPreCheckoutQuery", valid
+    ? { pre_checkout_query_id: query.id, ok: true }
+    : { pre_checkout_query_id: query.id, ok: false, error_message: "Счёт устарел или сумма не совпала. Вернитесь в Mini App и создайте новый счёт." });
+  return valid;
+}
+
+export async function recordSuccessfulTelegramPayment(telegramId: string, payment: {
+  currency: string;
+  total_amount: number;
+  invoice_payload: string;
+  telegram_payment_charge_id: string;
+}) {
+  await ensureTelegramSchema();
+  const order = await database().prepare("SELECT * FROM telegram_orders WHERE invoice_payload = ? LIMIT 1")
+    .bind(payment.invoice_payload).first<Record<string, unknown>>();
+  if (!order
+    || String(order.telegram_id) !== telegramId
+    || String(order.currency) !== payment.currency
+    || Number(order.amount) !== payment.total_amount
+    || String(order.product_code) !== TELEGRAM_PRODUCT.code) throw new Error("Successful payment does not match a server order");
+
+  const duplicate = await database().prepare("SELECT telegram_payment_charge_id FROM telegram_payments WHERE telegram_payment_charge_id = ? LIMIT 1")
+    .bind(payment.telegram_payment_charge_id).first();
+  if (duplicate) return getTelegramAccess(telegramId);
+
+  const now = new Date();
+  const current = await database().prepare("SELECT expires_at FROM telegram_entitlements WHERE telegram_id = ? AND product_code = ? LIMIT 1")
+    .bind(telegramId, TELEGRAM_PRODUCT.code).first<Record<string, unknown>>();
+  const currentExpiry = current?.expires_at ? Date.parse(String(current.expires_at)) : 0;
+  const startMs = Math.max(now.getTime(), Number.isFinite(currentExpiry) ? currentExpiry : 0);
+  const expiresAt = new Date(startMs + TELEGRAM_PRODUCT.accessDays * 86400000).toISOString();
+  const nowIso = now.toISOString();
+  await database().batch([
+    database().prepare("INSERT INTO telegram_payments (telegram_payment_charge_id, order_id, telegram_id, currency, amount, paid_at) VALUES (?, ?, ?, ?, ?, ?)")
+      .bind(payment.telegram_payment_charge_id, String(order.id), telegramId, payment.currency, payment.total_amount, nowIso),
+    database().prepare("UPDATE telegram_orders SET status = 'paid', updated_at = ? WHERE id = ?")
+      .bind(nowIso, String(order.id)),
+    database().prepare(`INSERT INTO telegram_entitlements
+      (telegram_id, product_code, status, starts_at, expires_at, order_id, updated_at)
+      VALUES (?, ?, 'active', ?, ?, ?, ?)
+      ON CONFLICT(telegram_id, product_code) DO UPDATE SET
+        status = 'active', expires_at = excluded.expires_at, order_id = excluded.order_id, updated_at = excluded.updated_at`)
+      .bind(telegramId, TELEGRAM_PRODUCT.code, nowIso, expiresAt, String(order.id), nowIso),
+  ]);
+  return { status: "paid" as const, expiresAt };
+}
+
+export async function refundTelegramStars(telegramId: string, chargeId: string) {
+  await ensureTelegramSchema();
+  const payment = await database().prepare("SELECT * FROM telegram_payments WHERE telegram_payment_charge_id = ? AND telegram_id = ? LIMIT 1")
+    .bind(chargeId, telegramId).first<Record<string, unknown>>();
+  if (!payment) throw new Error("Payment not found");
+  await telegramApi("refundStarPayment", { user_id: Number(telegramId), telegram_payment_charge_id: chargeId });
+  const now = new Date().toISOString();
+  await database().batch([
+    database().prepare("UPDATE telegram_orders SET status = 'refunded', updated_at = ? WHERE id = ?").bind(now, String(payment.order_id)),
+    database().prepare("UPDATE telegram_entitlements SET status = 'refunded', updated_at = ? WHERE telegram_id = ? AND product_code = ?")
+      .bind(now, telegramId, TELEGRAM_PRODUCT.code),
+  ]);
+  return { status: "refunded" as const };
 }
 
 export function miniAppUrl(requestUrl: string) {

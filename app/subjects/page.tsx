@@ -10,8 +10,8 @@ export default function SubjectsPage() {
       <div className="catalog-actions"><Link href="/teachers">Преподаватели</Link><Link className="button button-red button-small" href="/exam">Начать диагностику</Link></div>
     </header>
     <section className="catalog-hero">
-      <div><span className="exam-label">15 предметов ЕГЭ</span><h1>Выберите предмет.<br /><em>Начните с 10 заданий.</em></h1></div>
-      <p>Каждое направление имеет отдельный стартовый срез, карту тем и план подготовки. Французский и испанский уже доступны в диагностике; преподаватели этих направлений ещё подбираются.</p>
+      <div><span className="exam-label">15 предметов ЕГЭ</span><h1>Выберите предмет.<br /><em>Решите полный вариант.</em></h1></div>
+      <p>Каждое направление имеет отдельный вариант в объёме актуальной структуры ФИПИ, карту тем и итоговый вердикт. Французский и испанский уже доступны; преподаватели этих направлений ещё подбираются.</p>
     </section>
     <section className="subject-lead-grid" aria-label="Предметы и преподаватели">
       {examSubjects.map((subject, index) => {
@@ -19,7 +19,7 @@ export default function SubjectsPage() {
         return <article className="subject-lead-card" key={subject.slug}>
           <div className="subject-lead-top"><span>{String(index + 1).padStart(2, "0")}</span><b>{subject.exam}</b></div>
           <h2>{subject.name}</h2>
-          {lead ? <><div className="lead-person"><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><small>{lead.department}</small></div></div><p>Стартовая диагностика: {subject.focus.join(", ")}. Профиль преподавателя выбран по официальным публикациям СПКУ.</p><div className="lead-foot"><span>Участие уточняется</span><a href={lead.sourceUrl} target="_blank" rel="noreferrer">Источник ↗</a></div></> : <><div className="lead-person"><span className="teacher-photo-fallback">+</span><div><b>Преподаватель подбирается</b><small>Иностранный язык</small></div></div><p>Диагностика из 10 заданий уже доступна. До запуска платной группы будет выбран и представлен преподаватель.</p><div className="lead-foot"><span>Набор не открыт</span><Link href="/exam">Попробовать →</Link></div></>}
+          {lead ? <><div className="lead-person"><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><small>{lead.department}</small></div></div><p>{subject.fullTaskCount} заданий: {subject.focus.join(", ")}. Профиль преподавателя выбран по официальным публикациям СПКУ.</p><div className="lead-foot"><span>Участие уточняется</span><Link href={`/exam?subject=${subject.slug}`}>Решить вариант →</Link></div></> : <><div className="lead-person"><span className="teacher-photo-fallback">+</span><div><b>Преподаватель подбирается</b><small>Иностранный язык</small></div></div><p>Полный маршрут из {subject.fullTaskCount} заданий уже доступен. До запуска платной группы будет выбран и представлен преподаватель.</p><div className="lead-foot"><span>Набор не открыт</span><Link href={`/exam?subject=${subject.slug}`}>Решить вариант →</Link></div></>}
         </article>;
       })}
     </section>

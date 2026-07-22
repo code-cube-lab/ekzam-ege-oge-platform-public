@@ -1,10 +1,15 @@
 import {
+  answerTelegramPreCheckout,
+  createTelegramStarsInvoice,
   deleteTelegramStudent,
   findTelegramTask,
   getTelegramStudent,
+  getTelegramAccess,
+  hasPaidTelegramAccess,
   miniAppUrl,
   recordTelegramAnswer,
   recordTelegramConsent,
+  recordSuccessfulTelegramPayment,
   sendTaskMessage,
   setReminders,
   setStudentTrack,
@@ -14,9 +19,11 @@ import {
   webhookSecret,
 } from "../../../lib/telegram";
 
-type Message = { chat: { id: number }; from?: { id: number; first_name?: string; username?: string }; text?: string };
+type SuccessfulPayment = { currency: string; total_amount: number; invoice_payload: string; telegram_payment_charge_id: string };
+type Message = { chat: { id: number }; from?: { id: number; first_name?: string; username?: string }; text?: string; successful_payment?: SuccessfulPayment };
 type Callback = { id: string; from: { id: number; first_name?: string; username?: string }; message?: { chat: { id: number } }; data?: string };
-type Update = { message?: Message; callback_query?: Callback };
+type PreCheckout = { id: string; from: { id: number }; currency: string; total_amount: number; invoice_payload: string };
+type Update = { message?: Message; callback_query?: Callback; pre_checkout_query?: PreCheckout };
 
 function trackKeyboard() {
   return {
@@ -36,6 +43,7 @@ export async function POST(request: Request) {
   const received = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
   if (!expected || received !== expected) return Response.json({ error: "Unauthorized" }, { status: 401 });
   const update = (await request.json()) as Update;
+  if (update.pre_checkout_query) await answerTelegramPreCheckout(update.pre_checkout_query);
   if (update.message) await handleMessage(update.message, request.url);
   if (update.callback_query) await handleCallback(update.callback_query);
   return Response.json({ ok: true });
@@ -86,11 +94,34 @@ async function handleMessage(message: Message, requestUrl: string) {
   }
   const student = await upsertTelegramStudent(message.from, String(message.chat.id));
   if (!student) return;
+  if (message.successful_payment) {
+    const access = await recordSuccessfulTelegramPayment(student.telegramId, message.successful_payment);
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: `✅ Оплата подтверждена Telegram. Персональная практика открыта до ${new Date(access.expiresAt).toLocaleDateString("ru-RU")}.`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть Mini App", web_app: { url: appUrl } }], [{ text: "Поддержка оплаты", url: new URL("/paysupport", requestUrl).toString() }]] },
+    });
+    return;
+  }
   if (command === "/track") {
     await telegramApi("sendMessage", { chat_id: student.chatId, text: `Сейчас выбрано: ${studentTrackLabel(student)}. Можно изменить:`, reply_markup: trackKeyboard() });
     return;
   }
   if (command === "/today") { await sendTaskMessage(student); return; }
+  if (command === "/buy") {
+    const invoice = await createTelegramStarsInvoice(student);
+    if (invoice.status === "paid") {
+      await telegramApi("sendMessage", { chat_id: student.chatId, text: "Доступ уже активен. Откройте Mini App командой /start." });
+    } else {
+      await telegramApi("sendMessage", { chat_id: student.chatId, text: "Персональная практика на 30 дней — 199 ⭐. Доступ появится только после подтверждения Telegram.", reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] } });
+    }
+    return;
+  }
+  if (command === "/status") {
+    const access = await getTelegramAccess(student.telegramId);
+    await telegramApi("sendMessage", { chat_id: student.chatId, text: access.status === "paid" ? `Доступ активен до ${new Date(access.expiresAt!).toLocaleDateString("ru-RU")}.` : "Платный доступ не активен. Оформить: /buy" });
+    return;
+  }
   if (command === "/remind_on") {
     await setReminders(student.telegramId, true);
     await telegramApi("sendMessage", { chat_id: student.chatId, text: "🔔 Ежедневные задания включены. Плановое время — 10:00 по Москве." });
@@ -120,7 +151,7 @@ async function handleMessage(message: Message, requestUrl: string) {
   }
   await telegramApi("sendMessage", {
     chat_id: student.chatId,
-    text: "Команды: /today — задание, /track — экзамен и предмет, /remind_on — включить ежедневную отправку, /remind_off — выключить, /help — помощь.",
+    text: "Команды: /today — задание, /track — экзамен и предмет, /buy — оплатить практику Stars, /status — срок доступа, /remind_on — включить ежедневную отправку, /remind_off — выключить, /paysupport — оплата.",
     reply_markup: { inline_keyboard: [[{ text: "Открыть платформу", web_app: { url: appUrl } }]] },
   });
 }
@@ -182,6 +213,12 @@ async function handleCallback(callback: Callback) {
   }
   const nextMatch = callback.data?.match(/^next:([^:]+)$/);
   if (nextMatch) {
+    if (!(await hasPaidTelegramAccess(student.telegramId))) {
+      const invoice = await createTelegramStarsInvoice(student);
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Следующие задания входят в персональный план", show_alert: true });
+      if (invoice.status !== "paid") await telegramApi("sendMessage", { chat_id: student.chatId, text: "Персональная практика на 30 дней — 199 ⭐.", reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] } });
+      return;
+    }
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id });
     await sendTaskMessage(student, undefined, nextMatch[1]);
     return;

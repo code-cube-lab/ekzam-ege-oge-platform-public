@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { examSubjects, getExamSubject } from "../../knowledge-base/exams/exam-subjects";
-import { getDemoTasks } from "../../knowledge-base/tasks/exam-demo-bank";
+import { getFullVariantTasks } from "../../knowledge-base/tasks/exam-demo-bank";
 
 type ResultState = "correct" | "incorrect" | "review";
 
@@ -19,13 +19,18 @@ export function ExamSimulatorClient({ initialSubject = "russian" }: { initialSub
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<Record<string, ResultState>>({});
   const subject = getExamSubject(subjectSlug);
-  const tasks = useMemo(() => getDemoTasks(subjectSlug), [subjectSlug]);
+  const tasks = useMemo(() => getFullVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus), [subjectSlug, subject.fullTaskCount, subject.focus]);
   const task = tasks[index];
   const subjectResults = tasks.map((item) => results[item.id]).filter(Boolean);
   const done = subjectResults.length;
   const correct = subjectResults.filter((item) => item === "correct").length;
+  const review = subjectResults.filter((item) => item === "review").length;
   const progress = Math.round((done / tasks.length) * 100);
-  const minimumLength = task.id === "zh-10" ? 40 : 80;
+  const autoChecked = Math.max(1, done - review);
+  const accuracy = Math.round((correct / autoChecked) * 100);
+  const weakTopics = [...new Set(tasks.filter((item) => results[item.id] === "incorrect").map((item) => item.topic).filter(Boolean))] as string[];
+  const verdict = accuracy >= 85 ? "уверенный высокий старт" : accuracy >= 70 ? "хорошая база" : accuracy >= 45 ? "база есть, но есть пробелы" : "нужно укрепить основу";
+  const minimumLength = task.id.startsWith("zh-10") ? 40 : 80;
 
   function resetAnswer() {
     setSelected([]);
@@ -74,7 +79,7 @@ export function ExamSimulatorClient({ initialSubject = "russian" }: { initialSub
   return <main className="exam-simulator">
     <header className="exam-sim-top">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-      <div><b>Стартовая диагностика</b><span>10 заданий по одному выбранному предмету</span></div>
+      <div><b>Полная диагностика</b><span>Один вариант выбранного предмета → итоговый вердикт</span></div>
       <Link className="button button-ghost button-small" href="/dashboard">Мой прогресс</Link>
     </header>
 
@@ -91,7 +96,7 @@ export function ExamSimulatorClient({ initialSubject = "russian" }: { initialSub
       <aside className="exam-map">
         <span className="exam-label light">{subject.exam}</span>
         <h1>{subject.name}</h1>
-        <p className="exam-map-intro">Вопросы больше не перемешаны: весь стартовый вариант относится только к выбранному предмету.</p>
+        <p className="exam-map-intro">Один предмет, полный объём варианта: {tasks.length} заданий, ориентир по времени — {subject.durationMinutes} минут.</p>
         <div className="exam-progress"><span style={{ width: `${progress}%` }} /></div>
         <p>Выполнено {done} из {tasks.length} · верно {correct}</p>
         <nav aria-label={`Задания: ${subject.name}`}>
@@ -99,7 +104,7 @@ export function ExamSimulatorClient({ initialSubject = "russian" }: { initialSub
             <span>{itemIndex + 1}</span><div><b>{item.number}</b><small>{item.format}</small></div>
           </button>)}
         </nav>
-        <p className="exam-map-note"><b>Почему 10?</b> Это быстрый срез на 15–20 минут. Он не выдаётся за полный КИМ: полный вариант проходит отдельно по структуре ФИПИ.</p>
+        <p className="exam-map-note"><b>Почему объём разный?</b> Количество заданий взято из спецификаций ФИПИ-2026. Это авторский тренировочный прототип, не официальный КИМ. Для общего профиля пройдите по одному варианту каждого выбранного предмета.</p>
         <a className="fipi-link" href="https://fipi.ru/ege/demoversii-specifikacii-kodifikatory" target="_blank" rel="noreferrer">Демоверсии и спецификации ФИПИ ↗</a>
       </aside>
 
@@ -111,7 +116,7 @@ export function ExamSimulatorClient({ initialSubject = "russian" }: { initialSub
         {task.kind === "extended" && <label className="exam-input"><span>Развёрнутый ответ</span><textarea disabled={submitted} value={written} onChange={(event) => setWritten(event.target.value)} placeholder="Тезис → пример → объяснение → вывод" /><small>{written.trim().length} знаков · минимум {minimumLength} для отправки на проверку</small></label>}
         {!submitted ? <button className="button button-red" disabled={!hasAnswer} onClick={submit}>Проверить решение</button> : <div className={`exam-solution ${result}`}><div className="solution-title"><span>{result === "correct" ? "Верно" : result === "review" ? "Принято на проверку" : "Есть ошибка"}</span><b>Разбор ответа</b></div><ol>{task.solution.map((step) => <li key={step}>{step}</li>)}</ol></div>}
         <div className="exam-nav"><button disabled={index === 0} onClick={() => move(-1)}>← Предыдущее</button><span>{index + 1} / {tasks.length}</span><button disabled={index === tasks.length - 1} onClick={() => move(1)}>Следующее →</button></div>
-        {done === tasks.length && <div className="exam-complete"><div><b>Стартовый срез завершён</b><span>{correct} правильных из {tasks.length}. В кабинете сохраним результат и соберём план по слабым темам.</span></div><Link className="button button-dark" href="/dashboard">Получить план</Link></div>}
+        {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">Итог по предмету</span><b>{verdict}</b><strong>{accuracy}% автоматически проверяемых ответов верны</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это диагностический уровень, а не официальный балл ЕГЭ.</span>{weakTopics.length > 0 && <p><b>Начать с тем:</b> {weakTopics.slice(0, 3).join(", ")}.</p>}</div><Link className="button button-dark" href="/dashboard">Получить план</Link></div>}
       </section>
     </section>
   </main>;

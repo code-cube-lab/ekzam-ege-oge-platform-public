@@ -17,9 +17,9 @@ export default function Home() {
       <div className="exam-hero-copy">
         <div className="exam-label"><span /> Подготовка к ЕГЭ-2027 · 15 предметов</div>
         <h1>Ребёнок готовится.<br /><em>Вы видите результат.</em></h1>
-        <p>Выберите предмет, пройдите стартовый срез из 10 заданий и получите понятный план подготовки. Ребёнок решает задания в формате экзамена, преподаватель разбирает сложные работы, родитель раз в неделю видит прогресс и следующий шаг.</p>
+        <p>Выберите предмет, решите один полный вариант и получите понятный вердикт: текущий уровень, слабые темы и с чего начинать подготовку. Для общего профиля ребёнок проходит по одному варианту каждого нужного предмета.</p>
         <div className="hero-actions"><Link className="button button-red" href="/exam">Выбрать предмет и начать <span>→</span></Link><Link className="button button-ghost" href="#plans">Посмотреть цены</Link></div>
-        <div className="parent-proof"><div><strong>0 ₽</strong><span>стартовая диагностика</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>10 заданий</strong><span>по одному предмету</span></div></div>
+        <div className="parent-proof"><div><strong>0 ₽</strong><span>полная диагностика</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>11–42</strong><span>задания по структуре предмета</span></div></div>
       </div>
       <div className="exam-hero-board" aria-label="Пример родительского отчёта">
         <div className="paper-caption"><span>Личный маршрут · ЕГЭ</span><b>за неделю</b></div>
@@ -34,17 +34,17 @@ export default function Home() {
     <section className="exam-ribbon" aria-label="Форматы экзамена"><span>Краткий ответ</span><span>Несколько правильных</span><span>Число</span><span>Соответствие</span><span>Развёрнутый ответ</span><Link href="/exam">Открыть тренажёр →</Link></section>
 
     <section className="section parent-start" id="start">
-      <div className="simple-heading"><span className="exam-label">Три понятных шага</span><h2>Сначала узнаём пробелы.<br />Потом платим за их устранение.</h2><p>Стартовый срез занимает 15–20 минут и не смешивает разные предметы. Это не полный пробник, а быстрый способ понять, с чего начать.</p></div>
+      <div className="simple-heading"><span className="exam-label">Три понятных шага</span><h2>Сначала полный вариант.<br />Потом решение по подготовке.</h2><p>Карточки ниже — реальные переходы. Можно сразу выбрать предмет, открыть вариант или посмотреть личный план.</p></div>
       <div className="parent-steps">
-        <article><span>01</span><div><b>Выберите один из 15 предметов</b><p>Русский, математика, информатика, языки и все остальные предметы из официального перечня ЕГЭ.</p></div></article>
-        <article><span>02</span><div><b>Решите 10 заданий этого предмета</b><p>Задания сгруппированы по предмету и показывают разные типы ответа. После попытки открывается разбор.</p></div></article>
-        <article><span>03</span><div><b>Получите план и формат занятий</b><p>Система показывает слабые темы, а вы выбираете: самостоятельная практика, группа или сопровождение преподавателя.</p></div></article>
+        <Link className="parent-step" href="/subjects"><span>01</span><div><b>Выберите один из 15 предметов</b><p>У каждого предмета показан свой объём полного варианта и преподаватель направления.</p><em>Выбрать предмет →</em></div></Link>
+        <Link className="parent-step featured" href="/exam"><span>02</span><div><b>Решите один полный вариант</b><p>От 11 до 42 авторских заданий — по объёму спецификации ФИПИ-2026, без смешивания дисциплин.</p><em>Открыть вариант →</em></div></Link>
+        <Link className="parent-step" href="/dashboard"><span>03</span><div><b>Получите вердикт и план</b><p>Уровень, слабые темы, задания на повторение и подходящий формат занятий.</p><em>Посмотреть кабинет →</em></div></Link>
       </div>
     </section>
 
     <section className="section subject-showcase">
-      <div className="subject-head"><div><span className="exam-label light">Все предметы ЕГЭ</span><h2>Один кабинет.<br />Никакой мешанины.</h2></div><p>У каждого предмета свой набор из 10 стартовых заданий, своя карта тем и свой маршрут подготовки.</p></div>
-      <div className="home-subject-grid all-exam-subjects">{examSubjects.map((subject, index) => <Link href={`/exam?subject=${subject.slug}`} key={subject.slug}><span>{String(index + 1).padStart(2, "0")}</span><h3>{subject.name}</h3><p>{subject.exam}</p><b>10 заданий</b></Link>)}</div>
+      <div className="subject-head"><div><span className="exam-label light">Все предметы ЕГЭ</span><h2>Один кабинет.<br />Никакой мешанины.</h2></div><p>У каждого предмета свой полный вариант, своя карта тем и свой итоговый вердикт.</p></div>
+      <div className="home-subject-grid all-exam-subjects">{examSubjects.map((subject, index) => <Link href={`/exam?subject=${subject.slug}`} key={subject.slug}><span>{String(index + 1).padStart(2, "0")}</span><h3>{subject.name}</h3><p>{subject.exam}</p><b>{subject.fullTaskCount} заданий →</b></Link>)}</div>
       <Link className="all-subjects-link" href="/subjects">Смотреть все предметы и преподавателей →</Link>
     </section>
 
@@ -65,18 +65,19 @@ export default function Home() {
     </section>
 
     <section className="section plans-section exam-plans" id="plans">
-      <div className="simple-heading"><span className="exam-label">Цены после сравнения рынка</span><h2>Понятная цена<br />за один предмет в месяц.</h2><p>Мы сверили актуальные предложения крупных онлайн-школ и поставили пилотные цены ниже групповых программ рынка, но достаточно высоко для реальной проверки работ преподавателем.</p></div>
+      <div className="simple-heading"><span className="exam-label">Понятные форматы</span><h2>Родитель сразу видит,<br />за что платит.</h2><p>Бесплатно — полный вариант и вердикт. Платно — регулярная практика, проверка преподавателем или сопровождение. Цена указана за один предмет.</p></div>
       <div className="plans-grid four-plans">
-        <article className="plan-card"><div><span>ДИАГНОСТИКА</span><strong>0 ₽</strong><small>без карты</small></div><ul><li>1 предмет на выбор</li><li>10 стартовых заданий</li><li>Карта слабых тем</li></ul><Link href="/exam" className="button button-dark">Пройти бесплатно</Link></article>
+        <article className="plan-card"><div><span>ДИАГНОСТИКА</span><strong>0 ₽</strong><small>без карты</small></div><ul><li>1 полный вариант</li><li>11–42 задания по предмету</li><li>Вердикт и слабые темы</li></ul><Link href="/exam" className="button button-dark">Пройти бесплатно</Link></article>
         <article className="plan-card"><div><span>ТРЕНАЖЁР</span><strong>1 490 ₽</strong><small>в месяц · 1 предмет</small></div><ul><li>Ежедневные задания</li><li>Полные решения после попытки</li><li>План повторения</li><li>Еженедельный отчёт</li></ul><Link href="/exam" className="button button-dark">Попробовать формат</Link></article>
         <article className="plan-card featured"><div className="popular">Оптимально для регулярной подготовки</div><div><span>ГРУППА</span><strong>4 490 ₽</strong><small>в месяц · 1 предмет</small></div><ul><li>Всё из тренажёра</li><li>Живой урок каждую неделю</li><li>Проверка письменных работ</li><li>До 12 учеников</li></ul><Link href="/support" className="button button-red">В лист ожидания</Link></article>
         <article className="plan-card"><div><span>МИНИ-ГРУППА + НАСТАВНИК</span><strong>7 990 ₽</strong><small>в месяц · 1 предмет</small></div><ul><li>Группа до 6 учеников</li><li>Личный маршрут</li><li>Две проверки работ в неделю</li><li>Связь и отчёт родителю</li></ul><Link href="/support" className="button button-dark">Оставить заявку</Link></article>
       </div>
-      <div className="market-benchmark"><div><b>Ориентир рынка · июль 2026</b><span>99 Баллов: 3 990–7 490 ₽/мес.</span><span>Maximum: 8 800–12 400 ₽/мес.</span><span>Foxford: репетитор от 1 350 ₽ за урок.</span></div><div><b>Почему ЭКЗАМ стоит так</b><span>1 490 ₽ — самостоятельная практика.</span><span>4 490 ₽ — еженедельный урок и проверка.</span><span>7 990 ₽ — малая группа и персональное сопровождение.</span></div></div>
-      <p className="pricing-note">Источники: <a href="https://99ballov.ru/about" target="_blank" rel="noreferrer">99 Баллов ↗</a>, <a href="https://maximumtest.ru/ege" target="_blank" rel="noreferrer">Maximum ↗</a>, <a href="https://foxford.ru/ege/russkiy-yazyk" target="_blank" rel="noreferrer">Foxford ↗</a>. Цены конкурентов проверены 23 июля 2026 года и могут меняться. Оплата на ЭКЗАМ пока отключена до подтверждения преподавателей, расписания и юридических реквизитов.</p>
+      <div className="payment-explainer"><div><span>01</span><b>Сначала бесплатно</b><p>Полный вариант даёт основание выбрать формат, а не покупать вслепую.</p></div><div><span>02</span><b>Оплата только после выбора</b><p>В Telegram пилотный тренажёр оплачивается Stars. Доступ открывает только подтверждённый платёж.</p></div><div><span>03</span><b>Есть поддержка</b><p>Статус оплаты и срок доступа видны в Mini App; вопрос можно отправить через поддержку оплаты.</p></div></div>
+      <div className="telegram-plan"><div><span className="exam-label">Telegram Mini App</span><h3>Тренажёр прямо в Telegram</h3><p>Полный бесплатный вариант, ежедневный маршрут и разовая оплата 199 ⭐ за 30 дней персональной практики.</p></div><Link href="/telegram" className="button button-violet">Открыть Mini App →</Link></div>
+      <p className="pricing-note">Рублёвые тарифы с преподавателями включаются только после подтверждения команды, расписания и юридических реквизитов. Telegram Stars применяются только к цифровому тренажёру.</p>
     </section>
 
-    <section className="final-exam-cta"><div><span className="exam-label light">Начните без оплаты</span><h2>Выберите предмет.<br />Решите первые 10 заданий.</h2><p>15 предметов ЕГЭ, никакого смешивания и объяснение после каждой попытки.</p></div><Link href="/exam" className="button button-yellow">Открыть диагностику →</Link></section>
+    <section className="final-exam-cta"><div><span className="exam-label light">Начните без оплаты</span><h2>Выберите предмет.<br />Решите полный вариант.</h2><p>15 предметов ЕГЭ, итоговый вердикт и объяснение после каждой попытки.</p></div><Link href="/exam" className="button button-yellow">Открыть диагностику →</Link></section>
 
     <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная платформа подготовки к ОГЭ и ЕГЭ. AI помогает с ежедневной практикой, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link><Link href="/support">Поддержка</Link></div></footer>
   </main>;

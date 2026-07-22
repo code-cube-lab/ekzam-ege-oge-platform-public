@@ -1,5 +1,6 @@
 import {
   findTelegramTask,
+  hasPaidTelegramAccess,
   getTelegramStudent,
   recordTelegramAnswer,
   selectTaskForStudent,
@@ -33,6 +34,10 @@ export async function POST(request: Request) {
       mastery: result.mastery,
       nextReviewAt: result.nextReviewAt,
     });
+  }
+
+  if (body.excludeTaskKey && !(await hasPaidTelegramAccess(auth.student.telegramId))) {
+    return Response.json({ error: "Следующие персональные задания доступны после оплаты", code: "payment_required" }, { status: 403 });
   }
 
   const task = await selectTaskForStudent(auth.student, body.excludeTaskKey);

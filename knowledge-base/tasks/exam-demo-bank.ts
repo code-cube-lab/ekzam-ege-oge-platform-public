@@ -6,6 +6,7 @@ export type ExamTask = {
   number: string;
   kind: ExamTaskKind;
   format: string;
+  topic?: string;
   prompt: string;
   options?: string[];
   answer: string | string[];
@@ -202,4 +203,23 @@ export const demoTasksBySubject: Record<string, ExamTask[]> = {
 
 export function getDemoTasks(subjectSlug: string) {
   return demoTasksBySubject[subjectSlug] ?? demoTasksBySubject.russian;
+}
+
+export function getFullVariantTasks(subjectSlug: string, count: number, topics: string[]) {
+  const seeds = getDemoTasks(subjectSlug);
+  return Array.from({ length: count }, (_, index) => {
+    const seed = seeds[index % seeds.length];
+    const parallel = Math.floor(index / seeds.length) + 1;
+    const options = seed.options && parallel > 1
+      ? [...seed.options.slice((parallel - 1) % seed.options.length), ...seed.options.slice(0, (parallel - 1) % seed.options.length)]
+      : seed.options;
+    return {
+      ...seed,
+      id: `${seed.id}-full-${index + 1}`,
+      number: `Задание ${index + 1}`,
+      topic: topics[index % topics.length] ?? seed.format,
+      prompt: parallel === 1 ? seed.prompt : `${seed.prompt} Тренировочная параллель ${parallel}.`,
+      options,
+    } satisfies ExamTask;
+  });
 }

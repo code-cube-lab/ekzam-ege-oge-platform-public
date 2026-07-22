@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function PrivacyPage() {
   return <main className="legal-page">
-    <Link className="brand" href="/"><span className="brand-mark">С</span><span>СЛОВО</span></Link>
+    <Link className="brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
     <div className="legal-status">ПОЛИТИКА ДЛЯ ПИЛОТНОЙ ВЕРСИИ</div>
     <h1>Политика обработки персональных данных</h1>
     <p>Редакция от 22 июля 2026 года. Оператор пилотной платформы — Михайличенко Елена Николаевна. Полные реквизиты и рабочий адрес для обращений должны быть опубликованы до начала массовой регистрации и приёма оплаты.</p>

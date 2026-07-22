@@ -1,151 +1,79 @@
+import Link from "next/link";
+import { subjectLeads } from "../knowledge-base/teachers/subject-leads";
+
+const launchSubjects = subjectLeads.slice(0, 10);
+
 export default function Home() {
-  return (
-    <main className="landing-shell">
-      <nav className="topbar" aria-label="Основная навигация">
-        <a className="brand" href="#top" aria-label="Слово — на главную">
-          <span className="brand-mark">С</span>
-          <span>СЛОВО</span>
-        </a>
-        <div className="top-links">
-          <a href="#parents">Родителям</a>
-          <a href="#method">Как работает</a>
-          <a href="/teachers">Преподаватели</a>
-          <a href="#plans">Стоимость</a>
-        </div>
-        <a className="button button-small button-ghost" href="/dashboard">
-          Демо-кабинет
-        </a>
-      </nav>
+  return <main className="landing-shell exam-landing" id="top">
+    <nav className="topbar exam-topbar" aria-label="Основная навигация">
+      <a className="brand exam-brand" href="#top" aria-label="ЭКЗАМ — на главную"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>школа высоких баллов</small></a>
+      <div className="top-links"><a href="#start">Как начать</a><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><a href="#plans">Цены</a></div>
+      <Link className="button button-small button-ghost" href="/director">Кабинет директора</Link>
+    </nav>
 
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <div className="eyebrow"><span /> Подготовка к ОГЭ и ЕГЭ без ежедневных споров</div>
-          <h1>Маме — спокойно.<br />Ребёнку — <em>понятно.</em></h1>
-          <p className="hero-lead">
-            «Слово» показывает, где ребёнок теряет баллы, даёт короткий план на день и разбирает ошибки простым языком.
-            В основе — материалы и контроль преподавателя Елены Николаевны Михайличенко; AI только помогает применять их каждый день.
-          </p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="/dashboard" data-testid="hero-start">
-              Узнать пробелы ребёнка <span>↗</span>
-            </a>
-            <a className="text-link" href="#method">Как это работает <span>↓</span></a>
-            <a className="text-link" href="/learn">Открытый видеоурок <span>↗</span></a>
-          </div>
-          <div className="trust-row">
-            <div><strong>1 шаг в день</strong><span>без перегруза</span></div>
-            <div><strong>Виден прогресс</strong><span>по темам и ошибкам</span></div>
-            <div><strong>Учитель в контуре</strong><span>AI не решает сам</span></div>
-          </div>
-        </div>
+    <section className="exam-hero">
+      <div className="exam-hero-copy">
+        <div className="exam-label"><span /> Подготовка к ЕГЭ-2027 · все основные предметы</div>
+        <h1>Ребёнок готовится.<br /><em>Вы видите, к чему.</em></h1>
+        <p>За 3 минуты покажем стартовый уровень, слабые темы и план до нужного балла. Ребёнок решает задания в формате экзамена, родитель получает короткий отчёт без педагогических терминов.</p>
+        <div className="hero-actions"><Link className="button button-red" href="/exam">Попробовать формат ЕГЭ <span>→</span></Link><Link className="button button-ghost" href="/dashboard">Узнать стартовый балл</Link></div>
+        <div className="parent-proof"><div><strong>0 ₽</strong><span>первая диагностика</span></div><div><strong>13</strong><span>предметных направлений</span></div><div><strong>1 отчёт</strong><span>родителю каждую неделю</span></div></div>
+      </div>
+      <div className="exam-hero-board" aria-label="Пример родительского отчёта">
+        <div className="paper-caption"><span>Личный маршрут · ЕГЭ</span><b>23.07.2026</b></div>
+        <div className="target-line"><span>Текущий прогноз</span><strong>68</strong><em>цель 85+</em></div>
+        <div className="score-scale"><i style={{ width: "68%" }} /></div>
+        <div className="report-title"><span>На этой неделе</span><b>+4 балла к прогнозу</b></div>
+        <div className="report-grid"><article><span>01</span><div><b>Пунктуация</b><small>2 ошибки разобраны</small></div><em className="risk">нужен повтор</em></article><article><span>02</span><div><b>Аргументация</b><small>тезис стал точнее</small></div><em className="ok">есть рост</em></article><article><span>03</span><div><b>Следующий шаг</b><small>мини-вариант в субботу</small></div><em>38 мин</em></article></div>
+        <div className="parent-summary"><b>Что делать родителю?</b><p>Ничего объяснять не нужно. В воскресенье спросите: «Покажешь, какие две ошибки ты уже исправил?»</p></div>
+      </div>
+    </section>
 
-        <div className="hero-board" aria-label="Пример персонального маршрута">
-          <div className="board-top">
-            <span className="mini-logo">С</span>
-            <span className="board-chip">Ваш маршрут</span>
-            <span className="board-dots">•••</span>
-          </div>
-          <div className="score-orbit">
-            <div className="score-ring"><span>78</span><small>прогноз</small></div>
-            <div className="orbit-note orbit-one">−1 пробел<br /><small>после разбора</small></div>
-            <div className="orbit-note orbit-two">Повтор<br /><small>назначен завтра</small></div>
-          </div>
-          <div className="today-card">
-            <div className="today-meta"><span>Сегодня · 12 минут</span><b>01</b></div>
-            <h3>Одно объяснение и три задания по слабой теме</h3>
-            <div className="lesson-progress"><span /></div>
-            <div className="today-footer"><span>Объяснение · 4 мин</span><span>Практика · 3 задания</span></div>
-          </div>
-          <div className="coach-bubble"><span>ЕМ</span><p>Родитель видит не часы в приложении, а тему, ошибку и следующий шаг ребёнка.</p></div>
-        </div>
-      </section>
+    <section className="exam-ribbon" aria-label="Форматы экзамена"><span>Краткий ответ</span><span>Несколько правильных</span><span>Число</span><span>Соответствие</span><span>Развёрнутый ответ</span><Link href="/exam">Открыть тренажёр →</Link></section>
 
-      <section className="problem-strip" aria-label="Преимущества">
-        <p>Не нужно каждый вечер выяснять, что учить.</p>
-        <div className="strip-points">
-          <span>✦ Ребёнок получает один ясный шаг</span>
-          <span>✦ Мама видит реальный прогресс</span>
-          <span>✦ Сложные случаи уходят преподавателю</span>
-        </div>
-      </section>
+    <section className="section parent-start" id="start">
+      <div className="simple-heading"><span className="exam-label">Понятно с первого экрана</span><h2>Родителю не нужно разбираться<br />в кодификаторах и номерах заданий.</h2><p>Три простых шага — и вы понимаете, что происходит с подготовкой ребёнка.</p></div>
+      <div className="parent-steps">
+        <article><span>01</span><div><b>Назовите предметы и цель</b><p>Например: русский, профильная математика, информатика; цель — поступление на бюджет.</p></div></article>
+        <article><span>02</span><div><b>Ребёнок проходит диагностику</b><p>Не школьная контрольная, а короткий срез разных форматов ЕГЭ с полными решениями.</p></div></article>
+        <article><span>03</span><div><b>Получаете человеческий отчёт</b><p>Текущий прогноз, что проседает, что сделано за неделю и где должен подключиться преподаватель.</p></div></article>
+      </div>
+    </section>
 
-      <section className="section method-section" id="method">
-        <div className="section-kicker">01 — Методика</div>
-        <div className="method-grid">
-          <div>
-            <h2>От ошибки —<br />к <span className="marker">пониманию</span></h2>
-            <p className="section-intro">Каждая тема проходит ясный цикл. Ребёнок понимает причину ошибки, а родитель видит, что будет сделано дальше.</p>
-          </div>
-          <ol className="method-steps">
-            <li><b>01</b><div><h3>Диагностика</h3><p>Определяем не только неверный ответ, но и тип затруднения.</p></div></li>
-            <li><b>02</b><div><h3>Понятное правило</h3><p>Объяснение, исключения и пример в одном коротком уроке.</p></div></li>
-            <li><b>03</b><div><h3>Осознанная практика</h3><p>Задания меняются по сложности и возвращают слабую тему вовремя.</p></div></li>
-            <li><b>04</b><div><h3>Контроль преподавателя</h3><p>Педагог видит динамику и подключается там, где нужна экспертиза.</p></div></li>
-          </ol>
-        </div>
-      </section>
+    <section className="section subject-showcase">
+      <div className="subject-head"><div><span className="exam-label light">Предметная школа</span><h2>Один ребёнок.<br />Один план. Все предметы.</h2></div><p>Система общая, но задания, критерии и преподавательские профили разделены по предметам.</p></div>
+      <div className="home-subject-grid">{launchSubjects.map((lead, index) => <Link href="/subjects" key={lead.slug}><span>{String(index + 1).padStart(2, "0")}</span><h3>{lead.subject}</h3><p>{lead.exam}</p><b>{lead.initials}</b></Link>)}</div>
+      <Link className="all-subjects-link" href="/subjects">Все 13 направлений и преподаватели →</Link>
+    </section>
 
-      <section className="section program-section" id="program">
-        <div className="section-kicker light">02 — Что внутри</div>
-        <div className="program-head">
-          <h2>Один ритм.<br />Вся подготовка.</h2>
-          <p>Русский и литература — первый модуль будущей платформы по всем школьным предметам: диагностика, уроки, сочинения и повторение.</p>
-        </div>
-        <div className="feature-grid">
-          <article className="feature-card lime"><span className="feature-no">01</span><div className="feature-icon">↗</div><h3>Точный прогноз</h3><p>Баллы считаются по навыкам, а не по ощущению «вроде получается».</p></article>
-          <article className="feature-card violet"><span className="feature-no">02</span><div className="feature-icon">AI</div><h3>AI + преподаватель</h3><p>AI объясняет по утверждённой базе, а учитель контролирует критерии и спорные ответы.</p></article>
-          <article className="feature-card paper"><span className="feature-no">03</span><div className="feature-icon">✓</div><h3>Четыре уровня</h3><p>Стартовый, базовый, экзаменационный и высокий — сложность меняется по ответам.</p></article>
-          <article className="feature-card coral"><span className="feature-no">04</span><div className="feature-icon">◎</div><h3>Сочинение по шагам</h3><p>Тезис, аргумент, связь и речевая точность проверяются отдельно.</p></article>
-        </div>
-      </section>
+    <section className="section exam-method">
+      <div className="simple-heading"><span className="exam-label">Не тест из трёх кнопок</span><h2>Решения выглядят так,<br />как требует экзамен.</h2><p>Мы перестроили тренажёр вокруг реальных форматов ответа, а не вокруг удобства интерфейса.</p></div>
+      <div className="method-board"><div className="method-tabs"><span className="active">Краткий ответ</span><span>Множественный выбор</span><span>Развёрнутая работа</span></div><div className="method-question"><small>Русский язык · задание 15</small><h3>Выберите все варианты, в которых пишется НН.</h3><div><span>1</span>организова..ый</div><div><span>2</span>кожа..ый</div><div><span>3</span>време..ый</div><div><span>4</span>ветре..ый</div><div><span>5</span>стекля..ый</div></div><aside><span>После попытки</span><b>Полное решение по шагам</b><p>Почему правильны 1, 3 и 5; какое правило применить; какое повторение назначено.</p><Link href="/exam">Решить самому →</Link></aside></div>
+    </section>
 
-      <section className="section expert-section">
-        <div className="expert-card">
-          <div className="expert-monogram" aria-hidden="true">ЕМ</div>
-          <div>
-            <div className="section-kicker">03 — Эксперт</div>
-            <h2>Методика Елены<br />Николаевны Михайличенко</h2>
-            <blockquote>«ИИ должен освобождать время учителя для главного — разговора, обратной связи и роста ученика».</blockquote>
-            <p>В платформе преподаватель задаёт логику объяснений, критерии проверки и маршрут повторения. AI помогает применять эту систему каждый день.</p>
-            <p><a className="text-link" href="/teachers">Открыть реестр преподавателей <span>↗</span></a></p>
-          </div>
-        </div>
-      </section>
+    <section className="section teacher-system">
+      <div className="teacher-system-copy"><span className="exam-label">Преподаватели СПКУ</span><h2>По одному предметному лидеру — для запуска каждого направления.</h2><p>Мы нашли публичные профили по материалам Ставропольского президентского кадетского училища. Перед реальным курсом каждого педагога нужно пригласить, получить согласие и перенести его методику в систему.</p><Link className="button button-dark" href="/teachers">Посмотреть педагогическую команду</Link></div>
+      <div className="teacher-stack">{subjectLeads.slice(0, 5).map((lead, index) => <article style={{ transform: `translateY(${index * 8}px)` }} key={lead.slug}><span>{lead.initials}</span><div><b>{lead.teacher}</b><small>{lead.subject}</small></div><em>кандидат</em></article>)}</div>
+    </section>
 
-      <section className="section parent-section" id="parents">
-        <div className="section-kicker">04 — Что получает семья</div>
-        <div className="parent-head">
-          <h2>Платите не за доступ<br />к ещё одному <span className="marker">тесту.</span></h2>
-          <p>Оплата — за организованный учебный процесс: понятный план, своевременное повторение, объяснение ошибок и контроль преподавателя там, где алгоритма недостаточно.</p>
-        </div>
-        <div className="parent-grid">
-          <article className="parent-card"><span>Для ребёнка</span><h3>Не «учи всё», а один выполнимый шаг</h3><p>Короткое объяснение, задание сразу после него и разбор ответа без стыда и перегруза.</p></article>
-          <article className="parent-card"><span>Для мамы</span><h3>Прогресс, который можно увидеть</h3><p>Какие темы проседают, что уже закреплено, сколько сделано и какой следующий шаг выбран.</p></article>
-          <article className="parent-card"><span>Для результата</span><h3>Повторение по ошибкам, а не по календарю</h3><p>Слабая тема возвращается вовремя; уверенно освоенное не отнимает лишние часы.</p></article>
-        </div>
-      </section>
+    <section className="section director-callout">
+      <div><span className="exam-label light">Ваш уровень доступа</span><h2>Олег — директор школы,<br />а не просто владелец сайта.</h2><p>В отдельном кабинете видны ученики, конверсия, прогнозы, предметы, выручка и цены. Тарифы можно менять — они сохраняются на сервере.</p><Link className="button button-yellow" href="/director">Открыть кабинет директора →</Link></div>
+      <div className="director-mini"><div><span>Выручка месяца</span><strong>12 900 ₽</strong></div><div><span>Диагностика → оплата</span><strong>24%</strong></div><div><span>Нужна помощь</span><strong>7 учеников</strong></div></div>
+    </section>
 
-      <section className="section plans-section" id="plans">
-        <div className="section-kicker">05 — Стоимость и ценность</div>
-        <div className="plans-head"><h2>Сначала посмотрите пробелы.<br />Платите только за нужный уровень поддержки.</h2><p>Оплата в демонстрационной версии пока не принимается. Состав и цены показаны, чтобы родителю было понятно, что входит в каждый месяц.</p></div>
-        <div className="plans-grid">
-          <article className="plan-card"><div><span>ПОНЯТЬ СТАРТ</span><strong>0 ₽</strong><small>до решения об оплате</small></div><ul><li>Диагностика по навыкам</li><li>Карта сильных и слабых тем</li><li>Открытый видеоурок с заданием</li><li className="muted">Можно оценить подход без карты</li></ul><a href="/dashboard" className="button button-dark">Проверить бесплатно</a></article>
-          <article className="plan-card featured"><div className="popular">Если ребёнок занимается самостоятельно</div><div><span>ЛИЧНЫЙ МАРШРУТ</span><strong>1 990 ₽</strong><small>за 30 дней доступа</small></div><ul><li>Ежедневный план на 10–25 минут</li><li>Объяснение сразу после ошибки</li><li>AI-помощник по базе преподавателя</li><li>Повторение слабых тем и отчёт прогресса</li></ul><a href="/dashboard" className="button button-primary">Посмотреть демо</a></article>
-          <article className="plan-card"><div><span>С ПРЕПОДАВАТЕЛЕМ</span><strong>4 990 ₽</strong><small>за 30 дней поддержки</small></div><ul><li>Всё из «Личного маршрута»</li><li>Проверка сочинений человеком</li><li>Групповые занятия по расписанию</li><li>Личные рекомендации родителю и ученику</li></ul><a href="/support" className="button button-dark">В лист ожидания</a></article>
-        </div>
-        <p className="plans-legal">До подключения оплаты предложения являются предварительными. Условия будущей покупки описаны в <a href="/offer">проекте оферты</a>.</p>
-      </section>
+    <section className="section plans-section exam-plans" id="plans">
+      <div className="simple-heading"><span className="exam-label">Пилотные цены</span><h2>Дешёвый вход.<br />Преподаватель — там, где он нужен.</h2><p>Рынок групповых онлайн-курсов начинается примерно от 4 000 ₽ в месяц, а репетиторы — от 800 ₽ за час. В пилоте цена ниже, потому что ежедневную практику берёт на себя платформа.</p></div>
+      <div className="plans-grid four-plans">
+        <article className="plan-card"><div><span>ДИАГНОСТИКА</span><strong>0 ₽</strong><small>без карты</small></div><ul><li>Срез по форматам ЕГЭ</li><li>Стартовый прогноз</li><li>Три слабые темы</li></ul><Link href="/dashboard" className="button button-dark">Начать</Link></article>
+        <article className="plan-card featured"><div className="popular">Самый простой старт</div><div><span>ТРЕНАЖЁР</span><strong>390 ₽</strong><small>в месяц · 1 предмет</small></div><ul><li>Ежедневные задания</li><li>Полные решения</li><li>План повторения</li><li>Отчёт родителю</li></ul><Link href="/exam" className="button button-red">Попробовать</Link></article>
+        <article className="plan-card"><div><span>ГРУППА</span><strong>1 290 ₽</strong><small>в месяц · 1 предмет</small></div><ul><li>Всё из тренажёра</li><li>Урок раз в неделю</li><li>Проверка письменных работ</li><li>До 12 учеников</li></ul><Link href="/support" className="button button-dark">В лист ожидания</Link></article>
+        <article className="plan-card"><div><span>С ПРЕПОДАВАТЕЛЕМ</span><strong>2 490 ₽</strong><small>в месяц · пилот</small></div><ul><li>Личный маршрут</li><li>Две проверки работ</li><li>Связь с родителем</li><li>Разбор пробника</li></ul><Link href="/support" className="button button-dark">Оставить заявку</Link></article>
+      </div>
+      <div className="single-session-note"><b>Разовый разбор пробника — от 590 ₽ / 20 минут</b><span>Только после подтверждения преподавателей и расписания. Оплата на сайте пока отключена.</span></div>
+    </section>
 
-      <section className="final-cta">
-        <div><span className="section-kicker light">Начать без оплаты</span><h2>Сначала узнайте,<br />где ребёнку нужна <em>помощь.</em></h2></div>
-        <a href="/dashboard" className="button button-primary">Узнать пробелы <span>↗</span></a>
-      </section>
+    <section className="final-exam-cta"><div><span className="exam-label light">Начните без оплаты</span><h2>Сначала посмотрите,<br />как ребёнок решает.</h2><p>Пять разных форматов и полные решения — без регистрации.</p></div><Link href="/exam" className="button button-yellow">Открыть мини-вариант →</Link></section>
 
-      <footer>
-        <a className="brand brand-light" href="#top"><span className="brand-mark">С</span><span>СЛОВО</span></a>
-        <p>Образовательный MVP. Преподаватель задаёт методику; AI помогает применять её и не заменяет учителя.</p>
-        <div><a href="/teachers">Преподаватели</a><a href="/offer">Оферта</a><a href="/privacy">Политика данных</a><a href="/consent">Согласие</a><a href="/terms">Условия</a><a href="/support">Поддержка</a></div>
-      </footer>
-    </main>
-  );
+    <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная платформа подготовки к ОГЭ и ЕГЭ. AI помогает, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/director">Директор</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link><Link href="/support">Поддержка</Link></div></footer>
+  </main>;
 }

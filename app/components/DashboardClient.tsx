@@ -4,17 +4,17 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AppNav } from "./AppNav";
 
-type State = "anonymous" | "free" | "invoice_pending" | "paid" | "expired_or_refunded" | "admin";
+type State = "anonymous" | "free" | "invoice_pending" | "paid" | "expired_or_refunded" | "admin" | "director";
 type ConsentActor = "adult_student" | "parent";
 type Session = { name: string; state: State; role: string; diagnosticScore: number; weakTopics: string[]; hasConsent: boolean; consentActor: ConsentActor | null };
 type Result = { score: number; correct: number; total: number; weakTopics: string[]; nextLesson: string };
 
 const questions = [
-  { label: "Орфоэпия", question: "В каком слове верно выделено ударение?", options: ["звОнит", "красИвее", "тОрты"] },
-  { label: "Орфография", question: "Выберите верное написание", options: ["не прочитанная мною книга", "непрочитанная книга лежала", "не прочитанная книга лежала"] },
-  { label: "Пунктуация", question: "Где нужна запятая?", options: ["Уставший после дороги, он уснул сразу.", "Уставший, после дороги он уснул сразу.", "Уставший после дороги он, уснул сразу."] },
-  { label: "Литература", question: "Как называется противопоставление образов?", options: ["Градация", "Антитеза", "Инверсия"] },
-  { label: "Сочинение", question: "Какая фраза лучше связывает пример с тезисом?", options: ["Вот такой пример.", "Автор написал об этом.", "Этот эпизод показывает, что выбор героя основан на чувстве долга."] },
+  { label: "Орфоэпия", question: "В каком слове верно выделено ударение?", options: ["звОнит", "красИвее", "тОрты", "бАловать"] },
+  { label: "Орфография", question: "Выберите верное написание", options: ["непрочитанная мною книга", "не-прочитанная мною книга", "не прочитанная мною книга", "непрочитанная-мною книга"] },
+  { label: "Пунктуация", question: "Где нужна запятая?", options: ["Уставший после дороги, он уснул сразу.", "Уставший, после дороги он уснул сразу.", "Уставший после дороги он, уснул сразу.", "Уставший после дороги он уснул, сразу."] },
+  { label: "Литература", question: "Как называется противопоставление образов?", options: ["Градация", "Антитеза", "Инверсия", "Анафора"] },
+  { label: "Сочинение", question: "Какая фраза лучше связывает пример с тезисом?", options: ["Вот такой пример.", "Автор написал об этом.", "Этот эпизод показывает, что выбор героя основан на чувстве долга.", "Так заканчивается произведение."] },
 ];
 
 const stateLabels: Record<State, string> = {
@@ -24,6 +24,7 @@ const stateLabels: Record<State, string> = {
   paid: "Маршрут открыт",
   expired_or_refunded: "Доступ завершён",
   admin: "Преподаватель",
+  director: "Директор",
 };
 
 export function DashboardClient() {
@@ -187,7 +188,7 @@ export function DashboardClient() {
 
           <section className="panel coach-panel" id="coach">
             <div className="panel-head"><div><h2>AI-помощник преподавателя</h2><p>Разбор по базе знаний и методике Елены Николаевны</p></div><span className="panel-tag">DEMO</span></div>
-            {session.state === "paid" || session.state === "admin" ? (
+            {session.state === "paid" || session.state === "admin" || session.state === "director" ? (
               <div className="coach-form"><textarea aria-label="Фрагмент сочинения" value={coachText} onChange={(event) => setCoachText(event.target.value)} /><button className="button button-violet button-full" disabled={coachLoading} onClick={askCoach}>{coachLoading ? "Разбираю…" : "Разобрать фрагмент"}</button>{coach && <div className="coach-response" data-testid="coach-response"><p><b>Сильная сторона:</b> {coach.strength}</p><p><b>Что улучшить:</b> {coach.issue}</p><p><b>Следующий шаг:</b> {coach.nextStep}</p><small>{coach.note}</small></div>}</div>
             ) : (
               <div className="coach-lock"><div className="lock-icon">AI</div><h3>{session.state === "expired_or_refunded" ? "Доступ завершён" : session.state === "invoice_pending" ? "Проверяем оплату" : "Помощник в тарифе «Маршрут»"}</h3><p>{session.state === "invoice_pending" ? "Платный режим откроется только после серверного подтверждения." : "Работает по базе преподавателя: показывает причину ошибки и предлагает один следующий шаг."}</p><button className="button button-violet button-full" onClick={() => switchState(session.state === "invoice_pending" ? "paid" : "invoice_pending")}>{session.state === "invoice_pending" ? "Подтвердить в демо" : "Открыть демо оплаты"}</button></div>
@@ -198,7 +199,7 @@ export function DashboardClient() {
           <section className="panel demo-switcher">
             <div className="panel-head"><div><h2>Проверка состояний владельцем</h2><p>Локальный демо-контур. Источник состояния — серверная запись, не браузерное хранилище.</p></div><span className="panel-tag">mock/local</span></div>
             <div className="state-buttons">
-              {(["free","invoice_pending","paid","expired_or_refunded","admin"] as const).map((state) => <button className={`state-button ${session.state === state ? "active" : ""}`} data-testid={`state-${state}`} key={state} onClick={() => switchState(state)}>{stateLabels[state]}</button>)}
+              {(["free","invoice_pending","paid","expired_or_refunded","admin","director"] as const).map((state) => <button className={`state-button ${session.state === state ? "active" : ""}`} data-testid={`state-${state}`} key={state} onClick={() => switchState(state)}>{stateLabels[state]}</button>)}
             </div>
           </section>
         </div>

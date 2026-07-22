@@ -3,7 +3,7 @@ import { getSession } from "../../lib/demo-store";
 export async function POST(request: Request) {
   const session = await getSession(request);
   if (!session) return Response.json({ error: "Authentication required" }, { status: 401 });
-  if (session.state !== "paid" && session.state !== "admin") {
+  if (session.state !== "paid" && session.state !== "admin" && session.state !== "director") {
     return Response.json({ error: "Paid entitlement required" }, { status: 403 });
   }
   const body = (await request.json()) as { text?: string };

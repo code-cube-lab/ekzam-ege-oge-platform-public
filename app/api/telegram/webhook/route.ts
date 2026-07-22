@@ -28,7 +28,7 @@ function trackKeyboard() {
 }
 
 export async function GET() {
-  return Response.json({ ok: true, service: "slovo-telegram-webhook" });
+  return Response.json({ ok: true, service: "ekzam-telegram-webhook" });
 }
 
 export async function POST(request: Request) {
@@ -56,7 +56,7 @@ async function handleMessage(message: Message, requestUrl: string) {
     if (!student) return;
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
-      text: `Здравствуйте, ${student.firstName}! Я бот платформы «Слово». Каждый день дам одно короткое задание, разберу ответ и подберу следующий шаг.\n\nСначала выберите свой экзамен и предмет:`,
+      text: `Здравствуйте, ${student.firstName}! Я бот школы «ЭКЗАМ». Каждый день дам одно короткое задание, разберу ответ и подберу следующий шаг.\n\nСначала выберите свой экзамен и предмет:`,
       reply_markup: trackKeyboard(),
     });
     await telegramApi("sendMessage", {

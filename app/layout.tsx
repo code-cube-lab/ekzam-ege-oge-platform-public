@@ -8,15 +8,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   return {
     metadataBase: new URL(`${protocol}://${host}`),
-    title: { default: "Слово — AI-подготовка к ОГЭ и ЕГЭ", template: "%s — Слово" },
-    description: "Персональная подготовка к ОГЭ и ЕГЭ по русскому языку и литературе: диагностика, понятный маршрут и поддержка преподавателя.",
+    title: { default: "ЭКЗАМ — школа подготовки к ОГЭ и ЕГЭ", template: "%s — ЭКЗАМ" },
+    description: "Многопредметная подготовка к ОГЭ и ЕГЭ: диагностика, задания в формате экзамена, понятный отчёт родителю и поддержка преподавателя.",
     icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
     openGraph: {
-      title: "Слово — понимать, а не угадывать",
-      description: "AI-платформа подготовки к ОГЭ и ЕГЭ по методике преподавателя.",
+      title: "ЭКЗАМ — ребёнок готовится, родитель видит результат",
+      description: "Многопредметная школа ОГЭ и ЕГЭ с заданиями в реальных форматах экзамена.",
       type: "website",
       locale: "ru_RU",
-      images: [{ url: "/og.png", width: 1536, height: 1024, alt: "Слово — AI-подготовка к ОГЭ и ЕГЭ" }],
+      images: [{ url: "/og.png", width: 1536, height: 1024, alt: "ЭКЗАМ — школа подготовки к ОГЭ и ЕГЭ" }],
     },
     twitter: { card: "summary_large_image", images: ["/og.png"] },
   };

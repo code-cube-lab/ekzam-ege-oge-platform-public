@@ -42,7 +42,7 @@ export function TelegramMiniAppClient() {
         setMessage(error instanceof Error ? error.message : "Ошибка Telegram"); setStatus("error");
       }
     };
-    let script = document.querySelector<HTMLScriptElement>('script[data-slovo-telegram="true"]');
+    let script = document.querySelector<HTMLScriptElement>('script[data-ekzam-telegram="true"]');
     if (window.Telegram?.WebApp) {
       void initialize();
     } else {
@@ -50,7 +50,7 @@ export function TelegramMiniAppClient() {
         script = document.createElement("script");
         script.src = "https://telegram.org/js/telegram-web-app.js";
         script.async = true;
-        script.dataset.slovoTelegram = "true";
+        script.dataset.ekzamTelegram = "true";
         document.head.appendChild(script);
       }
       script.addEventListener("load", initialize, { once: true });
@@ -79,11 +79,11 @@ export function TelegramMiniAppClient() {
   }
 
   if (status === "loading") return <main className="telegram-app"><div className="telegram-loader"><span>С</span><p>Проверяем Telegram…</p></div></main>;
-  if (status === "preview") return <main className="telegram-app"><div className="telegram-preview"><span className="telegram-logo">С</span><h1>«Слово» готово к Telegram</h1><p>Откройте Mini App из реального бота: так сервер проверит вашу Telegram-сессию и подберёт личное задание.</p><a className="button button-primary" href="/dashboard">Посмотреть web-кабинет</a><small>Обычный браузер не получает mock-доступ Telegram.</small></div></main>;
+  if (status === "preview") return <main className="telegram-app"><div className="telegram-preview"><span className="telegram-logo">Э</span><h1>«ЭКЗАМ» готов к Telegram</h1><p>Откройте Mini App из реального бота: так сервер проверит вашу Telegram-сессию и подберёт личное задание.</p><a className="button button-primary" href="/dashboard">Посмотреть web-кабинет</a><small>Обычный браузер не получает mock-доступ Telegram.</small></div></main>;
   if (status === "error") return <main className="telegram-app"><div className="telegram-preview"><span className="telegram-logo error">!</span><h1>Не удалось войти</h1><p>{message}</p><button className="button button-dark" onClick={() => window.location.reload()}>Повторить</button></div></main>;
 
   return <main className="telegram-app">
-    <header className="telegram-header"><div><span className="telegram-logo">С</span><div><b>СЛОВО</b><small>личный маршрут</small></div></div><span className="streak">🔥 4 дня</span></header>
+    <header className="telegram-header"><div><span className="telegram-logo">Э</span><div><b>ЭКЗАМ</b><small>личный маршрут</small></div></div><span className="streak">🔥 4 дня</span></header>
     <section className="telegram-welcome"><span>Сегодня · {task?.estimatedMinutes ?? 5} минут</span><h1>{firstName}, одно точное действие</h1><p>Задание выбрано по вашим последним ответам.</p></section>
     {task && <section className="telegram-task" data-testid="telegram-task"><div className="telegram-topic">{task.exam.toUpperCase()} · {task.subject === "russian" ? "Русский" : "Литература"} · {task.topic}</div><h2>{task.title}</h2><p>{task.question}</p><div className="telegram-options">{task.options.map((option, index) => <button key={option} disabled={busy || !!result} onClick={() => answer(index)}><span>{String.fromCharCode(65 + index)}</span>{option}</button>)}</div></section>}
     {result && <section className={`telegram-result ${result.correct ? "correct" : "incorrect"}`}><span>{result.correct ? "✓" : "↗"}</span><div><h3>{result.correct ? "Верно" : "Разберём"}</h3><p>{result.explanation}</p><small>{result.skillHint}</small></div></section>}

@@ -6,12 +6,13 @@ export type SessionState =
   | "invoice_pending"
   | "paid"
   | "expired_or_refunded"
-  | "admin";
+  | "admin"
+  | "director";
 
 export type DemoSession = {
   id: string;
   name: string;
-  role: "student" | "admin";
+  role: "student" | "admin" | "director";
   state: SessionState;
   diagnosticScore: number;
   weakTopics: string[];
@@ -22,7 +23,7 @@ export type DemoSession = {
 export type ConsentActor = "adult_student" | "parent";
 export const CONSENT_VERSION = "2026-07-22";
 
-const COOKIE_NAME = "slovo_demo_session";
+const COOKIE_NAME = "ekzam_demo_session";
 
 function db() {
   if (!env.DB) throw new Error("D1 binding DB is unavailable");
@@ -57,6 +58,18 @@ async function ensureSchema() {
         user_agent TEXT
       )`,
     ),
+    d1.prepare(
+      `CREATE TABLE IF NOT EXISTS school_plans (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        monthly_price INTEGER NOT NULL,
+        promise TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
+    ),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('trainer', 'Тренажёр', 390, 'Самостоятельная подготовка и отчёт родителю', datetime('now'))"),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('group', 'Группа', 1290, 'Занятия по предмету и проверка работ', datetime('now'))"),
+    d1.prepare("INSERT OR IGNORE INTO school_plans (id, name, monthly_price, promise, updated_at) VALUES ('mentor', 'С преподавателем', 2490, 'Личный маршрут и контроль преподавателя', datetime('now'))"),
   ]);
 }
 
@@ -74,6 +87,7 @@ export function setSessionCookie(id: string) {
 }
 
 function toState(role: string, entitlement: string): SessionState {
+  if (role === "director") return "director";
   if (role === "admin") return "admin";
   if (entitlement === "paid") return "paid";
   if (entitlement === "pending") return "invoice_pending";
@@ -91,7 +105,7 @@ function rowToSession(row: Record<string, unknown>): DemoSession {
   return {
     id: String(row.id),
     name: String(row.name),
-    role: row.role === "admin" ? "admin" : "student",
+    role: row.role === "director" ? "director" : row.role === "admin" ? "admin" : "student",
     state: toState(String(row.role), String(row.entitlement)),
     diagnosticScore: Number(row.diagnostic_score ?? 0),
     weakTopics,
@@ -128,7 +142,7 @@ export async function setDemoState(
 ) {
   await ensureSchema();
   const existing = sessionCookie(request);
-  const role = state === "admin" ? "admin" : "student";
+  const role = state === "director" ? "director" : state === "admin" ? "admin" : "student";
   let id = existing || crypto.randomUUID();
   if (existing) {
     const current = await db()
@@ -145,7 +159,7 @@ export async function setDemoState(
         : state === "expired_or_refunded"
           ? "expired"
           : "free";
-  const name = state === "admin" ? "Елена Николаевна" : "Алексей";
+  const name = state === "director" ? "Олег · директор" : state === "admin" ? "Елена Николаевна" : "Алексей";
   const updatedAt = new Date().toISOString();
 
   await db()
@@ -224,4 +238,42 @@ export async function listStudents() {
     weakTopics: JSON.parse(String(row.weak_topics ?? "[]")) as string[],
     updatedAt: String(row.updated_at),
   }));
+}
+
+export async function getDirectorReport() {
+  await ensureSchema();
+  const [students, plansResult] = await Promise.all([
+    listStudents(),
+    db().prepare("SELECT id, name, monthly_price, promise, updated_at FROM school_plans ORDER BY monthly_price ASC").all<Record<string, unknown>>(),
+  ]);
+  const paid = students.filter((student) => student.state === "paid").length;
+  const active = students.filter((student) => student.state !== "expired_or_refunded").length;
+  const average = students.filter((student) => student.score > 0);
+  const averageScore = average.length ? Math.round(average.reduce((sum, student) => sum + student.score, 0) / average.length) : 0;
+  return {
+    metrics: {
+      activeStudents: active,
+      paidStudents: paid,
+      trialToPaid: students.length ? Math.round((paid / students.length) * 100) : 0,
+      averageScore,
+      revenue: paid * 1290,
+    },
+    plans: plansResult.results.map((row) => ({
+      id: String(row.id),
+      name: String(row.name),
+      monthlyPrice: Number(row.monthly_price),
+      promise: String(row.promise),
+      updatedAt: String(row.updated_at),
+    })),
+    students,
+  };
+}
+
+export async function updatePlanPrice(id: string, monthlyPrice: number) {
+  await ensureSchema();
+  const allowed = ["trainer", "group", "mentor"];
+  if (!allowed.includes(id)) throw new Error("Unknown plan");
+  if (!Number.isInteger(monthlyPrice) || monthlyPrice < 0 || monthlyPrice > 50000) throw new Error("Invalid price");
+  await db().prepare("UPDATE school_plans SET monthly_price = ?, updated_at = ? WHERE id = ?").bind(monthlyPrice, new Date().toISOString(), id).run();
+  return getDirectorReport();
 }

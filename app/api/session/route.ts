@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     "paid",
     "expired_or_refunded",
     "admin",
+    "director",
   ];
   if (!body.state || !allowed.includes(body.state)) {
     return Response.json({ error: "Unknown demo state" }, { status: 400 });

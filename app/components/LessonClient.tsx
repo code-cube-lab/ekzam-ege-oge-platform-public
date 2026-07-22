@@ -21,7 +21,7 @@ export function LessonClient({ lesson }: { lesson: LessonUnit }) {
   return (
     <main className="lesson-shell">
       <header className="lesson-top">
-        <Link className="brand" href="/"><span className="brand-mark">С</span><span>СЛОВО</span></Link>
+        <Link className="brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
         <div><span>Первый модуль</span><b>{lesson.subject}</b></div>
         <Link className="button button-ghost button-small" href="/dashboard">В кабинет</Link>
       </header>

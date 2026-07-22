@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function ConsentPage() {
   return <main className="legal-page">
-    <Link className="brand" href="/"><span className="brand-mark">С</span><span>СЛОВО</span></Link>
+    <Link className="brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
     <div className="legal-status">ОТДЕЛЬНОЕ СОГЛАСИЕ · ВЕРСИЯ 22.07.2026</div>
     <h1>Согласие на обработку персональных данных</h1>
     <p>Выбирая в интерфейсе «Я совершеннолетний ученик» либо «Я родитель или законный представитель», пользователь свободно, конкретно, информированно и однозначно даёт оператору — Михайличенко Елене Николаевне — согласие на обработку данных в объёме ниже.</p>

@@ -2,55 +2,15 @@
   "schema_version": 1,
   "project_path": "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
   "current_stage": "handoff",
-  "updated_at": "2026-07-22T20:56:00Z",
+  "updated_at": "2026-07-23T12:00:00+03:00",
   "stages": [
-    {
-      "name": "intake",
-      "state": "passed",
-      "evidence": ["Master prompt and owner clarifications reviewed"],
-      "note": "Russian language and literature are the first module of a future multi-subject platform"
-    },
-    {
-      "name": "audit",
-      "state": "passed",
-      "evidence": ["Source institution inferred and marked as an assumption", "Teacher participation is not claimed without confirmation"],
-      "note": "Public staff data is separated from confirmed platform participation"
-    },
-    {
-      "name": "plan",
-      "state": "passed",
-      "evidence": ["Product brief", "Education-system architecture", "Four learner levels and parent/teacher/student roles"],
-      "note": "Architecture supports future subjects without changing the core learner model"
-    },
-    {
-      "name": "build",
-      "state": "passed",
-      "evidence": ["Responsive public site", "Student dashboard", "Teacher dashboard", "16-profile teacher registry", "Four learning levels"],
-      "note": "Russian/literature MVP is complete; other subjects remain a connection roadmap"
-    },
-    {
-      "name": "telegram",
-      "state": "passed",
-      "evidence": ["@slovo_oge_ege_bot webhook", "Consent gate", "OGE/EGE track selection", "Adaptive task and answer flow", "Authenticated Mini App", "Daily 10:00 Moscow automation"],
-      "note": "Daily delivery is idempotent and secret-protected"
-    },
-    {
-      "name": "payments",
-      "state": "pending",
-      "evidence": ["Public offer draft exists", "Payment actions are intentionally disabled"],
-      "note": "Requires operator legal details, licensing review, localized primary storage and final offer approval"
-    },
-    {
-      "name": "qa",
-      "state": "passed",
-      "evidence": ["pnpm lint passed", "pnpm test passed: 9/9", "Production mobile checks", "Website consent flow", "Telegram consent and Mini App authentication"],
-      "note": "No production payment was attempted because payment is intentionally disabled"
-    },
-    {
-      "name": "handoff",
-      "state": "passed",
-      "evidence": ["Production deployment", "Private source repository", "Local source package", "Teacher skill library", "QA report"],
-      "note": "Ready for owner review and legal/operator completion before paid public launch"
-    }
+    { "name": "intake", "state": "passed", "evidence": ["Owner brief reviewed", "All-subject expansion confirmed"] },
+    { "name": "audit", "state": "passed", "evidence": ["FIPI 2026 sources", "Current market pricing samples", "Official SPKU pages"] },
+    { "name": "plan", "state": "passed", "evidence": ["EKZAM brand", "Parent-first path", "Student/parent/teacher/director roles"] },
+    { "name": "build", "state": "passed", "evidence": ["13 subject directions", "Mixed-format exam simulator", "Director report and editable D1 prices", "4 verified official teacher photos", "13 validated subject skills"] },
+    { "name": "telegram", "state": "passed", "evidence": ["Adaptive task and answer flow", "Authenticated Mini App", "Daily delivery endpoint"] },
+    { "name": "payments", "state": "pending", "evidence": ["Offer draft", "Payment intentionally disabled"] },
+    { "name": "qa", "state": "passed", "evidence": ["Production build passed", "12 source tests passed", "Lint passed", "Desktop and 390px mobile browser QA", "Director price persistence verified and restored"] },
+    { "name": "handoff", "state": "doing", "evidence": ["Validated source ready for deployment"] }
   ]
 }

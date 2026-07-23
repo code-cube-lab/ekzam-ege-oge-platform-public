@@ -3,7 +3,13 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
-import { analyzeTaskResults, buildTrainingVariant } from "../knowledge-base/tasks/variant-engine.js";
+import {
+  analyzeTaskResults,
+  buildTrainingVariant,
+  getRussianAuthorBankSize,
+  getRussianFamilyTasks,
+  russianTaskFamilies,
+} from "../knowledge-base/tasks/variant-engine.js";
 
 async function loadSeedBank() {
   const source = await readFile(new URL("../knowledge-base/tasks/exam-demo-bank.ts", import.meta.url), "utf8");
@@ -73,4 +79,23 @@ test("three Russian variants contain independent real task wording", async () =>
   const signatures = variants.flatMap((tasks) => tasks.map(signature));
   assert.equal(signatures.length, 81);
   assert.equal(new Set(signatures).size, 81);
+});
+
+test("Russian type bank contains 105 distinct authored tasks grouped by EGE skill", () => {
+  assert.equal(russianTaskFamilies.length, 14);
+  assert.equal(getRussianAuthorBankSize(), 105);
+  const all = russianTaskFamilies.flatMap((family) => {
+    const tasks = getRussianFamilyTasks(family.id);
+    assert.equal(tasks.length, family.count, `${family.id}: declared count`);
+    assert.ok(tasks.every((task) => task.familyId === family.id), `${family.id}: family id`);
+    assert.ok(tasks.every((task) => task.theory?.length > 40), `${family.id}: remediation theory`);
+    assert.equal(new Set(tasks.map(signature)).size, tasks.length, `${family.id}: unique content`);
+    for (const task of tasks) {
+      if (task.kind === "single") assert.ok(task.options.includes(task.answer), `${task.id}: answer exists`);
+      if (task.kind === "multiple") assert.ok(task.answer.every((answer) => task.options.includes(answer)), `${task.id}: answers exist`);
+    }
+    return tasks;
+  });
+  assert.equal(all.length, 105);
+  assert.equal(new Set(all.map((task) => task.id)).size, 105);
 });

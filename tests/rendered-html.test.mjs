@@ -104,8 +104,12 @@ test("all 15 EGE subjects expose honest training and official flows", async () =
   for (const kind of ["single", "multiple", "text", "number", "extended"]) assert.match(bank, new RegExp(`"${kind}"`));
   assert.match(simulator, /Все 15 предметов ЕГЭ/);
   assert.match(simulator, /getTrainingVariantTasks/);
+  assert.match(simulator, /getRussianFamilyTasks/);
+  assert.match(simulator, /Отработка слабого места/);
+  assert.match(simulator, /Отработать похожее/);
+  assert.doesNotMatch(simulator, /trainingVariants|Выбор тренировочного варианта|Вариант 1/);
   assert.match(simulator, /subject\.fullTaskCount/);
-  assert.match(simulator, /Официальный вариант ФИПИ/);
+  assert.match(simulator, /Открытый материал ФИПИ/);
   assert.match(simulator, /Сильные темы/);
   assert.match(simulator, /Слабые темы/);
   assert.match(simulator, /не официальный балл ЕГЭ/);
@@ -113,6 +117,23 @@ test("all 15 EGE subjects expose honest training and official flows", async () =
   assert.match(simulator, /task\.solution\.map/);
   assert.equal((official.match(/_1_ege2026\.zip/g) ?? []).length, 15);
   assert.doesNotMatch(bank, /Тренировочная параллель/);
+});
+
+test("public teacher product has a working assignment builder and paid pilot", async () => {
+  const [page, builder, home] = await Promise.all([
+    readFile(new URL("../app/for-teachers/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TeacherProductClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(page, /TeacherProductClient/);
+  assert.match(builder, /Соберите ссылку на задание/);
+  assert.match(builder, /navigator\.clipboard\.writeText/);
+  assert.match(builder, /990 ₽/);
+  assert.match(builder, /4 990 ₽/);
+  assert.match(builder, /DIDAK/);
+  assert.match(builder, /CoreApp/);
+  assert.match(builder, /Оплата на сайте пока не включена/);
+  assert.match(home, /href="\/for-teachers"/);
 });
 
 test("Telegram Stars access is granted only after verified server payment", async () => {

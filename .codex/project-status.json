@@ -2,13 +2,13 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-07-23T06:20:50.7882118Z",
+    "updated_at":  "2026-07-23T15:47:58.3770068Z",
     "stages":  [
                    {
                        "name":  "intake",
                        "state":  "passed",
                        "evidence":  [
-                                        "User reported repeated Russian answers and requested unique multi-variant adaptive diagnostics for all subjects"
+                                        "User replaced few variants with a large EGE task-type bank, immediate remediation after every task, and a paid teacher product"
                                     ],
                        "note":  ""
                    },
@@ -16,8 +16,8 @@
                        "name":  "audit",
                        "state":  "passed",
                        "evidence":  [
-                                        "Auditing current task expansion and student flow",
-                                        "Found the root cause: ten seed tasks were cloned with the same answers and parallel labels"
+                                        "Auditing 2026 EGE sources, current task engine and teacher routes",
+                                        "FIPI 2026 structure and methodology verified; CoreApp and DIDAK teacher pricing reviewed"
                                     ],
                        "note":  ""
                    },
@@ -25,7 +25,7 @@
                        "name":  "plan",
                        "state":  "passed",
                        "evidence":  [
-                                        "Defined honest split between author training, official FIPI tracker, result analysis and adaptive lesson"
+                                        "Updated product-brief.md and acceptance-criteria.md for task-family practice and teacher product"
                                     ],
                        "note":  ""
                    },
@@ -33,7 +33,7 @@
                        "name":  "build",
                        "state":  "passed",
                        "evidence":  [
-                                        "Built three 27-task Russian variants, official 15-subject source registry, analysis and adaptive lesson route"
+                                        "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes"
                                     ],
                        "note":  ""
                    },
@@ -41,7 +41,7 @@
                        "name":  "telegram",
                        "state":  "passed",
                        "evidence":  [
-                                        "Existing Telegram daily-task and Mini App routes retained and covered by automated tests"
+                                        "Existing server-verified Telegram task and Stars routes remain present and covered by regression tests"
                                     ],
                        "note":  ""
                    },
@@ -49,7 +49,7 @@
                        "name":  "payments",
                        "state":  "passed",
                        "evidence":  [
-                                        "Public payment remains disabled while server-side Stars verification tests remain intact"
+                                        "Teacher paid plans route to application; public checkout remains disabled pending legal readiness"
                                     ],
                        "note":  ""
                    },
@@ -57,8 +57,8 @@
                        "name":  "qa",
                        "state":  "passed",
                        "evidence":  [
-                                        "17 automated tests pass including student audit of 45 subject-variant combinations",
-                                        "17 of 17 tests pass; 390px browser flow verified for training, official tracker, adaptive lesson and chemistry"
+                                        "Build passes; automated and mobile browser QA in progress",
+                                        "19/19 tests passed; production build and lint passed; mobile 375px exam and teacher flows verified without horizontal overflow; remediation and teacher assignment link checked in browser"
                                     ],
                        "note":  ""
                    },
@@ -66,8 +66,7 @@
                        "name":  "handoff",
                        "state":  "passed",
                        "evidence":  [
-                                        "Preparing exact tested commit and production deployment",
-                                        "Sites version 8 deployed successfully and production Russian variant 2 verified at 390px"
+                                        "Task-family engine, immediate remediation, teacher product and documentation prepared; exact validated source is ready for Sites versioning"
                                     ],
                        "note":  ""
                    }

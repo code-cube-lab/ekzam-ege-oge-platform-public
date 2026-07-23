@@ -9,6 +9,8 @@ export type ExamTask = {
   kind: ExamTaskKind;
   format: string;
   topic?: string;
+  familyId?: string;
+  theory?: string;
   prompt: string;
   options?: string[];
   answer: string | string[];

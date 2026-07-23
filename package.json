@@ -10,7 +10,7 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "pnpm run build && node --test",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern work",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern work",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

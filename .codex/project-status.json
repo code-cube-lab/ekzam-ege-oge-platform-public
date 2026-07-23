@@ -1,14 +1,15 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "handoff",
-    "updated_at":  "2026-07-23T15:47:58.3770068Z",
+    "current_stage":  "qa",
+    "updated_at":  "2026-07-23T19:35:00.0000000Z",
     "stages":  [
                    {
                        "name":  "intake",
                        "state":  "passed",
                        "evidence":  [
-                                        "User replaced few variants with a large EGE task-type bank, immediate remediation after every task, and a paid teacher product"
+                                        "User replaced few variants with a large EGE task-type bank, immediate remediation after every task, and a paid teacher product",
+                                        "Scope expanded to a unified grade 6-11 school: 15 subjects, OGE/EGE preparation, adaptive practice, teacher academy, parent visibility, gamified progress and electronic diary preview"
                                     ],
                        "note":  ""
                    },
@@ -17,7 +18,8 @@
                        "state":  "passed",
                        "evidence":  [
                                         "Auditing 2026 EGE sources, current task engine and teacher routes",
-                                        "FIPI 2026 structure and methodology verified; CoreApp and DIDAK teacher pricing reviewed"
+                                        "FIPI 2026 structure and methodology verified; CoreApp and DIDAK teacher pricing reviewed",
+                                        "Current platform audited; direct Avito search blocked by IP and browser policy, indexed listing snapshots and Moscow tutor marketplaces collected; FIPI 2025 error reports for all 15 EGE subjects verified"
                                     ],
                        "note":  ""
                    },
@@ -25,7 +27,8 @@
                        "name":  "plan",
                        "state":  "passed",
                        "evidence":  [
-                                        "Updated product-brief.md and acceptance-criteria.md for task-family practice and teacher product"
+                                        "Updated product-brief.md and acceptance-criteria.md for task-family practice and teacher product",
+                                        "Grade 6-11 curriculum contract, role model, school hub and teacher academy specified"
                                     ],
                        "note":  ""
                    },
@@ -33,13 +36,14 @@
                        "name":  "build",
                        "state":  "passed",
                        "evidence":  [
-                                        "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes"
+                                        "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes",
+                                        "Built school hub, electronic diary demo, parent and teacher views, 15 subject curriculum profiles and grouped starter practice"
                                     ],
                        "note":  ""
                    },
                    {
                        "name":  "telegram",
-                       "state":  "passed",
+                       "state":  "doing",
                        "evidence":  [
                                         "Existing server-verified Telegram task and Stars routes remain present and covered by regression tests"
                                     ],
@@ -58,15 +62,17 @@
                        "state":  "passed",
                        "evidence":  [
                                         "Build passes; automated and mobile browser QA in progress",
-                                        "19/19 tests passed; production build and lint passed; mobile 375px exam and teacher flows verified without horizontal overflow; remediation and teacher assignment link checked in browser"
+                                        "19/19 tests passed; production build and lint passed; mobile 375px exam and teacher flows verified without horizontal overflow; remediation and teacher assignment link checked in browser",
+                                        "21/21 tests, lint and production build passed for the unified school; production browser QA remains"
                                     ],
                        "note":  ""
                    },
                    {
                        "name":  "handoff",
-                       "state":  "passed",
+                       "state":  "doing",
                        "evidence":  [
-                                        "Task-family engine, immediate remediation, teacher product and documentation prepared; exact validated source is ready for Sites versioning"
+                                        "Task-family engine, immediate remediation, teacher product and documentation prepared; exact validated source is ready for Sites versioning",
+                                        "Unified school source prepared for production browser QA"
                                     ],
                        "note":  ""
                    }

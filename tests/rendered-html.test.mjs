@@ -217,3 +217,45 @@ test("six lightweight subject AI visuals are bundled", async () => {
     "../public/teachers/ai-german-direction.webp",
   ]) await access(new URL(path, import.meta.url));
 });
+
+test("unified grade 6-11 school exposes all roles, subjects and honest diary", async () => {
+  const [curriculum, school, schoolPage, css] = await Promise.all([
+    readFile(new URL("../knowledge-base/curriculum/school-curriculum.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/SchoolHubClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/school/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.equal((curriculum.match(/^\s{4}slug: "/gm) ?? []).length, 15);
+  for (const grade of [6, 7, 8, 9, 10, 11]) assert.match(curriculum, new RegExp(`\\n\\s+${grade}: \\[`));
+  assert.equal((curriculum.match(/methodologyUrl:/g) ?? []).length, 16);
+  assert.equal((curriculum.match(/^\s{4}bankStatus: "expanded"/gm) ?? []).length, 1);
+  assert.equal((curriculum.match(/^\s{4}bankStatus: "starter"/gm) ?? []).length, 14);
+  assert.match(school, /Ученик/);
+  assert.match(school, /Родитель/);
+  assert.match(school, /Педагог/);
+  assert.match(school, /демо-данные/);
+  assert.match(school, /Реальный доступ родителя/);
+  assert.match(school, /Проверить и получить XP/);
+  assert.match(schoolPage, /SchoolHubClient/);
+  assert.match(css, /\.school-hub/);
+  assert.match(css, /@media \(max-width: 390px\)/);
+});
+
+test("teacher academy contains 15 methods, FIPI evidence and market limitations", async () => {
+  const [academy, academyPage, curriculum, simulator] = await Promise.all([
+    readFile(new URL("../app/components/TeacherAcademyClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/teacher-academy/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/curriculum/school-curriculum.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(academyPage, /TeacherAcademyClient/);
+  assert.match(academy, /Академия педагога · 15 предметов/);
+  assert.match(academy, /Ошибки участников ЕГЭ-2025/);
+  assert.match(academy, /Семь обязательных шагов/);
+  assert.match(academy, /Цены репетиторов Москвы/);
+  assert.match(curriculum, /Прямая выдача Avito недоступна/);
+  assert.match(curriculum, /Индексированная копия объявления/);
+  assert.match(simulator, /subjectFocus/);
+  assert.match(simulator, /Они сгруппированы по трём умениям/);
+  assert.match(simulator, /расширенный авторский банк ещё проходит предметную редактуру/);
+});

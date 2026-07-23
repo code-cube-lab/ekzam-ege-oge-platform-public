@@ -5,6 +5,7 @@ import Link from "next/link";
 import { examSubjects, getExamSubject } from "../../knowledge-base/exams/exam-subjects";
 import { getOfficialTaskTopic, getOfficialVariantSource, officialFipiLinks } from "../../knowledge-base/exams/official-variants";
 import { getTrainingVariantTasks, type ExamTask } from "../../knowledge-base/tasks/exam-demo-bank";
+import { getSubjectSchoolProfile } from "../../knowledge-base/curriculum/school-curriculum";
 import {
   analyzeTaskResults,
   getRussianAuthorBankSize,
@@ -45,6 +46,7 @@ export function ExamSimulatorClient({
   const [subjectSlug, setSubjectSlug] = useState(() => getExamSubject(initialSubject).slug);
   const [mode, setMode] = useState<ExamMode>("training");
   const [familyId, setFamilyId] = useState(() => getRussianTaskFamily(initialFamily).id);
+  const [subjectFocus, setSubjectFocus] = useState("all");
   const [assignmentCount] = useState(() => Math.max(0, initialCount));
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
@@ -52,14 +54,16 @@ export function ExamSimulatorClient({
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<Record<string, ResultState>>({});
   const subject = getExamSubject(subjectSlug);
+  const schoolProfile = getSubjectSchoolProfile(subjectSlug);
   const source = getOfficialVariantSource(subjectSlug);
   const family = getRussianTaskFamily(familyId);
   const authorBankSize = getRussianAuthorBankSize();
   const tasks = useMemo(() => {
     if (subjectSlug === "russian") return getRussianFamilyTasks(familyId, assignmentCount || undefined) as ExamTask[];
     const base = getTrainingVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus, 1);
-    return assignmentCount ? base.slice(0, assignmentCount) : base;
-  }, [assignmentCount, familyId, subject.focus, subject.fullTaskCount, subjectSlug]);
+    const grouped = subjectFocus === "all" ? base : base.filter((item) => item.topic === subjectFocus);
+    return assignmentCount ? grouped.slice(0, assignmentCount) : grouped;
+  }, [assignmentCount, familyId, subject.focus, subject.fullTaskCount, subjectFocus, subjectSlug]);
   const task: ExamTask = tasks[index] ?? tasks[0];
   const subjectResults = tasks.map((item) => results[item.id]).filter(Boolean);
   const done = subjectResults.length;
@@ -72,6 +76,9 @@ export function ExamSimulatorClient({
   const weakTopics = analysis.weaknesses as string[];
   const strongTopics = analysis.strengths as string[];
   const nextTopic = weakTopics[0] ?? task?.topic ?? subject.focus[0] ?? "базовая подготовка";
+  const currentRisk = schoolProfile.examRisks.find((risk) =>
+    `${risk.skill} ${risk.signal}`.toLowerCase().includes(nextTopic.toLowerCase()),
+  ) ?? schoolProfile.examRisks[0];
   const minimumLength = task?.id.startsWith("chinese") ? 40 : 80;
 
   const officialTasks = useMemo(() => Array.from({ length: subject.fullTaskCount }, (_, taskIndex) => ({
@@ -95,6 +102,7 @@ export function ExamSimulatorClient({
 
   function selectSubject(slug: string) {
     setSubjectSlug(slug);
+    setSubjectFocus("all");
     setIndex(0);
     resetAnswer();
   }
@@ -189,7 +197,13 @@ export function ExamSimulatorClient({
           </button>)}
         </div>
       </div>}
-      {mode === "training" && subjectSlug !== "russian" && <div className="subject-bank-note"><b>{subject.name}: стартовый банк</b><span>Сейчас доступен проверочный набор и полный официальный трекер. Большие банки по типам подключаются предметными редакторами по той же модели, что русский язык.</span></div>}
+      {mode === "training" && subjectSlug !== "russian" && <div className="subject-bank-note grouped-bank">
+        <div><b>{subject.name}: 10 стартовых заданий</b><span>Они сгруппированы по трём умениям. Полный официальный трекер находится в соседней вкладке; расширенный авторский банк ещё проходит предметную редактуру.</span></div>
+        <div className="subject-focus-tabs" aria-label={`Умения: ${subject.name}`}>
+          <button className={subjectFocus === "all" ? "active" : ""} onClick={() => { setSubjectFocus("all"); setIndex(0); resetAnswer(); }}>Все 10</button>
+          {subject.focus.map((focus) => <button className={subjectFocus === focus ? "active" : ""} key={focus} onClick={() => { setSubjectFocus(focus); setIndex(0); resetAnswer(); }}>{focus}</button>)}
+        </div>
+      </div>}
     </section>
 
     {mode === "official" ? <section className="official-workspace">
@@ -244,7 +258,7 @@ export function ExamSimulatorClient({
           {result === "incorrect" && <section className="remediation-panel" data-testid="inline-remediation">
             <div className="remediation-title"><span>Отработка слабого места</span><b>Не идём дальше, пока правило не закреплено</b></div>
             <div className="remediation-steps">
-              <article><span>01</span><div><b>Короткая теория</b><p>{task.theory ?? `Повторите правило по теме «${task.topic ?? "текущий тип"}» и найдите признак, который определяет ответ.`}</p></div></article>
+              <article><span>01</span><div><b>Короткая теория</b><p>{task.theory ?? `${currentRisk.intervention}. Сначала назовите проверяемый признак по теме «${task.topic ?? "текущий тип"}», затем снова решайте задачу.`}</p></div></article>
               <article><span>02</span><div><b>Почему возникла ошибка</b><p>{task.solution[0]}</p></div></article>
               <article><span>03</span><div><b>Сразу похожее задание</b><p>Следующая попытка проверяет это же умение на другом материале.</p><button className="button button-dark" onClick={practiceSimilar}>Отработать похожее →</button></div></article>
             </div>

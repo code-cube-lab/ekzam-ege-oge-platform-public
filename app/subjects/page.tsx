@@ -7,11 +7,11 @@ export default function SubjectsPage() {
   return <main className="catalog-page">
     <header className="faculty-top">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-      <div className="catalog-actions"><Link href="/teachers">Преподаватели</Link><Link className="button button-red button-small" href="/exam">Начать диагностику</Link></div>
+      <div className="catalog-actions"><Link href="/school">Школа 6–11</Link><Link href="/teachers">Преподаватели</Link><Link className="button button-red button-small" href="/exam">Начать практику</Link></div>
     </header>
     <section className="catalog-hero">
-      <div><span className="exam-label">15 предметов ЕГЭ</span><h1>Выберите предмет.<br /><em>Решите полный вариант.</em></h1></div>
-      <p>Каждое направление имеет отдельный вариант в объёме актуальной структуры ФИПИ, карту тем и итоговый вердикт. Французский и испанский уже доступны; преподаватели этих направлений ещё подбираются.</p>
+      <div><span className="exam-label">15 предметов · 6–11 классы</span><h1>Выберите предмет.<br /><em>Увидьте весь маршрут.</em></h1></div>
+      <p>У каждого направления есть школьная вертикаль, стартовая авторская практика и отдельный трекер полного открытого материала ФИПИ. Французский и испанский уже доступны; преподаватели этих направлений ещё подбираются.</p>
     </section>
     <section className="subject-lead-grid" aria-label="Предметы и преподаватели">
       {examSubjects.map((subject, index) => {
@@ -19,7 +19,7 @@ export default function SubjectsPage() {
         return <article className="subject-lead-card" key={subject.slug}>
           <div className="subject-lead-top"><span>{String(index + 1).padStart(2, "0")}</span><b>{subject.exam}</b></div>
           <h2>{subject.name}</h2>
-          {lead ? <><div className="lead-person"><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><small>{lead.department}</small></div></div><p>{subject.fullTaskCount} заданий: {subject.focus.join(", ")}. Профиль преподавателя выбран по официальным публикациям СПКУ.</p><div className="lead-foot"><span>Участие уточняется</span><Link href={`/exam?subject=${subject.slug}`}>Решить вариант →</Link></div></> : <><div className="lead-person"><span className="teacher-photo-fallback">+</span><div><b>Преподаватель подбирается</b><small>Иностранный язык</small></div></div><p>Полный маршрут из {subject.fullTaskCount} заданий уже доступен. До запуска платной группы будет выбран и представлен преподаватель.</p><div className="lead-foot"><span>Набор не открыт</span><Link href={`/exam?subject=${subject.slug}`}>Решить вариант →</Link></div></>}
+          {lead ? <><div className="lead-person"><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><small>{lead.department}</small></div></div><p>{subject.slug === "russian" ? "105 авторских заданий" : "10 стартовых авторских заданий"}: {subject.focus.join(", ")}. Полная структура варианта доступна в официальном трекере ФИПИ.</p><div className="lead-foot"><span>Участие уточняется</span><Link href={`/exam?subject=${subject.slug}`}>Открыть предмет →</Link></div></> : <><div className="lead-person"><span className="teacher-photo-fallback">+</span><div><b>Преподаватель подбирается</b><small>Иностранный язык</small></div></div><p>Подключены методика 6–11 классов, 10 стартовых заданий и полный трекер открытого материала ФИПИ. Платная группа пока не открыта.</p><div className="lead-foot"><span>Набор не открыт</span><Link href={`/exam?subject=${subject.slug}`}>Открыть предмет →</Link></div></>}
         </article>;
       })}
     </section>

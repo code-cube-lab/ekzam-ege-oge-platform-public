@@ -9,7 +9,7 @@ export default function Home() {
   return <main className="landing-shell exam-landing" id="top">
     <nav className="topbar exam-topbar" aria-label="Основная навигация">
       <a className="brand exam-brand" href="#top" aria-label="ЭКЗАМ — на главную"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>школа высоких баллов</small></a>
-      <div className="top-links"><a href="#start">Как начать</a><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><a href="#plans">Цены</a></div>
+      <div className="top-links"><Link href="/school">Школа 6–11</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><a href="#plans">Цены</a></div>
       <Link className="button button-small button-red" href="/exam">Бесплатная диагностика</Link>
     </nav>
 
@@ -18,8 +18,8 @@ export default function Home() {
         <div className="exam-label"><span /> Подготовка к ЕГЭ-2027 · 15 предметов</div>
         <h1>Ребёнок готовится.<br /><em>Вы видите результат.</em></h1>
         <p>Выберите предмет и тип задания. Ребёнок решает серию на одно умение, а после каждой ошибки сразу получает правило, похожую задачу и объяснение. Полный открытый материал ФИПИ остаётся отдельной проверкой.</p>
-        <div className="hero-actions"><Link className="button button-red" href="/exam">Выбрать предмет и начать <span>→</span></Link><Link className="button button-ghost" href="#plans">Посмотреть цены</Link></div>
-        <div className="parent-proof"><div><strong>0 ₽</strong><span>полная диагностика</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>11–42</strong><span>задания по структуре предмета</span></div></div>
+        <div className="hero-actions"><Link className="button button-red" href="/school">Открыть школу 6–11 <span>→</span></Link><Link className="button button-ghost" href="/exam">Начать практику</Link></div>
+        <div className="parent-proof"><div><strong>6–11</strong><span>единый школьный маршрут</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>105 + 140</strong><span>расширенный русский + стартовые банки</span></div></div>
       </div>
       <div className="exam-hero-board" aria-label="Пример родительского отчёта">
         <div className="paper-caption"><span>Личный маршрут · ЕГЭ</span><b>за неделю</b></div>
@@ -33,6 +33,11 @@ export default function Home() {
 
     <section className="exam-ribbon" aria-label="Форматы экзамена"><span>Краткий ответ</span><span>Несколько правильных</span><span>Число</span><span>Соответствие</span><span>Развёрнутый ответ</span><Link href="/exam">Открыть тренажёр →</Link></section>
 
+    <section className="school-entry">
+      <div><span className="exam-label light">Теперь это школа 6–11</span><h2>Учебник, задания и дневник работают как один маршрут.</h2><p>Ученик получает ежедневный квест и отработку ошибок. Родитель видит не только оценку, но и причину пробела. Педагог получает программу урока и аналитику класса.</p></div>
+      <div className="school-entry-actions"><Link className="button button-yellow" href="/school">Посмотреть школу →</Link><Link className="button button-ghost light-button" href="/teacher-academy">Академия педагога</Link></div>
+    </section>
+
     <section className="section parent-start" id="start">
       <div className="simple-heading"><span className="exam-label">Три понятных шага</span><h2>Сначала находим слабый тип.<br />Потом отрабатываем его.</h2><p>Полный вариант нужен для диагностики, а рост дают серии заданий на конкретное проверяемое умение.</p></div>
       <div className="parent-steps">
@@ -44,7 +49,7 @@ export default function Home() {
 
     <section className="section subject-showcase">
       <div className="subject-head"><div><span className="exam-label light">Все предметы ЕГЭ</span><h2>Один кабинет.<br />Никакой мешанины.</h2></div><p>У каждого предмета свой полный вариант, своя карта тем и свой итоговый вердикт.</p></div>
-      <div className="home-subject-grid all-exam-subjects">{examSubjects.map((subject, index) => <Link href={`/exam?subject=${subject.slug}`} key={subject.slug}><span>{String(index + 1).padStart(2, "0")}</span><h3>{subject.name}</h3><p>{subject.exam}</p><b>{subject.fullTaskCount} заданий →</b></Link>)}</div>
+      <div className="home-subject-grid all-exam-subjects">{examSubjects.map((subject, index) => <Link href={`/exam?subject=${subject.slug}`} key={subject.slug}><span>{String(index + 1).padStart(2, "0")}</span><h3>{subject.name}</h3><p>{subject.exam}</p><b>{subject.slug === "russian" ? "105 авторских заданий" : "10 стартовых + трекер ФИПИ"} →</b></Link>)}</div>
       <Link className="all-subjects-link" href="/subjects">Смотреть все предметы и преподавателей →</Link>
     </section>
 
@@ -61,7 +66,7 @@ export default function Home() {
 
     <section className="teacher-entry">
       <div><span className="exam-label light">Отдельно для педагогов</span><h2>Соберите работу.<br />Получите карту ошибок класса.</h2><p>Выберите тип ЕГЭ, количество заданий и отправьте готовую ссылку ученикам. Краткие ответы проверяются автоматически, а после ошибки запускается отработка.</p></div>
-      <Link className="button button-yellow" href="/for-teachers">Открыть платформу педагога →</Link>
+      <div className="teacher-entry-actions"><Link className="button button-yellow" href="/teacher-academy">Открыть академию педагога →</Link><Link className="button button-ghost light-button" href="/for-teachers">Конструктор работ</Link></div>
     </section>
 
     <section className="section value-section" aria-labelledby="value-title">
@@ -84,6 +89,6 @@ export default function Home() {
 
     <section className="final-exam-cta"><div><span className="exam-label light">Начните без оплаты</span><h2>Выберите предмет.<br />Решите полный вариант.</h2><p>15 предметов ЕГЭ, итоговый вердикт и объяснение после каждой попытки.</p></div><Link href="/exam" className="button button-yellow">Открыть диагностику →</Link></section>
 
-    <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная платформа подготовки к ОГЭ и ЕГЭ. AI помогает с ежедневной практикой, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link><Link href="/support">Поддержка</Link></div></footer>
+    <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная школа 6–11 классов с подготовкой к ОГЭ и ЕГЭ. AI помогает с ежедневной практикой, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/school">Школа 6–11</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/teacher-academy">Академия педагога</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link></div></footer>
   </main>;
 }

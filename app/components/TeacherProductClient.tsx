@@ -40,7 +40,7 @@ export function TeacherProductClient() {
   return <main className="teacher-product">
     <nav className="teacher-product-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-      <div><a href="#tools">Инструменты</a><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
+      <div><Link href="/teacher-academy">Методики 15 предметов</Link><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
       <Link className="button button-small button-red" href="#builder">Попробовать бесплатно</Link>
     </nav>
 

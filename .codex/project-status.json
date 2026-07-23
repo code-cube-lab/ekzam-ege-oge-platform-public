@@ -1,16 +1,74 @@
-{
-  "schema_version": 1,
-  "project_path": "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-  "current_stage": "release",
-  "updated_at": "2026-07-23T12:00:00+03:00",
-  "stages": [
-    { "name": "intake", "state": "passed", "evidence": ["User screenshots reviewed", "Parent-first revision confirmed"] },
-    { "name": "audit", "state": "passed", "evidence": ["FIPI 15-subject list", "Competitor prices checked on official sites", "Official SPKU teacher publications"] },
-    { "name": "plan", "state": "passed", "evidence": ["Public owner identity removed", "One-subject diagnostic model", "Parent value and pricing model"] },
-    { "name": "build", "state": "passed", "evidence": ["15 EGE subjects", "150 starting tasks", "10-question Russian dashboard diagnostic", "7 verified teacher photos", "Server prices 1490/4490/7990"] },
-    { "name": "telegram", "state": "passed", "evidence": ["Existing adaptive task and answer flow retained", "Authenticated Mini App retained", "Daily delivery endpoint retained"] },
-    { "name": "payments", "state": "pending", "evidence": ["Offer and consent drafts retained", "Payment intentionally disabled until legal and teacher confirmation"] },
-    { "name": "qa", "state": "passed", "evidence": ["Production build passed", "13/13 source tests passed", "Lint passed", "Desktop and 390px browser QA", "15 subject selector and 10-task flow verified", "7 teacher assets returned HTTP 200", "No browser console errors"] },
-    { "name": "release", "state": "doing", "evidence": ["Validated source ready for exact-commit deployment"] }
-  ]
+﻿{
+    "schema_version":  1,
+    "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
+    "current_stage":  "handoff",
+    "updated_at":  "2026-07-23T06:17:13.6865716Z",
+    "stages":  [
+                   {
+                       "name":  "intake",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "User reported repeated Russian answers and requested unique multi-variant adaptive diagnostics for all subjects"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "audit",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Auditing current task expansion and student flow",
+                                        "Found the root cause: ten seed tasks were cloned with the same answers and parallel labels"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "plan",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Defined honest split between author training, official FIPI tracker, result analysis and adaptive lesson"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "build",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Built three 27-task Russian variants, official 15-subject source registry, analysis and adaptive lesson route"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "telegram",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Existing Telegram daily-task and Mini App routes retained and covered by automated tests"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "payments",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Public payment remains disabled while server-side Stars verification tests remain intact"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "qa",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "17 automated tests pass including student audit of 45 subject-variant combinations",
+                                        "17 of 17 tests pass; 390px browser flow verified for training, official tracker, adaptive lesson and chemistry"
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "handoff",
+                       "state":  "doing",
+                       "evidence":  [
+                                        "Preparing exact tested commit and production deployment"
+                                    ],
+                       "note":  ""
+                   }
+               ]
 }

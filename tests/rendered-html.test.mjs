@@ -88,11 +88,12 @@ test("knowledge base keeps expert, levels and lesson cycle", async () => {
   assert.match(lesson, /nextStep/);
 });
 
-test("all 15 EGE subjects expand into subject-sized full diagnostic variants", async () => {
-  const [catalog, bank, simulator] = await Promise.all([
+test("all 15 EGE subjects expose honest training and official flows", async () => {
+  const [catalog, bank, simulator, official] = await Promise.all([
     readFile(new URL("../knowledge-base/exams/exam-subjects.ts", import.meta.url), "utf8"),
     readFile(new URL("../knowledge-base/tasks/exam-demo-bank.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/exams/official-variants.ts", import.meta.url), "utf8"),
   ]);
   assert.equal((catalog.match(/slug: "/g) ?? []).length, 15);
   assert.match(catalog, /Французский язык/);
@@ -102,12 +103,16 @@ test("all 15 EGE subjects expand into subject-sized full diagnostic variants", a
   for (const [, slug, body] of groups) assert.equal((body.match(/\("[a-z]+-\d+"/g) ?? []).length, 10, `${slug} must have ten tasks`);
   for (const kind of ["single", "multiple", "text", "number", "extended"]) assert.match(bank, new RegExp(`"${kind}"`));
   assert.match(simulator, /Все 15 предметов ЕГЭ/);
-  assert.match(simulator, /getFullVariantTasks/);
+  assert.match(simulator, /getTrainingVariantTasks/);
   assert.match(simulator, /subject\.fullTaskCount/);
-  assert.match(simulator, /итоговый вердикт/);
+  assert.match(simulator, /Официальный вариант ФИПИ/);
+  assert.match(simulator, /Сильные темы/);
+  assert.match(simulator, /Слабые темы/);
   assert.match(simulator, /не официальный балл ЕГЭ/);
   assert.match(simulator, /!submitted \?/);
   assert.match(simulator, /task\.solution\.map/);
+  assert.equal((official.match(/_1_ege2026\.zip/g) ?? []).length, 15);
+  assert.doesNotMatch(bank, /Тренировочная параллель/);
 });
 
 test("Telegram Stars access is granted only after verified server payment", async () => {

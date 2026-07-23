@@ -1,3 +1,5 @@
+import { buildTrainingVariant } from "./variant-engine.js";
+
 export type ExamTaskKind = "single" | "multiple" | "text" | "number" | "extended";
 
 export type ExamTask = {
@@ -205,21 +207,11 @@ export function getDemoTasks(subjectSlug: string) {
   return demoTasksBySubject[subjectSlug] ?? demoTasksBySubject.russian;
 }
 
-export function getFullVariantTasks(subjectSlug: string, count: number, topics: string[]) {
-  const seeds = getDemoTasks(subjectSlug);
-  return Array.from({ length: count }, (_, index) => {
-    const seed = seeds[index % seeds.length];
-    const parallel = Math.floor(index / seeds.length) + 1;
-    const options = seed.options && parallel > 1
-      ? [...seed.options.slice((parallel - 1) % seed.options.length), ...seed.options.slice(0, (parallel - 1) % seed.options.length)]
-      : seed.options;
-    return {
-      ...seed,
-      id: `${seed.id}-full-${index + 1}`,
-      number: `Задание ${index + 1}`,
-      topic: topics[index % topics.length] ?? seed.format,
-      prompt: parallel === 1 ? seed.prompt : `${seed.prompt} Тренировочная параллель ${parallel}.`,
-      options,
-    } satisfies ExamTask;
-  });
+export function getTrainingVariantTasks(subjectSlug: string, count: number, topics: string[], variantId = 1): ExamTask[] {
+  return buildTrainingVariant(subjectSlug, count, topics, getDemoTasks(subjectSlug), variantId) as ExamTask[];
+}
+
+/** @deprecated Use getTrainingVariantTasks with an explicit variant id. */
+export function getFullVariantTasks(subjectSlug: string, count: number, topics: string[], variantId = 1): ExamTask[] {
+  return getTrainingVariantTasks(subjectSlug, count, topics, variantId);
 }

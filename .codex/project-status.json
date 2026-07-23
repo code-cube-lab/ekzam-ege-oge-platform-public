@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "qa",
-    "updated_at":  "2026-07-23T19:35:00.0000000Z",
+    "current_stage":  "handoff",
+    "updated_at":  "2026-07-23T19:29:35.8298005Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -43,7 +43,7 @@
                    },
                    {
                        "name":  "telegram",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "Existing server-verified Telegram task and Stars routes remain present and covered by regression tests"
                                     ],
@@ -63,16 +63,18 @@
                        "evidence":  [
                                         "Build passes; automated and mobile browser QA in progress",
                                         "19/19 tests passed; production build and lint passed; mobile 375px exam and teacher flows verified without horizontal overflow; remediation and teacher assignment link checked in browser",
-                                        "21/21 tests, lint and production build passed for the unified school; production browser QA remains"
+                                        "21/21 tests, lint and production build passed for the unified school; production browser QA remains",
+                                        "Production browser QA passed for student, parent and teacher roles, XP quest, 15-subject academy, grouped math remediation and 375px overflow checks"
                                     ],
                        "note":  ""
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "Task-family engine, immediate remediation, teacher product and documentation prepared; exact validated source is ready for Sites versioning",
-                                        "Unified school source prepared for production browser QA"
+                                        "Unified school source prepared for production browser QA",
+                                        "Production version 10 verified; final metadata-only source revision prepared for release"
                                     ],
                        "note":  ""
                    }

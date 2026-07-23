@@ -75,3 +75,30 @@ export const verifiedTeacherPhotos: Record<string, { src: string; sourceUrl: str
     alt: "Анна Александровна Морозова проводит урок китайского языка",
   },
 };
+
+export const generatedTeacherVisuals: Record<string, { src: string; alt: string }> = {
+  "literature-ege-gorbunov": {
+    src: "/teachers/ai-literature-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по литературе",
+  },
+  "informatics-ege-khanov": {
+    src: "/teachers/ai-informatics-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по информатике",
+  },
+  "physics-ege-levinskaya": {
+    src: "/teachers/ai-physics-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по физике",
+  },
+  "history-ege-korolevskaya": {
+    src: "/teachers/ai-history-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по истории",
+  },
+  "english-ege-burova": {
+    src: "/teachers/ai-english-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по английскому языку",
+  },
+  "german-ege-voronina": {
+    src: "/teachers/ai-german-direction.webp",
+    alt: "AI-визуал направления подготовки к ЕГЭ по немецкому языку",
+  },
+};

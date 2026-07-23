@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { TeacherPhoto } from "./components/TeacherPhoto";
 import { examSubjects } from "../knowledge-base/exams/exam-subjects";
-import { subjectLeads, verifiedTeacherPhotos } from "../knowledge-base/teachers/subject-leads";
+import { generatedTeacherVisuals, subjectLeads, verifiedTeacherPhotos } from "../knowledge-base/teachers/subject-leads";
 
-const photographedTeachers = subjectLeads.filter((lead) => verifiedTeacherPhotos[lead.skillSlug]);
+const photographedTeachers = subjectLeads.filter((lead) => verifiedTeacherPhotos[lead.skillSlug] || generatedTeacherVisuals[lead.skillSlug]);
 
 export default function Home() {
   return <main className="landing-shell exam-landing" id="top">
@@ -54,9 +54,9 @@ export default function Home() {
     </section>
 
     <section className="section teacher-system">
-      <div className="teacher-system-copy"><span className="exam-label">Кто отвечает за обучение</span><h2>Родитель видит преподавателя и его роль.</h2><p>На платформе показаны предметные профили по официальным материалам СПКУ. Преподаватель проверяет сложные работы и методику; система выдаёт практику и собирает прогресс. Для семи профилей уже найдены однозначно подписанные фотографии из официальных публикаций.</p><Link className="button button-dark" href="/teachers">Посмотреть преподавателей</Link></div>
+      <div className="teacher-system-copy"><span className="exam-label">Кто отвечает за обучение</span><h2>Родитель видит преподавателя и его роль.</h2><p>На платформе показаны предметные профили по официальным материалам СПКУ. Семь карточек используют подтверждённые фотографии, ещё шесть — живые AI-визуалы предметов с честной пометкой. Преподаватель проверяет сложные работы, система выдаёт практику и собирает прогресс.</p><Link className="button button-dark" href="/teachers">Посмотреть преподавателей</Link></div>
       <div className="home-teacher-grid">{photographedTeachers.map((lead) => <article key={lead.slug}><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><span>{lead.subject}</span><small>профиль для запуска · участие уточняется</small></div></article>)}</div>
-      <p className="teacher-source-note">Перед открытием платного потока школа отдельно подтверждает участие преподавателя, расписание и согласие на коммерческое использование имени и фотографии.</p>
+      <p className="teacher-source-note">AI-визуалы не изображают указанных преподавателей. Перед открытием платного потока школа отдельно подтверждает участие, расписание и согласие на коммерческое использование имени и реальной фотографии.</p>
     </section>
 
     <section className="section value-section" aria-labelledby="value-title">

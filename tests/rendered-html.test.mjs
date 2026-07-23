@@ -137,17 +137,20 @@ test("Russian dashboard diagnostic also has ten questions", async () => {
   assert.match(route, /body\.answers\.length !== answerKey\.length/);
 });
 
-test("teacher registry has 13 profiles and seven verified official photos", async () => {
+test("teacher registry has 13 profiles, seven official photos and six labeled AI visuals", async () => {
   const [registry, page, photoComponent] = await Promise.all([
     readFile(new URL("../knowledge-base/teachers/subject-leads.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/teachers/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/TeacherPhoto.tsx", import.meta.url), "utf8"),
   ]);
   assert.equal((registry.match(/skillSlug: "/g) ?? []).length, 13);
-  assert.equal((registry.match(/src: "\/teachers\//g) ?? []).length, 7);
-  assert.match(page, /13 предметных профилей · 7 официальных фотографий/);
+  assert.equal((registry.match(/src: "\/teachers\//g) ?? []).length, 13);
+  assert.equal((registry.match(/ai-[a-z]+-direction\.webp/g) ?? []).length, 6);
+  assert.match(page, /13 предметных профилей · 7 официальных фото · 6 AI-визуалов направлений/);
   assert.match(page, /Участие уточняется/);
-  assert.match(photoComponent, /Фото с официального сайта/);
+  assert.match(photoComponent, /Официальное фото/);
+  assert.match(photoComponent, /AI-визуал/);
+  assert.match(photoComponent, /Не изображает конкретного преподавателя/);
 });
 
 test("administration remains protected and uses researched prices", async () => {
@@ -175,5 +178,16 @@ test("seven official teacher photo assets are bundled", async () => {
     "../public/teachers/elena-mikhaylichenko-class.jpg",
     "../public/teachers/maria-nosenko-class.jpg",
     "../public/teachers/lilia-belomestnaya-class.jpg",
+  ]) await access(new URL(path, import.meta.url));
+});
+
+test("six lightweight subject AI visuals are bundled", async () => {
+  for (const path of [
+    "../public/teachers/ai-literature-direction.webp",
+    "../public/teachers/ai-informatics-direction.webp",
+    "../public/teachers/ai-physics-direction.webp",
+    "../public/teachers/ai-history-direction.webp",
+    "../public/teachers/ai-english-direction.webp",
+    "../public/teachers/ai-german-direction.webp",
   ]) await access(new URL(path, import.meta.url));
 });

@@ -26,9 +26,18 @@
 .teacher-photo {
   position: relative;
   display: block;
+  margin: 0;
   background: #dfe5ef;
   border: 2px solid #fff;
   box-shadow: 0 8px 20px rgba(16, 29, 50, 0.16);
+}
+
+.teacher-photo-ai {
+  border-color: #ffdd4a;
+}
+
+.teacher-photo-ai small {
+  background: rgba(36, 87, 255, 0.9);
 }
 
 .teacher-photo img {

@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-07-23T06:17:13.6865716Z",
+    "updated_at":  "2026-07-23T06:20:50.7882118Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -64,9 +64,10 @@
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
-                                        "Preparing exact tested commit and production deployment"
+                                        "Preparing exact tested commit and production deployment",
+                                        "Sites version 8 deployed successfully and production Russian variant 2 verified at 390px"
                                     ],
                        "note":  ""
                    }

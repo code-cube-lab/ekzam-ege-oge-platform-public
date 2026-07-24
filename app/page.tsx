@@ -9,7 +9,7 @@ export default function Home() {
   return <main className="landing-shell exam-landing" id="top">
     <nav className="topbar exam-topbar" aria-label="Основная навигация">
       <a className="brand exam-brand" href="#top" aria-label="ЭКЗАМ — на главную"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>школа высоких баллов</small></a>
-      <div className="top-links"><Link href="/school">Школа 5–11</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><a href="#plans">Цены</a></div>
+      <div className="top-links"><Link href="/school">Школа 5–11</Link><Link href="/textbooks">Учебники</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><a href="#plans">Цены</a></div>
       <Link className="button button-small button-red" href="/exam">Бесплатная диагностика</Link>
     </nav>
 
@@ -89,6 +89,6 @@ export default function Home() {
 
     <section className="final-exam-cta"><div><span className="exam-label light">Начните без оплаты</span><h2>Выберите предмет.<br />Решите полный вариант.</h2><p>15 предметов ЕГЭ, итоговый вердикт и объяснение после каждой попытки.</p></div><Link href="/exam" className="button button-yellow">Открыть диагностику →</Link></section>
 
-    <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная школа 5–11 классов с подготовкой к ОГЭ и ЕГЭ. AI помогает с ежедневной практикой, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/school">Школа 5–11</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/teacher-academy">Академия педагога</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link></div></footer>
+    <footer className="exam-footer"><a className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></a><p>Многопредметная школа 5–11 классов с подготовкой к ОГЭ и ЕГЭ. AI помогает с ежедневной практикой, преподаватель отвечает за методику и проверку сложных работ.</p><div><Link href="/school">Школа 5–11</Link><Link href="/textbooks">Учебники</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/teacher-academy">Академия педагога</Link><Link href="/offer">Оферта</Link><Link href="/privacy">Данные</Link></div></footer>
   </main>;
 }

@@ -10,7 +10,8 @@
                        "evidence":  [
                                         "User replaced few variants with a large EGE task-type bank, immediate remediation after every task, and a paid teacher product",
                                         "Scope expanded to a unified grade 5-11 school: 15 subjects, OGE/EGE preparation, adaptive practice, teacher academy, parent visibility, gamified progress and electronic diary preview",
-                                        "User required OGE and EGE tasks to run sequentially on the site without a mandatory download step"
+                                        "User required OGE and EGE tasks to run sequentially on the site without a mandatory download step",
+                                        "User required in-platform subject textbooks and offline study after the first save"
                                     ],
                        "note":  ""
                    },
@@ -40,7 +41,8 @@
                        "evidence":  [
                                         "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes",
                                         "Built school hub, electronic diary demo, parent and teacher views, 15 subject curriculum profiles and grouped starter practice",
-                                        "Added grade 5 foundations and sequential OGE/EGE route switching without mandatory downloads"
+                                        "Added grade 5 foundations and sequential OGE/EGE route switching without mandatory downloads",
+                                        "Built 15-subject grade 5-11 textbook library, interactive chapters, PWA manifest and offline cache"
                                     ],
                        "note":  ""
                    },
@@ -67,7 +69,8 @@
                                         "Build passes; automated and mobile browser QA in progress",
                                         "19/19 tests passed; production build and lint passed; mobile 375px exam and teacher flows verified without horizontal overflow; remediation and teacher assignment link checked in browser",
                                         "21/21 tests, lint and production build passed for the unified school; production browser QA remains",
-                                        "Production browser QA passed for student, parent and teacher roles, XP quest, 15-subject academy, grouped math remediation and 375px overflow checks"
+                                        "Production browser QA passed for student, parent and teacher roles, XP quest, 15-subject academy, grouped math remediation and 375px overflow checks",
+                                        "22/22 tests, lint and production build pass after the textbook and offline expansion"
                                     ],
                        "note":  ""
                    },

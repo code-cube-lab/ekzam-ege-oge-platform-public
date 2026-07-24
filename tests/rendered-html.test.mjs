@@ -265,3 +265,23 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
   assert.match(simulator, /Задания сгруппированы по умениям/);
   assert.match(simulator, /Расширенный авторский банк проходит предметную редактуру/);
 });
+
+test("embedded textbooks cover grades 5-11 and expose offline caching", async () => {
+  const [page, client, library, worker, layout] = await Promise.all([
+    readFile(new URL("../app/textbooks/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TextbookLibraryClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/curriculum/textbook-library.ts", import.meta.url), "utf8"),
+    readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(page, /TextbookLibraryClient/);
+  assert.match(client, /Учебники внутри платформы · 5–11 классы/);
+  assert.match(client, /Сохранить для офлайн/);
+  assert.match(client, /subjectSchoolProfiles\.map/);
+  assert.match(client, /schoolGrades\.map/);
+  assert.match(client, /caches\.open/);
+  assert.match(library, /авторское учебное пособие/);
+  assert.match(worker, /CACHE_NAME/);
+  assert.match(worker, /request\.mode === "navigate"/);
+  assert.match(layout, /OfflineServiceWorker/);
+});

@@ -74,7 +74,7 @@ export function SchoolHubClient() {
         </Link>
         <nav aria-label="Разделы школы">
           <a href="#route">Маршрут</a>
-          <a href="#textbook">Учебник</a>
+          <Link href="/textbooks">Учебники</Link>
           <a href="#diary">Дневник</a>
           <Link href="/teacher-academy">Академия педагога</Link>
         </nav>
@@ -228,7 +228,10 @@ export function SchoolHubClient() {
           <div className="textbook-step"><span>01</span><div><b>Понять</b><p>{subject.lesson.theory}</p></div></div>
           <div className="textbook-step"><span>02</span><div><b>Увидеть на примере</b><p>{subject.lesson.example}</p></div></div>
           <div className="textbook-step"><span>03</span><div><b>Выполнить самому</b><p>{subject.lesson.question}</p></div></div>
-          <Link className="button button-dark" href={`/exam?subject=${subject.slug}&count=5`}>Перейти к серии заданий →</Link>
+          <div className="teacher-protocol-actions">
+            <Link className="button button-dark" href="/textbooks">Открыть полный учебник →</Link>
+            <Link className="button button-ghost" href={`/exam?subject=${subject.slug}&count=5`}>Перейти к заданиям</Link>
+          </div>
         </article>
       </section>
 

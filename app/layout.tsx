@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import { OfflineServiceWorker } from "./components/OfflineServiceWorker";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -11,6 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: "ЭКЗАМ — школа подготовки к ОГЭ и ЕГЭ", template: "%s — ЭКЗАМ" },
     description: "Многопредметная подготовка к ОГЭ и ЕГЭ: диагностика, задания в формате экзамена, понятный отчёт родителю и поддержка преподавателя.",
     icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+    manifest: "/manifest.webmanifest",
     openGraph: {
       title: "ЭКЗАМ — ребёнок готовится, родитель видит результат",
       description: "Многопредметная школа ОГЭ и ЕГЭ с заданиями в реальных форматах экзамена.",
@@ -29,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body><OfflineServiceWorker />{children}</body>
     </html>
   );
 }

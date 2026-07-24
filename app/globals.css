@@ -762,7 +762,7 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .exam-map nav small { color: #9faabd; font-size: 9px; }
 .fipi-link { color: var(--lime); font-size: 11px; font-weight: 800; }
 .exam-paper { min-height: calc(100vh - 130px); background: white; border: 1px solid #ccd3de; padding: 38px 46px; position: relative; }
-.exam-paper::after { content: "ЧЕРНОВИК"; position: absolute; right: 20px; bottom: 15px; color: #e0e4eb; font: 900 26px/1 ui-monospace,monospace; transform: rotate(-4deg); }
+.exam-paper::after { content: "ЧЕРНОВИК"; position: absolute; right: 20px; bottom: 15px; color: #e0e4eb; font: 900 26px/1 ui-monospace,monospace; transform: rotate(-4deg); pointer-events: none; }
 .exam-paper-head { display: flex; justify-content: space-between; align-items: start; padding-bottom: 18px; border-bottom: 2px solid var(--ink); }
 .exam-paper-head div { display: grid; }
 .exam-paper-head span { color: var(--muted); font-size: 11px; }

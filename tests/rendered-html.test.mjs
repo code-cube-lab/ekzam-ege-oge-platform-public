@@ -246,6 +246,7 @@ test("unified grade 5-11 school exposes all roles, subjects and honest diary", a
   assert.match(schoolPage, /SchoolHubClient/);
   assert.match(css, /\.school-hub/);
   assert.match(css, /@media \(max-width: 390px\)/);
+  assert.match(css, /\.exam-paper::after[^}]*pointer-events: none/);
 });
 
 test("teacher academy contains 15 methods, FIPI evidence and market limitations", async () => {

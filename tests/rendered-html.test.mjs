@@ -109,6 +109,7 @@ test("OGE and EGE subjects expose honest in-site sequential routes", async () =>
   assert.match(simulator, /getRussianFamilyTasks/);
   assert.match(simulator, /Отработка слабого места/);
   assert.match(simulator, /Отработать похожее/);
+  assert.match(simulator, /jump\(index \+ 1\)/);
   assert.doesNotMatch(simulator, /trainingVariants|Выбор тренировочного варианта|Вариант 1/);
   assert.match(simulator, /subject\.fullTaskCount/);
   assert.match(simulator, /Экзаменационный маршрут/);

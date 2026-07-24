@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "handoff",
-    "updated_at":  "2026-07-24T00:00:00+03:00",
+    "current_stage":  "build",
+    "updated_at":  "2026-07-24T05:29:44.8655687Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -42,7 +42,8 @@
                                         "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes",
                                         "Built school hub, electronic diary demo, parent and teacher views, 15 subject curriculum profiles and grouped starter practice",
                                         "Added grade 5 foundations and sequential OGE/EGE route switching without mandatory downloads",
-                                        "Built 15-subject grade 5-11 textbook library, interactive chapters, PWA manifest and offline cache"
+                                        "Built 15-subject grade 5-11 textbook library, interactive chapters, PWA manifest and offline cache",
+                                        "Textbook entry is visible in the first homepage screen, a dedicated library panel, the mobile header and the school hero; production build passes."
                                     ],
                        "note":  ""
                    },

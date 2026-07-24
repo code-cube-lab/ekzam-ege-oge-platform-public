@@ -86,6 +86,10 @@ export function SchoolHubClient() {
           <span className="exam-label">Школа 5–11 классов · ОГЭ · ЕГЭ</span>
           <h1>Не набор тестов.<br /><em>Единый учебный маршрут.</em></h1>
           <p>Тема из школьной программы превращается в понятное объяснение, практику, исправление ошибки, повторение и запись результата в дневник.</p>
+          <div className="school-hero-actions">
+            <Link className="button button-primary" data-testid="school-textbooks-entry" href="/textbooks">Открыть учебники 5–11 →</Link>
+            <Link className="button button-ghost" href="/exam">Перейти к заданиям</Link>
+          </div>
         </div>
         <div className="school-hero-board" aria-label="Сводка маршрута">
           <div><span>Класс</span><strong>{grade}</strong></div>

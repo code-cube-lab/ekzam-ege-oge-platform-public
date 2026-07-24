@@ -269,12 +269,14 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
 });
 
 test("embedded textbooks cover grades 5-11 and expose offline caching", async () => {
-  const [page, client, library, worker, layout] = await Promise.all([
+  const [page, client, library, worker, layout, home, school] = await Promise.all([
     readFile(new URL("../app/textbooks/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/TextbookLibraryClient.tsx", import.meta.url), "utf8"),
     readFile(new URL("../knowledge-base/curriculum/textbook-library.ts", import.meta.url), "utf8"),
     readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/SchoolHubClient.tsx", import.meta.url), "utf8"),
   ]);
   assert.match(page, /TextbookLibraryClient/);
   assert.match(client, /Учебники внутри платформы · 5–11 классы/);
@@ -284,6 +286,11 @@ test("embedded textbooks cover grades 5-11 and expose offline caching", async ()
   assert.match(client, /caches\.open/);
   assert.match(library, /авторское учебное пособие/);
   assert.match(worker, /CACHE_NAME/);
+  assert.match(worker, /ekzam-offline-v3/);
   assert.match(worker, /request\.mode === "navigate"/);
   assert.match(layout, /OfflineServiceWorker/);
+  assert.match(home, /data-testid="textbooks-entry"/);
+  assert.match(home, /Учебники уже внутри платформы/);
+  assert.match(home, /Открыть библиотеку/);
+  assert.match(school, /data-testid="school-textbooks-entry"/);
 });

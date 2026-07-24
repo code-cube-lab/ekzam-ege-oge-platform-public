@@ -1,4 +1,4 @@
-const CACHE_NAME = "ekzam-offline-v2";
+const CACHE_NAME = "ekzam-offline-v3";
 const CORE_URLS = ["/", "/school", "/textbooks", "/exam?level=oge", "/exam?level=ege", "/favicon.svg"];
 
 self.addEventListener("install", (event) => {

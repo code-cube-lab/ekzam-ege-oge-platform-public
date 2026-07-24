@@ -10,6 +10,7 @@ export default function Home() {
     <nav className="topbar exam-topbar" aria-label="Основная навигация">
       <a className="brand exam-brand" href="#top" aria-label="ЭКЗАМ — на главную"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>школа высоких баллов</small></a>
       <div className="top-links"><Link href="/school">Школа 5–11</Link><Link href="/textbooks">Учебники</Link><Link href="/subjects">Предметы</Link><Link href="/teachers">Преподаватели</Link><Link href="/for-teachers">Для педагогов</Link><a href="#plans">Цены</a></div>
+      <Link className="mobile-textbook-link" href="/textbooks">Учебники 5–11</Link>
       <Link className="button button-small button-red" href="/exam">Бесплатная диагностика</Link>
     </nav>
 
@@ -18,7 +19,7 @@ export default function Home() {
         <div className="exam-label"><span /> Подготовка к ЕГЭ-2027 · 15 предметов</div>
         <h1>Ребёнок готовится.<br /><em>Вы видите результат.</em></h1>
         <p>Выберите предмет и тип задания. Ребёнок решает серию на одно умение, а после каждой ошибки сразу получает правило, похожую задачу и объяснение. Полный открытый материал ФИПИ остаётся отдельной проверкой.</p>
-        <div className="hero-actions"><Link className="button button-red" href="/school">Открыть школу 5–11 <span>→</span></Link><Link className="button button-ghost" href="/exam">Начать практику</Link></div>
+        <div className="hero-actions"><Link className="button button-yellow hero-textbook-button" data-testid="textbooks-entry" href="/textbooks">Открыть учебники 5–11 <span>→</span></Link><Link className="button button-red" href="/school">Открыть школу</Link><Link className="button button-ghost" href="/exam">Начать практику</Link></div>
         <div className="parent-proof"><div><strong>5–11</strong><span>единый школьный маршрут</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>105 + 140</strong><span>расширенный русский + стартовые банки</span></div></div>
       </div>
       <div className="exam-hero-board" aria-label="Пример родительского отчёта">
@@ -33,9 +34,27 @@ export default function Home() {
 
     <section className="exam-ribbon" aria-label="Форматы экзамена"><span>Краткий ответ</span><span>Несколько правильных</span><span>Число</span><span>Соответствие</span><span>Развёрнутый ответ</span><Link href="/exam">Открыть тренажёр →</Link></section>
 
+    <section className="textbook-entry" aria-labelledby="textbook-entry-title">
+      <div className="textbook-entry-copy">
+        <span className="exam-label light">Учебники уже внутри платформы</span>
+        <h2 id="textbook-entry-title">Не скачивать.<br />Открыть и заниматься.</h2>
+        <p>Выберите класс с 5-го по 11-й и один из 15 предметов. В каждой главе есть теория, пример, короткая проверка и самостоятельная работа. Открытые главы можно сохранить для занятий без интернета.</p>
+        <div className="textbook-entry-actions">
+          <Link className="button button-yellow" href="/textbooks">Открыть библиотеку →</Link>
+          <span>5–11 классы · 15 предметов · офлайн-режим</span>
+        </div>
+      </div>
+      <Link className="textbook-preview" href="/textbooks" aria-label="Открыть учебники 5–11 классов">
+        <div className="textbook-preview-top"><span>ЭКЗАМ · УЧЕБНИК</span><b>5 класс</b></div>
+        <strong>Русский язык</strong>
+        <div className="textbook-preview-rule"><span>Глава 01</span><b>Текст и его основная мысль</b><p>Правило → пример → задание → разбор</p></div>
+        <div className="textbook-preview-bottom"><span>15 предметов внутри</span><b>Читать →</b></div>
+      </Link>
+    </section>
+
     <section className="school-entry">
       <div><span className="exam-label light">Теперь это школа 5–11</span><h2>Учебник, задания и дневник работают как один маршрут.</h2><p>Ученик получает ежедневный квест и отработку ошибок. Родитель видит не только оценку, но и причину пробела. Педагог получает программу урока и аналитику класса.</p></div>
-      <div className="school-entry-actions"><Link className="button button-yellow" href="/school">Посмотреть школу →</Link><Link className="button button-ghost light-button" href="/teacher-academy">Академия педагога</Link></div>
+      <div className="school-entry-actions"><Link className="button button-yellow" href="/textbooks">Открыть учебники →</Link><Link className="button button-ghost light-button" href="/school">Посмотреть школу</Link></div>
     </section>
 
     <section className="section parent-start" id="start">

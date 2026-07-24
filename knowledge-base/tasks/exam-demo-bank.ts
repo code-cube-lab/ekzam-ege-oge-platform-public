@@ -11,6 +11,8 @@ export type ExamTask = {
   topic?: string;
   familyId?: string;
   theory?: string;
+  stimulus?: string;
+  minWords?: number;
   prompt: string;
   options?: string[];
   answer: string | string[];

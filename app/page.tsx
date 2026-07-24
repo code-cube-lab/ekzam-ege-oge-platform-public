@@ -19,7 +19,7 @@ export default function Home() {
         <div className="exam-label"><span /> Подготовка к ЕГЭ-2027 · 15 предметов</div>
         <h1>Ребёнок готовится.<br /><em>Вы видите результат.</em></h1>
         <p>Выберите предмет и тип задания. Ребёнок решает серию на одно умение, а после каждой ошибки сразу получает правило, похожую задачу и объяснение. Полный открытый материал ФИПИ остаётся отдельной проверкой.</p>
-        <div className="hero-actions"><Link className="button button-yellow hero-textbook-button" data-testid="textbooks-entry" href="/textbooks">Открыть учебники 5–11 <span>→</span></Link><Link className="button button-red" href="/school">Открыть школу</Link><Link className="button button-ghost" href="/exam">Начать практику</Link></div>
+        <div className="hero-actions"><Link className="button button-yellow hero-textbook-button" data-testid="textbooks-entry" href="/textbooks">Открыть учебники 5–11 <span>→</span></Link><Link className="button button-red" href="/how-it-works">Поклацать, как учит система</Link><Link className="button button-ghost" href="/exam">12 пробных вариантов</Link></div>
         <div className="parent-proof"><div><strong>5–11</strong><span>единый школьный маршрут</span></div><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>105 + 140</strong><span>расширенный русский + стартовые банки</span></div></div>
       </div>
       <div className="exam-hero-board" aria-label="Пример родительского отчёта">

@@ -50,7 +50,7 @@ test("student audit passes every training variant for all 15 subjects", async ()
 
   assert.equal(Object.keys(bank).length, 15);
   for (const [slug, fullCount, topics] of subjects) {
-    for (const variant of [1, 2, 3]) {
+    for (const variant of Array.from({ length: 12 }, (_, index) => index + 1)) {
       const tasks = buildTrainingVariant(slug, fullCount, topics, bank[slug], variant);
       assert.equal(tasks.length, slug === "russian" ? 27 : 10, `${slug} v${variant}: task count`);
       assert.equal(new Set(tasks.map((task) => task.id)).size, tasks.length, `${slug} v${variant}: unique ids`);
@@ -73,12 +73,17 @@ test("student audit passes every training variant for all 15 subjects", async ()
   }
 });
 
-test("three Russian variants contain independent real task wording", async () => {
+test("twelve Russian routes follow all 27 lines and produce different complete variants", async () => {
   const bank = await loadSeedBank();
-  const variants = [1, 2, 3].map((variant) => buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, variant));
-  const signatures = variants.flatMap((tasks) => tasks.map(signature));
-  assert.equal(signatures.length, 81);
-  assert.equal(new Set(signatures).size, 81);
+  const variants = Array.from({ length: 12 }, (_, index) => buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, index + 1));
+  assert.equal(variants.length, 12);
+  assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
+  for (const tasks of variants) {
+    assert.deepEqual(tasks.map((task) => task.number), Array.from({ length: 27 }, (_, index) => `Задание ${index + 1}`));
+    assert.equal(tasks[26].kind, "extended");
+    assert.equal(tasks[26].minWords, 150);
+    assert.ok(tasks[0].stimulus.length > 200);
+  }
 });
 
 test("Russian type bank contains 105 distinct authored tasks grouped by EGE skill", () => {

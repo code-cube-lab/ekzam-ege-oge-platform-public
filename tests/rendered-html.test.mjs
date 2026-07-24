@@ -110,9 +110,13 @@ test("OGE and EGE subjects expose honest in-site sequential routes", async () =>
   assert.match(simulator, /Отработка слабого места/);
   assert.match(simulator, /Отработать похожее/);
   assert.match(simulator, /jump\(index \+ 1\)/);
-  assert.doesNotMatch(simulator, /trainingVariants|Выбор тренировочного варианта|Вариант 1/);
+  assert.match(simulator, /12 пробных вариантов/);
+  assert.match(simulator, /Мои ошибки/);
+  assert.match(simulator, /MISTAKE_STORAGE_KEY/);
+  assert.match(simulator, /НЕЙРОСЕТЬ/);
+  assert.match(simulator, /УЧИТЕЛЬ/);
   assert.match(simulator, /subject\.fullTaskCount/);
-  assert.match(simulator, /Экзаменационный маршрут/);
+  assert.match(simulator, /Пробный вариант/);
   assert.match(simulator, /Без скачивания/);
   assert.doesNotMatch(simulator, /Скачать и занести результат/);
   assert.match(simulator, /Сильные темы/);
@@ -122,6 +126,22 @@ test("OGE and EGE subjects expose honest in-site sequential routes", async () =>
   assert.match(simulator, /task\.solution\.map/);
   assert.equal((official.match(/_1_ege2026\.zip/g) ?? []).length, 15);
   assert.doesNotMatch(bank, /Тренировочная параллель/);
+});
+
+test("interactive learning explanation separates automation, neural feedback and teacher review", async () => {
+  const [page, demo, telegram] = await Promise.all([
+    readFile(new URL("../app/how-it-works/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/LearningPathDemoClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TelegramMiniAppClient.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(page, /LearningPathDemoClient/);
+  assert.match(demo, /Автопроверка/);
+  assert.match(demo, /Нейросеть/);
+  assert.match(demo, /Преподаватель/);
+  assert.match(demo, /12 вариантов русского по 27 линий/);
+  assert.match(demo, /специально выбрать неверный ответ/);
+  assert.match(telegram, /Поклацать разбор ошибки/);
+  assert.match(telegram, /реального бота/);
 });
 
 test("public teacher product has a working assignment builder and paid pilot", async () => {

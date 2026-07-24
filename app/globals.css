@@ -934,6 +934,13 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .exam-verdict p { margin: 4px 0 0; color: var(--ink); }
 
 .exam-mode-panel { width: min(100% - 32px,1280px); margin: 18px auto; display: grid; gap: 12px; }
+.exam-level-switch { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 18px; border: 1px solid #c6ceda; background: var(--ink); color: white; }
+.exam-level-switch > div:first-child { display: grid; gap: 4px; }
+.exam-level-switch > div:last-child { display: flex; gap: 8px; }
+.exam-level-switch button { min-width: 118px; border: 1px solid #536079; background: #1d2b42; color: white; padding: 10px 18px; display: grid; gap: 2px; text-align: left; cursor: pointer; }
+.exam-level-switch button span { color: #b9c4d5; font-size: 10px; }
+.exam-level-switch button.active { border-color: var(--lime); background: var(--lime); color: var(--ink); }
+.exam-level-switch button.active span { color: #435122; }
 .exam-mode-tabs,.exam-variant-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
 .exam-mode-tabs button,.exam-variant-tabs button { border: 1px solid #c6ceda; background: white; color: var(--ink); padding: 13px 16px; display: grid; gap: 3px; text-align: left; cursor: pointer; }
 .exam-mode-tabs button { flex: 1 1 260px; }
@@ -952,6 +959,9 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .family-tabs button.active > small { color: #b9c4d5; }
 .subject-bank-note { padding: 17px 20px; display: grid; gap: 5px; border-left: 5px solid var(--violet); background: white; }
 .subject-bank-note span { color: var(--muted); line-height: 1.5; }
+.route-bank-note { padding: 18px 20px; display: grid; grid-template-columns: minmax(240px,.8fr) minmax(0,1.2fr); gap: 24px; align-items: center; border: 1px solid #b9d9a4; background: #f0f8e9; }
+.route-bank-note > div { display: grid; gap: 5px; }
+.route-bank-note p { margin: 0; color: #43514b; line-height: 1.55; }
 .fipi-button { width: 100%; text-align: left; border: 0; cursor: pointer; }
 .exam-paper h2 { white-space: pre-line; }
 .next-similar { margin-top: 18px; }
@@ -1138,6 +1148,10 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .telegram-plan { align-items: stretch; flex-direction: column; }
   .family-bank-head { align-items: start; flex-direction: column; }
   .family-bank-head > small { text-align: left; }
+  .exam-level-switch { align-items: stretch; flex-direction: column; }
+  .exam-level-switch > div:last-child { display: grid; grid-template-columns: 1fr 1fr; }
+  .exam-level-switch button { min-width: 0; }
+  .route-bank-note { grid-template-columns: 1fr; gap: 10px; }
   .family-tabs button { flex-basis: 145px; }
   .remediation-steps { grid-template-columns: 1fr; }
   .remediation-steps article { border-right: 0; border-bottom: 1px solid #ccd4df; }
@@ -1183,7 +1197,7 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .lead-person b { overflow-wrap: anywhere; }
 }
 
-/* Единая школа 6–11 и академия педагога */
+/* Единая школа 5–11 и академия педагога */
 .school-entry {
   width: min(1180px, calc(100% - 48px));
   margin: 72px auto;

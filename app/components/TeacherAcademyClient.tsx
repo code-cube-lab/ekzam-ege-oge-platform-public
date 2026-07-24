@@ -3,6 +3,7 @@
 import { useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
+  getSchoolTopics,
   getSubjectSchoolProfile,
   schoolGrades,
   subjectSchoolProfiles,
@@ -22,12 +23,12 @@ export function TeacherAcademyClient({ initialSubject = "russian" }: Props) {
     <main className="teacher-academy">
       <header className="academy-top">
         <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-        <nav><Link href="/school">Школа 6–11</Link><Link href="/for-teachers">Инструменты</Link><Link href="/teacher">Кабинет</Link></nav>
+        <nav><Link href="/school">Школа 5–11</Link><Link href="/for-teachers">Инструменты</Link><Link href="/teacher">Кабинет</Link></nav>
         <Link className="button button-dark button-small" href={`/exam?subject=${subject.slug}&count=5&teacher=academy`}>Собрать работу</Link>
       </header>
 
       <section className="academy-hero">
-        <div><span className="exam-label">Академия педагога · 15 предметов</span><h1>Методика, которая начинается <em>после ошибки ученика.</em></h1><p>Для каждого предмета: школьные предпосылки 6–11 классов, дефициты по аналитике ФИПИ, сценарий объяснения, авторская практика и повторение.</p></div>
+        <div><span className="exam-label">Академия педагога · 15 предметов</span><h1>Методика, которая начинается <em>после ошибки ученика.</em></h1><p>Для каждого предмета: школьные предпосылки 5–11 классов, дефициты по аналитике ФИПИ, сценарий объяснения, авторская практика и повторение.</p></div>
         <div className="academy-hero-note"><span>Принцип</span><strong>Не показать ответ.<br />Научить переносу.</strong><p>Диагностика → причина → короткая теория → похожая задача → смешанная задача → дневник.</p></div>
       </section>
 
@@ -68,10 +69,10 @@ export function TeacherAcademyClient({ initialSubject = "russian" }: Props) {
       </section>
 
       <section className="academy-continuity">
-        <div><span className="exam-label">Преемственность 6–11</span><h2>Экзамен не начинается в десятом классе</h2><p>Каждая экзаменационная линия привязана к школьной теме, которую нужно вернуть в маршрут при обнаружении пробела.</p></div>
+        <div><span className="exam-label">Преемственность 5–11</span><h2>Экзамен не начинается в десятом классе</h2><p>Каждая экзаменационная линия привязана к школьной теме, которую нужно вернуть в маршрут при обнаружении пробела.</p></div>
         <div className="continuity-row">
           {schoolGrades.map((grade) => (
-            <article key={grade}><span>{grade}</span><b>{subject.gradeTopics[grade][0]}</b><p>{subject.gradeTopics[grade].slice(1).join(" · ")}</p></article>
+            <article key={grade}><span>{grade}</span><b>{getSchoolTopics(subject, grade)[0]}</b><p>{getSchoolTopics(subject, grade).slice(1).join(" · ")}</p></article>
           ))}
         </div>
       </section>

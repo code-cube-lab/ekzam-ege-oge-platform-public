@@ -4,6 +4,7 @@ import { useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   getSubjectSchoolProfile,
+  getSchoolTopics,
   officialSchoolLinks,
   schoolGrades,
   subjectSchoolProfiles,
@@ -82,7 +83,7 @@ export function SchoolHubClient() {
 
       <section className="school-hero">
         <div>
-          <span className="exam-label">Школа 6–11 классов · ОГЭ · ЕГЭ</span>
+          <span className="exam-label">Школа 5–11 классов · ОГЭ · ЕГЭ</span>
           <h1>Не набор тестов.<br /><em>Единый учебный маршрут.</em></h1>
           <p>Тема из школьной программы превращается в понятное объяснение, практику, исправление ошибки, повторение и запись результата в дневник.</p>
         </div>
@@ -201,7 +202,7 @@ export function SchoolHubClient() {
                 style={{ "--subject-color": item.color } as CSSProperties}
               >
                 <span className="subject-code">{item.code}</span>
-                <div><b>{item.name}</b><small>{item.gradeTopics[grade].join(" · ")}</small></div>
+                <div><b>{item.name}</b><small>{getSchoolTopics(item, grade).join(" · ")}</small></div>
                 <em>{progress}%</em>
                 <span className="subject-progress"><i style={{ width: `${progress}%` }} /></span>
               </button>
@@ -215,7 +216,7 @@ export function SchoolHubClient() {
           <span className="subject-code large">{subject.code}</span>
           <span className="exam-label">{grade} класс · {stageLabel}</span>
           <h2>{subject.name}</h2>
-          <p>{subject.gradeTopics[grade].join(" → ")}</p>
+          <p>{getSchoolTopics(subject, grade).join(" → ")}</p>
           <div className="bank-status">
             <b>{subject.authorTaskCount} авторских заданий подключено</b>
             <span>{subject.bankStatus === "expanded" ? "расширенный банк" : "стартовый банк — редакторское расширение продолжается"}</span>

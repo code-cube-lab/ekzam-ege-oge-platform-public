@@ -1,4 +1,4 @@
-export type SchoolGrade = 6 | 7 | 8 | 9 | 10 | 11;
+export type SchoolGrade = 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
 export type ExamRisk = {
   skill: string;
@@ -25,14 +25,36 @@ export type SubjectSchoolProfile = {
   authorTaskCount: number;
   bankStatus: "expanded" | "starter";
   methodologyUrl: string;
-  gradeTopics: Record<SchoolGrade, string[]>;
+  gradeTopics: Partial<Record<SchoolGrade, string[]>>;
   examRisks: ExamRisk[];
   teacherFocus: string;
   teacherMove: string;
   lesson: SubjectLesson;
 };
 
-export const schoolGrades: SchoolGrade[] = [6, 7, 8, 9, 10, 11];
+export const schoolGrades: SchoolGrade[] = [5, 6, 7, 8, 9, 10, 11];
+
+const gradeFiveTopics: Record<string, string[]> = {
+  russian: ["состав слова", "части речи", "текст и основная мысль"],
+  math: ["натуральные числа", "обыкновенные дроби", "геометрические фигуры"],
+  informatics: ["информация и код", "алгоритм по шагам", "безопасная работа в сети"],
+  physics: ["наблюдение и измерение", "масса, объём и время", "физика вокруг нас"],
+  chemistry: ["вещества и их свойства", "смеси и чистые вещества", "безопасность опыта"],
+  biology: ["клетка и организм", "царства живой природы", "наблюдение в природе"],
+  history: ["счёт лет в истории", "исторический источник", "Древний мир"],
+  social: ["человек и общество", "семья и школа", "правила и ответственность"],
+  geography: ["план и карта", "стороны горизонта", "оболочки Земли"],
+  literature: ["сюжет и герой", "тема и главная мысль", "выразительное чтение"],
+  english: ["семья и школа", "Present Simple", "чтение короткого текста"],
+  german: ["семья и школа", "Präsens", "простое предложение"],
+  french: ["семья и школа", "présent", "артикли"],
+  spanish: ["семья и школа", "presente", "ser и estar"],
+  chinese: ["пиньинь и тоны", "первые иероглифы", "простое предложение"],
+};
+
+export function getSchoolTopics(profile: SubjectSchoolProfile, grade: SchoolGrade) {
+  return profile.gradeTopics[grade] ?? gradeFiveTopics[profile.slug] ?? profile.gradeTopics[6] ?? [];
+}
 
 const egeMethodBase =
   "https://doc.fipi.ru/ege/analiticheskie-i-metodicheskie-materialy/2025";

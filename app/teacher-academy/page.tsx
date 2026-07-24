@@ -4,7 +4,7 @@ import { TeacherAcademyClient } from "../components/TeacherAcademyClient";
 export const metadata: Metadata = {
   title: "Академия педагога — методики по 15 предметам",
   description:
-    "Предметные методики 6–11 классов, типичные ошибки ЕГЭ, сценарии уроков и конструктор заданий для педагогов.",
+    "Предметные методики 5–11 классов, типичные ошибки ЕГЭ, сценарии уроков и конструктор заданий для педагогов.",
 };
 
 export default async function TeacherAcademyPage({

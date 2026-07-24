@@ -88,7 +88,7 @@ test("knowledge base keeps expert, levels and lesson cycle", async () => {
   assert.match(lesson, /nextStep/);
 });
 
-test("all 15 EGE subjects expose honest training and official flows", async () => {
+test("OGE and EGE subjects expose honest in-site sequential routes", async () => {
   const [catalog, bank, simulator, official] = await Promise.all([
     readFile(new URL("../knowledge-base/exams/exam-subjects.ts", import.meta.url), "utf8"),
     readFile(new URL("../knowledge-base/tasks/exam-demo-bank.ts", import.meta.url), "utf8"),
@@ -103,16 +103,20 @@ test("all 15 EGE subjects expose honest training and official flows", async () =
   for (const [, slug, body] of groups) assert.equal((body.match(/\("[a-z]+-\d+"/g) ?? []).length, 10, `${slug} must have ten tasks`);
   for (const kind of ["single", "multiple", "text", "number", "extended"]) assert.match(bank, new RegExp(`"${kind}"`));
   assert.match(simulator, /Все 15 предметов ЕГЭ/);
+  assert.match(simulator, /14 предметов ОГЭ/);
   assert.match(simulator, /getTrainingVariantTasks/);
+  assert.match(simulator, /getOgeRouteTasks/);
   assert.match(simulator, /getRussianFamilyTasks/);
   assert.match(simulator, /Отработка слабого места/);
   assert.match(simulator, /Отработать похожее/);
   assert.doesNotMatch(simulator, /trainingVariants|Выбор тренировочного варианта|Вариант 1/);
   assert.match(simulator, /subject\.fullTaskCount/);
-  assert.match(simulator, /Открытый материал ФИПИ/);
+  assert.match(simulator, /Экзаменационный маршрут/);
+  assert.match(simulator, /Без скачивания/);
+  assert.doesNotMatch(simulator, /Скачать и занести результат/);
   assert.match(simulator, /Сильные темы/);
   assert.match(simulator, /Слабые темы/);
-  assert.match(simulator, /не официальный балл ЕГЭ/);
+  assert.match(simulator, /не официальный балл/);
   assert.match(simulator, /!submitted \?/);
   assert.match(simulator, /task\.solution\.map/);
   assert.equal((official.match(/_1_ege2026\.zip/g) ?? []).length, 15);
@@ -218,7 +222,7 @@ test("six lightweight subject AI visuals are bundled", async () => {
   ]) await access(new URL(path, import.meta.url));
 });
 
-test("unified grade 6-11 school exposes all roles, subjects and honest diary", async () => {
+test("unified grade 5-11 school exposes all roles, subjects and honest diary", async () => {
   const [curriculum, school, schoolPage, css] = await Promise.all([
     readFile(new URL("../knowledge-base/curriculum/school-curriculum.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/SchoolHubClient.tsx", import.meta.url), "utf8"),
@@ -226,6 +230,8 @@ test("unified grade 6-11 school exposes all roles, subjects and honest diary", a
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
   assert.equal((curriculum.match(/^\s{4}slug: "/gm) ?? []).length, 15);
+  assert.match(curriculum, /schoolGrades: SchoolGrade\[\] = \[5, 6, 7, 8, 9, 10, 11\]/);
+  assert.match(curriculum, /const gradeFiveTopics/);
   for (const grade of [6, 7, 8, 9, 10, 11]) assert.match(curriculum, new RegExp(`\\n\\s+${grade}: \\[`));
   assert.equal((curriculum.match(/methodologyUrl:/g) ?? []).length, 16);
   assert.equal((curriculum.match(/^\s{4}bankStatus: "expanded"/gm) ?? []).length, 1);
@@ -256,6 +262,6 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
   assert.match(curriculum, /Прямая выдача Avito недоступна/);
   assert.match(curriculum, /Индексированная копия объявления/);
   assert.match(simulator, /subjectFocus/);
-  assert.match(simulator, /Они сгруппированы по трём умениям/);
-  assert.match(simulator, /расширенный авторский банк ещё проходит предметную редактуру/);
+  assert.match(simulator, /Задания сгруппированы по умениям/);
+  assert.match(simulator, /Расширенный авторский банк проходит предметную редактуру/);
 });

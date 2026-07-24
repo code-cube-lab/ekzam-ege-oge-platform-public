@@ -2,14 +2,15 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-07-23T19:29:35.8298005Z",
+    "updated_at":  "2026-07-24T00:00:00+03:00",
     "stages":  [
                    {
                        "name":  "intake",
                        "state":  "passed",
                        "evidence":  [
                                         "User replaced few variants with a large EGE task-type bank, immediate remediation after every task, and a paid teacher product",
-                                        "Scope expanded to a unified grade 6-11 school: 15 subjects, OGE/EGE preparation, adaptive practice, teacher academy, parent visibility, gamified progress and electronic diary preview"
+                                        "Scope expanded to a unified grade 5-11 school: 15 subjects, OGE/EGE preparation, adaptive practice, teacher academy, parent visibility, gamified progress and electronic diary preview",
+                                        "User required OGE and EGE tasks to run sequentially on the site without a mandatory download step"
                                     ],
                        "note":  ""
                    },
@@ -28,7 +29,8 @@
                        "state":  "passed",
                        "evidence":  [
                                         "Updated product-brief.md and acceptance-criteria.md for task-family practice and teacher product",
-                                        "Grade 6-11 curriculum contract, role model, school hub and teacher academy specified"
+                                        "Grade 5-11 curriculum contract, role model, school hub and teacher academy specified",
+                                        "Separate OGE and EGE in-site task routes specified with honest authored-content labels"
                                     ],
                        "note":  ""
                    },
@@ -37,7 +39,8 @@
                        "state":  "passed",
                        "evidence":  [
                                         "Built 105-task Russian family bank, inline remediation, public teacher builder and teacher pricing; production build passes",
-                                        "Built school hub, electronic diary demo, parent and teacher views, 15 subject curriculum profiles and grouped starter practice"
+                                        "Built school hub, electronic diary demo, parent and teacher views, 15 subject curriculum profiles and grouped starter practice",
+                                        "Added grade 5 foundations and sequential OGE/EGE route switching without mandatory downloads"
                                     ],
                        "note":  ""
                    },

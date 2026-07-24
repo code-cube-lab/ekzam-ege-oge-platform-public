@@ -57,6 +57,7 @@ export function ExamSimulatorClient({
   const schoolProfile = getSubjectSchoolProfile(subjectSlug);
   const family = getRussianTaskFamily(familyId);
   const authorBankSize = getRussianAuthorBankSize();
+  const levelLabel = level === "oge" ? "ОГЭ" : "ЕГЭ";
   const availableSubjects = examSubjects.filter((item) => level === "ege" || getSubjectSchoolProfile(item.slug).ogeAvailable);
   const tasks = useMemo(() => {
     const ogeBase = getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9));
@@ -172,7 +173,7 @@ export function ExamSimulatorClient({
       <div><span className="exam-label">Выберите предмет</span><b>{level === "oge" ? "14 предметов ОГЭ" : "Все 15 предметов ЕГЭ"}</b></div>
       <div className="exam-subject-scroll">
         {availableSubjects.map((item) => <button className={item.slug === subjectSlug ? "active" : ""} onClick={() => selectSubject(item.slug)} key={item.slug}>
-          <span>{item.shortName}</span><small>{item.exam}</small>
+          <span>{item.shortName}</span><small>{level === "oge" ? "ОГЭ · 9 класс" : item.exam}</small>
         </button>)}
       </div>
     </section>
@@ -190,7 +191,7 @@ export function ExamSimulatorClient({
         <button className={mode === "route" ? "active" : ""} onClick={() => selectMode("route")}><b>Экзаменационный маршрут</b><span>Задания идут одно за другим прямо на сайте</span></button>
       </div>
       {mode === "route" && <div className="route-bank-note">
-        <div><span className="exam-label">Без скачивания</span><b>{subject.name} · {level.toUpperCase()} · {tasks.length} заданий на сайте</b></div>
+        <div><span className="exam-label">Без скачивания</span><b>{subject.name} · {levelLabel} · {tasks.length} заданий на сайте</b></div>
         <p>Ребёнок отвечает здесь, сразу видит разбор и переходит к следующему заданию. Это авторский маршрут по открытой структуре ФИПИ, а не закрытый экзаменационный КИМ.</p>
       </div>}
       {mode === "training" && level === "ege" && subjectSlug === "russian" && <div className="family-bank">
@@ -202,7 +203,7 @@ export function ExamSimulatorClient({
         </div>
       </div>}
       {mode === "training" && (level === "oge" || subjectSlug !== "russian") && <div className="subject-bank-note grouped-bank">
-        <div><b>{subject.name}: стартовая практика {level.toUpperCase()}</b><span>Задания сгруппированы по умениям. Расширенный авторский банк проходит предметную редактуру; скачивать материалы для начала не нужно.</span></div>
+        <div><b>{subject.name}: стартовая практика {levelLabel}</b><span>Задания сгруппированы по умениям. Расширенный авторский банк проходит предметную редактуру; скачивать материалы для начала не нужно.</span></div>
         <div className="subject-focus-tabs" aria-label={`Умения: ${subject.name}`}>
           <button className={subjectFocus === "all" ? "active" : ""} onClick={() => { setSubjectFocus("all"); setIndex(0); resetAnswer(); }}>Все {tasks.length}</button>
           {level === "ege" && subject.focus.map((focus) => <button className={subjectFocus === focus ? "active" : ""} key={focus} onClick={() => { setSubjectFocus(focus); setIndex(0); resetAnswer(); }}>{focus}</button>)}
@@ -212,13 +213,13 @@ export function ExamSimulatorClient({
 
     <section className="exam-workspace">
       <aside className="exam-map">
-        <span className="exam-label light">{level.toUpperCase()} · {subject.name}</span>
+        <span className="exam-label light">{levelLabel} · {subject.name}</span>
         <h1>{mode === "route" ? "Решаем одно за другим" : level === "ege" && subjectSlug === "russian" ? `№ ${family.egeNumber} · ${family.title}` : "Практика по умениям"}</h1>
         <p className="exam-map-intro">{mode === "route"
           ? `${tasks.length} авторских заданий выполняются внутри платформы. После каждого ответа открывается разбор.`
           : level === "ege" && subjectSlug === "russian"
             ? `${family.category}. Серия из ${tasks.length} разных авторских заданий на одно проверяемое умение.`
-            : `Стартовый авторский набор: ${tasks.length} заданий для ${level.toUpperCase()}.`}</p>
+            : `Стартовый авторский набор: ${tasks.length} заданий для ${levelLabel}.`}</p>
         <div className="exam-progress"><span style={{ width: `${progress}%` }} /></div>
         <p>Выполнено {done} из {tasks.length} · верно {correct}</p>
         <nav aria-label={`Задания: ${subject.name}`}>
@@ -249,7 +250,7 @@ export function ExamSimulatorClient({
           {result === "correct" && <button className="button button-ghost next-similar" onClick={practiceSimilar}>Закрепить ещё одним похожим →</button>}
         </>}
         <div className="exam-nav"><button disabled={index === 0} onClick={() => move(-1)}>← Предыдущее</button><span>{index + 1} / {tasks.length}</span><button disabled={index === tasks.length - 1} onClick={() => move(1)}>Следующее →</button></div>
-        {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">{mode === "route" ? `Итог маршрута ${level.toUpperCase()}` : "Освоение типа"}</span><b>{accuracy >= 80 ? "Можно переходить дальше" : "Нужна отработка слабых тем"}</b><strong>{accuracy}% автоматически проверяемых ответов верны</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это учебная аналитика, а не официальный балл {level.toUpperCase()}.</span><p><b>Сильные темы:</b> {strongTopics.length ? strongTopics.slice(0, 3).join(", ") : "пока не выявлены"}.</p><p><b>Слабые темы:</b> {weakTopics.length ? weakTopics.slice(0, 3).join(", ") : "ошибок не выявлено"}.</p></div><Link className="button button-dark" href={lessonHref(subjectSlug, nextTopic)}>Открыть занятие →</Link></div>}
+        {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">{mode === "route" ? `Итог маршрута ${levelLabel}` : "Освоение типа"}</span><b>{accuracy >= 80 ? "Можно переходить дальше" : "Нужна отработка слабых тем"}</b><strong>{accuracy}% автоматически проверяемых ответов верны</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это учебная аналитика, а не официальный балл {levelLabel}.</span><p><b>Сильные темы:</b> {strongTopics.length ? strongTopics.slice(0, 3).join(", ") : "пока не выявлены"}.</p><p><b>Слабые темы:</b> {weakTopics.length ? weakTopics.slice(0, 3).join(", ") : "ошибок не выявлено"}.</p></div><Link className="button button-dark" href={lessonHref(subjectSlug, nextTopic)}>Открыть занятие →</Link></div>}
       </section>
     </section>
   </main>;

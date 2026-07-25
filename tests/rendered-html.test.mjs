@@ -314,9 +314,10 @@ test("embedded textbooks cover grades 5-11 and expose offline caching", async ()
   assert.match(library, /авторское учебное пособие/);
   assert.match(library, /gradeFiveFoundationBank/);
   assert.equal((foundations.match(/^  \w+: \[/gm) ?? []).length, 15);
-  assert.equal((foundations.match(/^\s{4}chapter\(/gm) ?? []).length, 45);
-  assert.equal((foundations.match(/^\s{6}challenge\(/gm) ?? []).length, 90);
+  assert.equal((foundations.match(/^\s{4}chapter\(/gm) ?? []).length, 51);
+  assert.equal((foundations.match(/^\s{6}challenge\(/gm) ?? []).length, 102);
   assert.match(foundations, /Состав слова: морфемное расследование/);
+  assert.match(foundations, /Основа предложения: синтаксический радар/);
   assert.match(foundations, /Геометрические фигуры: измерительная лаборатория/);
   assert.match(foundations, /Простое предложение: порядок слов/);
   assert.match(worker, /CACHE_NAME/);

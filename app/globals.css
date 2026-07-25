@@ -1662,14 +1662,28 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .library-subjects button { min-width: 0; min-height: 48px; padding: 8px 10px; border: 1px solid #c6ceda; background: white; color: var(--ink); display: flex; align-items: center; gap: 8px; text-align: left; cursor: pointer; font-size: 10px; font-weight: 800; }
 .library-subjects button > span { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; background: #edf0f5; font-size: 9px; }
 .library-subjects button.active { border-color: var(--subject-color); box-shadow: inset 4px 0 0 var(--subject-color); background: #fbfcff; }
+.mission-hud { width: min(100% - 32px,1280px); margin: 34px auto 0; display: grid; grid-template-columns: 1.3fr repeat(3,1fr); border: 1px solid #cbd3df; background: white; box-shadow: 7px 7px 0 #dce2eb; }
+.mission-hud > div { min-width: 0; padding: 17px 20px; display: grid; gap: 5px; border-right: 1px solid #d7dde6; }
+.mission-hud > div:last-child { border-right: 0; }
+.mission-hud span { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+.mission-hud strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.mission-hud > div:nth-child(3) strong { color: var(--violet); font-size: 22px; }
+.mission-hud > div:nth-child(4) strong { color: #ffb000; letter-spacing: .18em; }
 .book-reader { width: min(100% - 32px,1280px); margin: 48px auto 72px; display: grid; grid-template-columns: 340px minmax(0,1fr); align-items: start; box-shadow: 11px 11px 0 var(--subject-color); }
+.game-reader { margin-top: 24px; }
 .book-reader > aside { position: sticky; top: 12px; min-height: 680px; padding: 30px; background: var(--ink); color: white; }
 .book-reader > aside h2 { margin: 12px 0 22px; font-size: 32px; }
+.book-reader > aside .mission-count { margin: -12px 0 18px; color: var(--lime); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .book-reader > aside nav { display: grid; gap: 8px; }
 .book-reader > aside nav button { width: 100%; padding: 12px; border: 1px solid #42506a; background: #1b2940; color: white; display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 10px; text-align: left; cursor: pointer; }
 .book-reader > aside nav button > span { color: #8fa0b9; font-size: 11px; }
+.book-reader > aside nav button b { display: grid; gap: 4px; line-height: 1.2; }
+.book-reader > aside nav button small { color: #9daac0; font-size: 9px; font-weight: 650; }
 .book-reader > aside nav button.active { border-color: var(--lime); background: var(--lime); color: var(--ink); }
 .book-reader > aside nav button.active > span { color: #536235; }
+.book-reader > aside nav button.active small { color: #536235; }
+.book-reader > aside nav button.complete:not(.active) { border-color: #36c986; box-shadow: inset 4px 0 0 #36c986; }
+.book-reader > aside nav button.complete:not(.active) > span { color: #55e6a1; font-size: 16px; }
 .book-reader > aside > p { margin-top: 24px; color: #aeb9ca; font-size: 11px; line-height: 1.55; }
 .book-reader > article { min-width: 0; padding: 46px 52px; background: white; border: 1px solid #cbd3df; }
 .book-reader > article > h1 { margin: 10px 0 14px; font-size: clamp(44px,5vw,70px); line-height: .96; letter-spacing: -.045em; }
@@ -1677,6 +1691,13 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .rule-card { margin: 30px 0; padding: 22px; display: grid; gap: 8px; border-left: 6px solid var(--subject-color); background: #f0f3f7; }
 .rule-card span { color: var(--muted); font-size: 10px; font-weight: 850; text-transform: uppercase; }
 .rule-card strong { font-size: 20px; line-height: 1.45; }
+.mission-rule { padding: 28px; background: #eef2ff; border: 1px solid #cdd6ff; border-left: 7px solid var(--subject-color); }
+.mission-rule strong { font-size: clamp(21px,2.5vw,29px); line-height: 1.32; }
+.mission-rule p { margin: 6px 0 0; color: var(--muted); line-height: 1.5; }
+.mission-method { margin: 18px 0 30px; border: 1px solid #cbd3df; background: white; }
+.mission-method summary { padding: 15px 18px; cursor: pointer; font-weight: 850; }
+.mission-method[open] summary { border-bottom: 1px solid #cbd3df; background: #f5f7fa; }
+.mission-method .chapter-method { margin: 0; padding: 6px 20px 16px; }
 .chapter-method { margin: 18px 0 32px; padding: 0; display: grid; gap: 10px; list-style: none; }
 .chapter-method li { padding: 14px 0; display: grid; grid-template-columns: 40px 1fr; align-items: start; gap: 14px; border-bottom: 1px solid #d7dde6; }
 .chapter-method li > span { width: 34px; height: 34px; display: grid; place-items: center; background: var(--ink); color: white; font-weight: 850; }
@@ -1686,10 +1707,28 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .chapter-example h3,.chapter-check h3 { margin: 9px 0 12px; font-size: 24px; }
 .chapter-example p { line-height: 1.55; }
 .chapter-example blockquote { margin: 18px 0 0; padding: 17px; background: white; border-left: 4px solid var(--ink); font-weight: 750; }
+.mission-gate { margin-top: 28px; padding: 26px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 26px; border: 2px dashed #aab5c7; background: #f6f8fb; }
+.mission-gate span { color: var(--violet); font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.mission-gate h2 { margin: 7px 0; font-size: 26px; line-height: 1.12; }
+.mission-gate p { margin: 0; color: var(--muted); line-height: 1.5; }
 .chapter-check > div { margin: 18px 0; display: grid; gap: 8px; }
 .chapter-check > div button { padding: 13px; display: flex; align-items: center; gap: 12px; border: 1px solid #cbd3df; background: white; color: var(--ink); text-align: left; cursor: pointer; }
 .chapter-check > div button > span { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; background: #edf0f5; font-weight: 850; }
 .chapter-check > div button.selected { border-color: var(--violet); background: #edf1ff; }
+.mission-challenge { position: relative; overflow: hidden; border: 2px solid var(--ink); box-shadow: 8px 8px 0 var(--subject-color); }
+.mission-challenge::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--subject-color); }
+.mission-level { margin: 12px 0 20px !important; display: flex !important; grid-template-columns: none !important; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+.mission-level b { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.mission-level span { padding: 5px 9px; background: var(--lime); font-size: 10px; font-weight: 900; }
+.chapter-check > div button.right-answer { border-color: #13945b; background: #e6f7ed; }
+.chapter-check > div button.wrong-answer { border-color: #db4047; background: #ffeded; }
+.mission-feedback { margin: 24px -26px -26px !important; padding: 25px 26px 28px; display: block !important; border-top: 1px solid #cbd3df; }
+.mission-feedback.correct { background: #e6f7ed; color: #155f3e; }
+.mission-feedback.incorrect { background: #fff0ee; color: #7e292e; }
+.mission-feedback > span { font-size: 10px; font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+.mission-feedback h3 { margin: 8px 0 16px; font-size: 25px; }
+.mission-feedback p { margin: 9px 0; line-height: 1.55; }
+.mission-feedback .mission-actions { margin: 20px 0 0; display: flex; gap: 10px; }
 .check-result { padding: 16px; display: grid; gap: 5px; }
 .check-result.correct { background: #e6f7ed; color: #176942; }
 .check-result.incorrect { background: #ffeded; color: #982b32; }
@@ -1704,6 +1743,9 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 
 @media (max-width: 900px) {
   .library-subjects { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .mission-hud { grid-template-columns: repeat(2,1fr); }
+  .mission-hud > div:nth-child(2) { border-right: 0; }
+  .mission-hud > div:nth-child(-n+2) { border-bottom: 1px solid #d7dde6; }
   .book-reader { grid-template-columns: 260px minmax(0,1fr); }
   .book-reader > article { padding: 38px 30px; }
 }
@@ -1715,11 +1757,19 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .library-hero { width: calc(100% - 28px); padding: 48px 0; grid-template-columns: 1fr; gap: 28px; }
   .library-hero h1 { font-size: clamp(48px,14vw,68px); }
   .library-subjects { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .mission-hud { width: calc(100% - 28px); grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .mission-hud > div { padding: 14px 12px; }
+  .mission-hud strong { font-size: 12px; }
   .book-reader { width: calc(100% - 28px); margin: 32px auto 60px; grid-template-columns: 1fr; box-shadow: 7px 7px 0 var(--subject-color); }
   .book-reader > aside { position: static; min-height: auto; padding: 24px; }
   .book-reader > article { padding: 30px 22px; }
   .book-reader > article > h1 { font-size: 46px; }
   .chapter-example,.chapter-check,.chapter-selfcheck { padding: 20px; }
+  .mission-gate { padding: 22px; grid-template-columns: 1fr; }
+  .mission-gate .button { width: 100%; justify-content: center; }
+  .mission-feedback { margin: 22px -20px -20px !important; padding: 22px 20px; }
+  .mission-feedback .mission-actions,.mission-feedback .button { width: 100%; }
+  .mission-feedback .button { justify-content: center; }
   .licensed-books-note { width: calc(100% - 28px); padding: 24px; grid-template-columns: 1fr; gap: 16px; }
 }
 

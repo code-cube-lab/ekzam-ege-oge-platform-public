@@ -3,6 +3,10 @@ import {
   type SchoolGrade,
   type SubjectSchoolProfile,
 } from "./school-curriculum";
+import {
+  gradeFiveFoundationBank,
+  type FoundationChallenge,
+} from "./grade-five-foundations";
 
 export type TextbookChapter = {
   id: string;
@@ -10,6 +14,10 @@ export type TextbookChapter = {
   goal: string;
   keyRule: string;
   method: string[];
+  example: string;
+  counterExample: string;
+  challenge: FoundationChallenge;
+  retry: FoundationChallenge;
   selfCheck: string[];
 };
 
@@ -78,12 +86,49 @@ const subjectMethods: Record<string, { keyRule: string; method: string[] }> = {
 
 export function getTextbookChapters(profile: SubjectSchoolProfile, grade: SchoolGrade): TextbookChapter[] {
   const guide = subjectMethods[profile.slug] ?? subjectMethods.russian;
+  const foundations = grade === 5 ? gradeFiveFoundationBank[profile.slug] : undefined;
+
+  if (foundations?.length) {
+    return foundations.map((item, index) => ({
+      id: `${profile.slug}-${grade}-${index + 1}`,
+      title: item.title,
+      goal: item.goal,
+      keyRule: item.rule,
+      method: guide.method,
+      example: item.example,
+      counterExample: item.counterExample,
+      challenge: item.challenge,
+      retry: item.retry,
+      selfCheck: [
+        `Объясните правило главы «${item.title}» без подсказки.`,
+        "Составьте свой пример с другими словами, числами или объектами.",
+        "Вернитесь к миссии завтра, затем через 3 и 7 дней.",
+      ],
+    }));
+  }
+
   return getSchoolTopics(profile, grade).map((topic, index) => ({
     id: `${profile.slug}-${grade}-${index + 1}`,
     title: topic,
     goal: `Понять тему «${topic}», увидеть способ решения и выполнить самостоятельную проверку.`,
     keyRule: guide.keyRule,
     method: guide.method,
+    example: `${profile.lesson.theory} ${profile.lesson.example}`,
+    counterExample: `Типичная ошибка: ${profile.examRisks[index % profile.examRisks.length]?.signal ?? "ответ выбран без проверки способа"}.`,
+    challenge: {
+      prompt: profile.lesson.question,
+      options: profile.lesson.options,
+      answerIndex: profile.lesson.answerIndex,
+      misconception: profile.examRisks[index % profile.examRisks.length]?.signal ?? "Правило не было применено по шагам.",
+      explanation: profile.lesson.explanation,
+    },
+    retry: {
+      prompt: `Какой первый шаг надёжнее для новой задачи по теме «${topic}»?`,
+      options: [guide.method[0], guide.method[2], "Сразу выбрать похожий ответ по памяти"],
+      answerIndex: 0,
+      misconception: "Решение начинается с вычисления или угадывания, а не с анализа условия.",
+      explanation: `Сначала: ${guide.method[0].toLowerCase()} После этого можно переходить к следующему шагу.`,
+    },
     selfCheck: [
       `Объясните своими словами, что означает «${topic}».`,
       "Приведите один собственный пример и разберите его по шагам.",

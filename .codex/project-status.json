@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_path": "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-  "current_stage": "release",
-  "updated_at": "2026-07-26T08:12:00.000Z",
+  "current_stage": "release_blocked",
+  "updated_at": "2026-07-26T08:15:00.000Z",
   "stages": [
     {
       "name": "research",
@@ -34,10 +34,11 @@
     },
     {
       "name": "release",
-      "state": "in_progress",
+      "state": "blocked",
       "evidence": [
-        "Exact tested source is ready for commit and Sites versioning",
-        "Existing Sites project access must be rechecked before deployment"
+        "Exact tested source committed as 79b89445136d095a4db5ae713def738095f18559",
+        "Sites get_site returned 404 project_not_found for the persisted project ID",
+        "The previous public URL still serves the older textbook version and was not reported as updated"
       ]
     }
   ]

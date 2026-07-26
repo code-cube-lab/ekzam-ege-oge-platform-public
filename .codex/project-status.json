@@ -2,7 +2,7 @@
   "schema_version": 1,
   "project_path": "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
   "current_stage": "release_blocked",
-  "updated_at": "2026-07-26T08:15:00.000Z",
+  "updated_at": "2026-07-26T17:50:59.210Z",
   "stages": [
     {
       "name": "research",
@@ -19,26 +19,31 @@
         "Explicit OGE or EGE choice added to the first route and direct exam gate",
         "Public grade 5-11 school and textbook routes removed",
         "Russian OGE rebuilt as 12 authored 13-task variants",
-        "Russian EGE choices converted to exam-blank input and 12 full variants retained"
+        "Russian EGE choices converted to exam-blank input and 12 full variants retained",
+        "Telegram rebuilt as an exam-first flow with 15 EGE and 14 OGE subjects",
+        "Mini App rebuilt with Today, Variant, Mistakes and Profile sections",
+        "Telegram Stars webhook now subscribes to pre_checkout_query"
       ]
     },
     {
       "name": "qa",
       "state": "passed",
       "evidence": [
-        "29 of 29 automated regression tests passed",
-        "9 of 9 exam-format tests passed",
-        "25 of 25 Playwright browser checks passed",
-        "Desktop and 390x844 mobile screenshots inspected; no JavaScript errors or horizontal overflow"
+        "35 of 35 automated regression tests passed",
+        "10 of 10 exam-format tests passed",
+        "5 of 5 Telegram rebuild tests passed",
+        "29 of 29 Playwright browser checks passed",
+        "Desktop and 390x844 mobile screenshots inspected; Telegram Mini App has no JavaScript errors or horizontal overflow"
       ]
     },
     {
       "name": "release",
       "state": "blocked",
       "evidence": [
-        "Exact tested source committed as 79b89445136d095a4db5ae713def738095f18559",
+        "Exam-format base is committed; Telegram rebuild is locally verified and ready for commit",
         "Sites get_site returned 404 project_not_found for the persisted project ID",
-        "The previous public URL still serves the older textbook version and was not reported as updated"
+        "The previous public URL still serves the older textbook version and was not reported as updated",
+        "GitHub plugin has no connected account and gh is unavailable, so no GitHub remote can be created or pushed yet"
       ]
     }
   ]

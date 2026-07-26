@@ -2,6 +2,10 @@ import { env } from "cloudflare:workers";
 import {
   chooseDailyTask,
   findTask,
+  isExamTrack,
+  isSubjectTrack,
+  isTrackAvailable,
+  telegramSubjectCatalog,
   trackLabel,
   type DailyTask,
   type ExamTrack,
@@ -145,13 +149,18 @@ function parseTopics(value: unknown) {
 }
 
 function rowToStudent(row: Record<string, unknown>): TelegramStudent {
+  const exam: ExamTrack = row.exam_track === "oge" ? "oge" : "ege";
+  const storedSubject = String(row.subject_track ?? "russian");
+  const subject: SubjectTrack = isSubjectTrack(storedSubject) && isTrackAvailable(exam, storedSubject)
+    ? storedSubject
+    : "russian";
   return {
     telegramId: String(row.telegram_id),
     chatId: String(row.chat_id),
     firstName: String(row.first_name),
     username: row.username ? String(row.username) : null,
-    exam: row.exam_track === "oge" ? "oge" : "ege",
-    subject: row.subject_track === "literature" ? "literature" : "russian",
+    exam,
+    subject,
     weakTopics: parseTopics(row.weak_topics),
     lastScore: Number(row.last_score ?? 0),
     remindersEnabled: Number(row.reminders_enabled ?? 1) === 1,
@@ -185,6 +194,9 @@ export async function getTelegramStudent(telegramId: string) {
 }
 
 export async function setStudentTrack(telegramId: string, exam: ExamTrack, subject: SubjectTrack) {
+  if (!isExamTrack(exam) || !isSubjectTrack(subject) || !isTrackAvailable(exam, subject)) {
+    throw new Error("Unsupported Telegram exam track");
+  }
   await ensureTelegramSchema();
   await database().batch([
     database().prepare("UPDATE telegram_students SET exam_track = ?, subject_track = ?, weak_topics = '[]', updated_at = ? WHERE telegram_id = ?")
@@ -473,3 +485,5 @@ export async function sendTaskMessage(student: TelegramStudent, task?: DailyTask
 
 export function findTelegramTask(key: string) { return findTask(key); }
 export function studentTrackLabel(student: TelegramStudent) { return trackLabel(student.exam, student.subject); }
+export function getTelegramTrackCatalog() { return telegramSubjectCatalog; }
+export { isExamTrack, isSubjectTrack, isTrackAvailable };

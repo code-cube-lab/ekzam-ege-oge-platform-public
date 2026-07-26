@@ -1,4 +1,10 @@
-import { getTelegramAccess, getTelegramStudent, TELEGRAM_PRODUCT, verifyTelegramInitData } from "../../../lib/telegram";
+import {
+  getTelegramAccess,
+  getTelegramStudent,
+  getTelegramTrackCatalog,
+  TELEGRAM_PRODUCT,
+  verifyTelegramInitData,
+} from "../../../lib/telegram";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { initData?: string };
@@ -17,6 +23,7 @@ export async function POST(request: Request) {
       remindersEnabled: student?.remindersEnabled ?? true,
     },
     access,
+    subjects: getTelegramTrackCatalog(),
     product: { code: TELEGRAM_PRODUCT.code, title: TELEGRAM_PRODUCT.title, amount: TELEGRAM_PRODUCT.amount, currency: TELEGRAM_PRODUCT.currency, accessDays: TELEGRAM_PRODUCT.accessDays },
     verification: "telegram-init-data",
   });

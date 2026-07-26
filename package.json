@@ -11,6 +11,7 @@
     "start": "vinext start",
     "test": "pnpm run build && node --test",
     "qa:exam": "node --test tests/exam-format-qa.test.mjs tests/exam-variants.test.mjs",
+    "qa:telegram": "node --test tests/telegram-rebuild.test.mjs",
     "qa:browser": "node quality-assurance/run-browser-qa.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern work",
     "db:generate": "drizzle-kit generate"

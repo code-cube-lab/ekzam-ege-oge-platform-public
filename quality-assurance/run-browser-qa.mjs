@@ -127,6 +127,20 @@ try {
   assert(await mobilePage.locator(".exam-map h1").isVisible(), "мобильный ОГЭ показывает выбранный вариант");
   await mobilePage.screenshot({ path: path.join(outputDir, "oge-mobile.png"), fullPage: false });
 
+  await mobilePage.goto(`${baseUrl}/telegram`, { waitUntil: "networkidle" });
+  assert(await mobilePage.getByText("ПРЕДПРОСМОТР MINI APP").isVisible(), "Mini App без initData показывает честный предпросмотр");
+  assert(await mobilePage.locator(".telegram-exam-switch button").count() === 2, "в мобильном предпросмотре отдельно выбираются ОГЭ и ЕГЭ");
+  await mobilePage.locator(".telegram-exam-switch button").nth(0).click();
+  await mobilePage.locator(".telegram-subject-select select").selectOption("math");
+  const previewHref = await mobilePage.getByRole("link", { name: "Открыть вариант № 1" }).getAttribute("href");
+  assert(previewHref?.includes("level=oge") && previewHref.includes("subject=math"), "предпросмотр собирает ссылку на выбранные экзамен и предмет");
+  const telegramOverflow = await mobilePage.evaluate(() => ({
+    scroll: document.documentElement.scrollWidth,
+    client: document.documentElement.clientWidth,
+  }));
+  assert(telegramOverflow.scroll <= telegramOverflow.client, "Telegram Mini App 390 px не имеет горизонтального переполнения");
+  await mobilePage.screenshot({ path: path.join(outputDir, "telegram-mobile.png"), fullPage: false });
+
   await mobile.close();
   await desktop.close();
   assert(runtimeErrors.length === 0, "нет ошибок JavaScript в браузере");
@@ -141,6 +155,7 @@ try {
       "ege-desktop.png",
       "home-mobile.png",
       "oge-mobile.png",
+      "telegram-mobile.png",
     ],
   };
   await writeFile(path.join(outputDir, "browser-results.json"), JSON.stringify(result, null, 2));

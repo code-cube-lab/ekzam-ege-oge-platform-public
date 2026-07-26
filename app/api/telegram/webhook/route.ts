@@ -3,13 +3,17 @@ import {
   createTelegramStarsInvoice,
   deleteTelegramStudent,
   findTelegramTask,
-  getTelegramStudent,
   getTelegramAccess,
+  getTelegramStudent,
+  getTelegramTrackCatalog,
   hasPaidTelegramAccess,
+  isExamTrack,
+  isSubjectTrack,
+  isTrackAvailable,
   miniAppUrl,
+  recordSuccessfulTelegramPayment,
   recordTelegramAnswer,
   recordTelegramConsent,
-  recordSuccessfulTelegramPayment,
   sendTaskMessage,
   setReminders,
   setStudentTrack,
@@ -25,17 +29,32 @@ type Callback = { id: string; from: { id: number; first_name?: string; username?
 type PreCheckout = { id: string; from: { id: number }; currency: string; total_amount: number; invoice_payload: string };
 type Update = { message?: Message; callback_query?: Callback; pre_checkout_query?: PreCheckout };
 
-function trackKeyboard() {
+function examKeyboard() {
   return {
     inline_keyboard: [
-      [{ text: "ЕГЭ · Русский", callback_data: "track:ege:russian" }, { text: "ЕГЭ · Литература", callback_data: "track:ege:literature" }],
-      [{ text: "ОГЭ · Русский", callback_data: "track:oge:russian" }, { text: "ОГЭ · Литература", callback_data: "track:oge:literature" }],
+      [{ text: "ОГЭ · 9 класс", callback_data: "track:exam:oge" }],
+      [{ text: "ЕГЭ · 11 класс", callback_data: "track:exam:ege" }],
     ],
   };
 }
 
+function subjectKeyboard(exam: "oge" | "ege") {
+  const buttons = getTelegramTrackCatalog()
+    .filter((subject) => exam === "ege" || subject.ogeAvailable)
+    .map((subject) => ({ text: subject.shortName, callback_data: `track:subject:${subject.slug}` }));
+  return {
+    inline_keyboard: Array.from({ length: Math.ceil(buttons.length / 2) }, (_, index) => buttons.slice(index * 2, index * 2 + 2)),
+  };
+}
+
+function appLink(appUrl: string, tab = "today") {
+  const url = new URL(appUrl);
+  url.searchParams.set("tab", tab);
+  return url.toString();
+}
+
 export async function GET() {
-  return Response.json({ ok: true, service: "ekzam-telegram-webhook" });
+  return Response.json({ ok: true, service: "ekzam-telegram-webhook", flow: "exam-first" });
 }
 
 export async function POST(request: Request) {
@@ -64,21 +83,17 @@ async function handleMessage(message: Message, requestUrl: string) {
     if (!student) return;
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
-      text: `Здравствуйте, ${student.firstName}! Я бот школы «ЭКЗАМ». Каждый день дам одно короткое задание, разберу ответ и подберу следующий шаг.\n\nСначала выберите свой экзамен и предмет:`,
-      reply_markup: trackKeyboard(),
+      text: `Здравствуйте, ${student.firstName}! Это мобильный маршрут «ЭКЗАМ».\n\n1. Выберите ОГЭ или ЕГЭ.\n2. Выберите предмет.\n3. Решите полный вариант.\n4. Получайте короткие задания по своим ошибкам.`,
+      reply_markup: examKeyboard(),
     });
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
-      text: "В Mini App можно видеть личное задание и объяснение преподавателя.",
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "Открыть личный маршрут", web_app: { url: appUrl } }],
-          [{ text: "Задание на сегодня", callback_data: "today" }],
-        ],
-      },
+      text: "Mini App хранит маршрут, ошибки и ежедневную практику в одном окне.",
+      reply_markup: { inline_keyboard: [[{ text: "Открыть Mini App", web_app: { url: appLink(appUrl) } }]] },
     });
     return;
   }
+
   if (command === "/terms" && !existing?.consentedAt) {
     await telegramApi("sendMessage", { chat_id: String(message.chat.id), text: `Условия использования: ${new URL("/terms", requestUrl).toString()}` });
     return;
@@ -92,6 +107,7 @@ async function handleMessage(message: Message, requestUrl: string) {
     await sendConsentPrompt(String(message.chat.id), requestUrl);
     return;
   }
+
   const student = await upsertTelegramStudent(message.from, String(message.chat.id));
   if (!student) return;
   if (message.successful_payment) {
@@ -99,27 +115,68 @@ async function handleMessage(message: Message, requestUrl: string) {
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
       text: `✅ Оплата подтверждена Telegram. Персональная практика открыта до ${new Date(access.expiresAt).toLocaleDateString("ru-RU")}.`,
-      reply_markup: { inline_keyboard: [[{ text: "Открыть Mini App", web_app: { url: appUrl } }], [{ text: "Поддержка оплаты", url: new URL("/paysupport", requestUrl).toString() }]] },
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "Открыть Mini App", web_app: { url: appLink(appUrl) } }],
+          [{ text: "Поддержка оплаты", url: new URL("/paysupport", requestUrl).toString() }],
+        ],
+      },
     });
     return;
   }
+
   if (command === "/track") {
-    await telegramApi("sendMessage", { chat_id: student.chatId, text: `Сейчас выбрано: ${studentTrackLabel(student)}. Можно изменить:`, reply_markup: trackKeyboard() });
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: `Сейчас выбрано: ${studentTrackLabel(student)}.\n\nСначала выберите экзамен:`,
+      reply_markup: examKeyboard(),
+    });
     return;
   }
-  if (command === "/today") { await sendTaskMessage(student); return; }
+  if (command === "/exam") {
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: `${studentTrackLabel(student)}. Откройте полный вариант и решайте задания по одному:`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть полный вариант", web_app: { url: appLink(appUrl, "variant") } }]] },
+    });
+    return;
+  }
+  if (command === "/today") {
+    await sendTaskMessage(student);
+    return;
+  }
+  if (command === "/mistakes") {
+    const weak = student.weakTopics.length
+      ? student.weakTopics.map((topic, index) => `${index + 1}. ${topic}`).join("\n")
+      : "Ошибок для отработки пока нет. Сначала решите полный вариант или задание дня.";
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: `🧩 Темы для повторения\n\n${weak}`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть тетрадь ошибок", web_app: { url: appLink(appUrl, "mistakes") } }]] },
+    });
+    return;
+  }
   if (command === "/buy") {
     const invoice = await createTelegramStarsInvoice(student);
     if (invoice.status === "paid") {
       await telegramApi("sendMessage", { chat_id: student.chatId, text: "Доступ уже активен. Откройте Mini App командой /start." });
     } else {
-      await telegramApi("sendMessage", { chat_id: student.chatId, text: "Персональная практика на 30 дней — 199 ⭐. Доступ появится только после подтверждения Telegram.", reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] } });
+      await telegramApi("sendMessage", {
+        chat_id: student.chatId,
+        text: "Персональная практика на 30 дней — 199 ⭐. Доступ появится только после подтверждения Telegram.",
+        reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] },
+      });
     }
     return;
   }
   if (command === "/status") {
     const access = await getTelegramAccess(student.telegramId);
-    await telegramApi("sendMessage", { chat_id: student.chatId, text: access.status === "paid" ? `Доступ активен до ${new Date(access.expiresAt!).toLocaleDateString("ru-RU")}.` : "Платный доступ не активен. Оформить: /buy" });
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: access.status === "paid"
+        ? `Доступ активен до ${new Date(access.expiresAt!).toLocaleDateString("ru-RU")}.`
+        : "Платный доступ не активен. Оформить: /buy",
+    });
     return;
   }
   if (command === "/remind_on") {
@@ -136,7 +193,12 @@ async function handleMessage(message: Message, requestUrl: string) {
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
       text: "Удалить профиль, ответы, прогресс и расписание повторений? Это действие нельзя отменить.",
-      reply_markup: { inline_keyboard: [[{ text: "Да, удалить мои данные", callback_data: "delete:confirm" }], [{ text: "Отмена", callback_data: "delete:cancel" }]] },
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "Да, удалить мои данные", callback_data: "delete:confirm" }],
+          [{ text: "Отмена", callback_data: "delete:cancel" }],
+        ],
+      },
     });
     return;
   }
@@ -149,10 +211,21 @@ async function handleMessage(message: Message, requestUrl: string) {
     await telegramApi("sendMessage", { chat_id: student.chatId, text: `Поддержка: ${new URL(path, requestUrl).toString()}` });
     return;
   }
+
   await telegramApi("sendMessage", {
     chat_id: student.chatId,
-    text: "Команды: /today — задание, /track — экзамен и предмет, /buy — оплатить практику Stars, /status — срок доступа, /remind_on — включить ежедневную отправку, /remind_off — выключить, /paysupport — оплата.",
-    reply_markup: { inline_keyboard: [[{ text: "Открыть платформу", web_app: { url: appUrl } }]] },
+    text: [
+      "Команды:",
+      "/exam — полный ОГЭ/ЕГЭ-вариант",
+      "/today — короткое задание по маршруту",
+      "/mistakes — темы для повторения",
+      "/track — сменить экзамен и предмет",
+      "/buy — оплатить практику Stars",
+      "/status — проверить доступ",
+      "/remind_on и /remind_off — напоминания",
+      "/terms, /support, /paysupport — документы и помощь",
+    ].join("\n"),
+    reply_markup: { inline_keyboard: [[{ text: "Открыть Mini App", web_app: { url: appLink(appUrl) } }]] },
   });
 }
 
@@ -178,9 +251,16 @@ async function handleCallback(callback: Callback) {
     if (!created) return;
     const student = await recordTelegramConsent(created.telegramId, consentMatch[1] as "parent" | "adult_student");
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Согласие сохранено" });
-    if (student) await telegramApi("sendMessage", { chat_id: student.chatId, text: `Спасибо, ${student.firstName}. Теперь выберите экзамен и предмет:`, reply_markup: trackKeyboard() });
+    if (student) {
+      await telegramApi("sendMessage", {
+        chat_id: student.chatId,
+        text: `Спасибо, ${student.firstName}. Сначала выберите ОГЭ или ЕГЭ:`,
+        reply_markup: examKeyboard(),
+      });
+    }
     return;
   }
+
   const student = await getTelegramStudent(String(callback.from.id));
   if (!student?.consentedAt) {
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Сначала подтвердите согласие через /start", show_alert: true });
@@ -193,12 +273,33 @@ async function handleCallback(callback: Callback) {
   if (callback.data === "delete:confirm") {
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Данные удалены" });
     await deleteTelegramStudent(student.telegramId);
-    await telegramApi("sendMessage", { chat_id: student.chatId, text: "Ваш профиль, ответы и прогресс удалены. Открытые материалы остаются доступны. Чтобы начать заново, отправьте /start." });
+    await telegramApi("sendMessage", { chat_id: student.chatId, text: "Ваш профиль, ответы и прогресс удалены. Чтобы начать заново, отправьте /start." });
     return;
   }
-  const trackMatch = callback.data?.match(/^track:(oge|ege):(russian|literature)$/);
-  if (trackMatch) {
-    const updated = await setStudentTrack(student.telegramId, trackMatch[1] as "oge" | "ege", trackMatch[2] as "russian" | "literature");
+
+  const examMatch = callback.data?.match(/^track:exam:(oge|ege)$/);
+  if (examMatch && isExamTrack(examMatch[1])) {
+    const exam = examMatch[1];
+    const subject = isTrackAvailable(exam, student.subject) ? student.subject : "russian";
+    const updated = await setStudentTrack(student.telegramId, exam, subject);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: `${exam.toUpperCase()} выбран` });
+    if (updated) {
+      await telegramApi("sendMessage", {
+        chat_id: updated.chatId,
+        text: `${exam.toUpperCase()}: теперь выберите предмет.`,
+        reply_markup: subjectKeyboard(exam),
+      });
+    }
+    return;
+  }
+
+  const subjectMatch = callback.data?.match(/^track:subject:([a-z]+)$/);
+  if (subjectMatch && isSubjectTrack(subjectMatch[1])) {
+    if (!isTrackAvailable(student.exam, subjectMatch[1])) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Предмет недоступен для этого экзамена", show_alert: true });
+      return;
+    }
+    const updated = await setStudentTrack(student.telegramId, student.exam, subjectMatch[1]);
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Маршрут сохранён" });
     if (updated) {
       await telegramApi("sendMessage", { chat_id: updated.chatId, text: `✅ Выбрано: ${studentTrackLabel(updated)}. Начинаем с короткой диагностики.` });
@@ -206,6 +307,16 @@ async function handleCallback(callback: Callback) {
     }
     return;
   }
+
+  // Compatibility with buttons sent by the previous bot revision.
+  const legacyTrack = callback.data?.match(/^track:(oge|ege):([a-z]+)$/);
+  if (legacyTrack && isExamTrack(legacyTrack[1]) && isSubjectTrack(legacyTrack[2]) && isTrackAvailable(legacyTrack[1], legacyTrack[2])) {
+    const updated = await setStudentTrack(student.telegramId, legacyTrack[1], legacyTrack[2]);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Маршрут обновлён" });
+    if (updated) await sendTaskMessage(updated);
+    return;
+  }
+
   if (callback.data === "today") {
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id });
     await sendTaskMessage(student);
@@ -216,18 +327,28 @@ async function handleCallback(callback: Callback) {
     if (!(await hasPaidTelegramAccess(student.telegramId))) {
       const invoice = await createTelegramStarsInvoice(student);
       await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Следующие задания входят в персональный план", show_alert: true });
-      if (invoice.status !== "paid") await telegramApi("sendMessage", { chat_id: student.chatId, text: "Персональная практика на 30 дней — 199 ⭐.", reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] } });
+      if (invoice.status !== "paid") {
+        await telegramApi("sendMessage", {
+          chat_id: student.chatId,
+          text: "Персональная практика на 30 дней — 199 ⭐.",
+          reply_markup: { inline_keyboard: [[{ text: "Оплатить 199 ⭐", url: invoice.invoiceLink }]] },
+        });
+      }
       return;
     }
     await telegramApi("answerCallbackQuery", { callback_query_id: callback.id });
     await sendTaskMessage(student, undefined, nextMatch[1]);
     return;
   }
-  const match = callback.data?.match(/^a:([^:]+):(\d+)$/);
-  if (!match) return;
-  const task = findTelegramTask(match[1]);
-  if (!task) return;
-  const result = await recordTelegramAnswer(student, task, Number(match[2]));
+
+  const answerMatch = callback.data?.match(/^a:([^:]+):(\d+)$/);
+  if (!answerMatch) return;
+  const task = findTelegramTask(answerMatch[1]);
+  if (!task || task.exam !== student.exam || task.subject !== student.subject) {
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Задание относится к старому маршруту. Запросите /today.", show_alert: true });
+    return;
+  }
+  const result = await recordTelegramAnswer(student, task, Number(answerMatch[2]));
   await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: result.correct ? "Верно!" : "Разберём ответ" });
   await telegramApi("sendMessage", {
     chat_id: student.chatId,

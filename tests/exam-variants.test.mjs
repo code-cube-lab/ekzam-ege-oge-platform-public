@@ -68,6 +68,10 @@ test("student audit passes every training variant for all 15 subjects", async ()
       assert.equal(new Set(tasks.map(signature)).size, tasks.length, `${slug} v${variant}: no repeated task-answer pairs`);
       assert.ok(tasks.every((task) => !task.prompt.includes("Тренировочная параллель")), `${slug} v${variant}: old clone marker removed`);
       for (const task of tasks) {
+        assert.ok(task.prompt.trim().length >= 10, `${task.id}: non-empty prompt`);
+        assert.ok(task.solution.length > 0 && task.solution.every((step) => step.trim().length >= 5), `${task.id}: usable solution`);
+        assert.ok(typeof task.answer === "string" ? task.answer.trim().length > 0 : task.answer.length > 0, `${task.id}: non-empty answer`);
+        if (task.options) assert.equal(new Set(task.options).size, task.options.length, `${task.id}: no duplicate options`);
         if (task.kind === "single") assert.ok(task.options.includes(task.answer), `${task.id}: answer exists in options`);
         if (task.kind === "multiple") assert.ok(task.answer.every((answer) => task.options.includes(answer)), `${task.id}: all answers exist in options`);
       }
@@ -144,4 +148,20 @@ test("Russian EGE choices are answered through the exam blank, not clickable gue
   assert.ok(tasksWithOptions.every((task) => task.interaction === "exam-blank"));
   assert.ok(tasksWithOptions.every((task) => task.kind === "text"));
   assert.ok(tasksWithOptions.every((task) => /^\d+$/.test(task.answer)));
+});
+
+test("every subject has a non-repeating Telegram daily practice pool", async () => {
+  const bank = await loadSeedBank();
+  for (const [subject, tasks] of Object.entries(bank)) {
+    const autoChecked = tasks.filter((task) => task.kind === "single" || task.kind === "number");
+    assert.ok(autoChecked.length >= 2, `${subject}: at least two daily tasks`);
+    for (const task of autoChecked) {
+      if (task.kind === "single") {
+        assert.equal(new Set(task.options).size, task.options.length, `${task.id}: unique options`);
+        assert.ok(task.options.includes(task.answer), `${task.id}: answer exists`);
+      } else {
+        assert.ok(Number.isFinite(Number(String(task.answer).replace(",", "."))), `${task.id}: numeric answer`);
+      }
+    }
+  }
 });

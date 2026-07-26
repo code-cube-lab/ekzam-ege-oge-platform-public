@@ -1,10 +1,22 @@
 param(
     [string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot),
-    [string]$Endpoint = "https://slovo-ege-ai-2026.altheasolwold3296.chatgpt.site/api/telegram/daily"
+    [string]$Endpoint = ""
 )
 
 $ErrorActionPreference = "Stop"
 $secretPath = Join-Path $ProjectRoot ".local-secrets\daily-trigger.xml"
+
+if ([string]::IsNullOrWhiteSpace($Endpoint)) {
+    $publicAppUrl = [Environment]::GetEnvironmentVariable("PUBLIC_APP_URL")
+    if ([string]::IsNullOrWhiteSpace($publicAppUrl)) {
+        throw "Pass -Endpoint or set PUBLIC_APP_URL. The script no longer uses a stale deployment URL."
+    }
+    $Endpoint = "$($publicAppUrl.TrimEnd('/'))/api/telegram/daily"
+}
+
+if (-not $Endpoint.StartsWith('https://')) {
+    throw "Endpoint must use HTTPS."
+}
 
 if (-not (Test-Path -LiteralPath $secretPath)) {
     throw "Daily trigger secret was not found. Run the one-time setup first."

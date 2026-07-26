@@ -71,8 +71,8 @@ test("Telegram endpoints validate identity and delivery secrets", async () => {
 test("daily task selection prioritizes weak topics", async () => {
   const source = await readFile(new URL("../knowledge-base/tasks/task-bank.ts", import.meta.url), "utf8");
   assert.match(source, /weakTopics\.includes\(task\.topic\)/);
-  assert.match(source, /Аргументация сочинения/);
-  assert.match(source, /Пунктуация/);
+  assert.match(source, /getDemoTasks\(subject\)/);
+  assert.match(source, /examSubjects\.flatMap/);
   assert.match(source, /exam === exam && task\.subject === subject/);
 });
 

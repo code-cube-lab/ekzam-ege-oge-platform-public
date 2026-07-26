@@ -10,6 +10,8 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "pnpm run build && node --test",
+    "qa:exam": "node --test tests/exam-format-qa.test.mjs tests/exam-variants.test.mjs",
+    "qa:browser": "node quality-assurance/run-browser-qa.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern work",
     "db:generate": "drizzle-kit generate"
   },
@@ -30,6 +32,7 @@
     "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
+    "playwright": "1.58.2",
     "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",

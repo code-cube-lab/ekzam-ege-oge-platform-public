@@ -9,8 +9,7 @@ export function AppNav({ active, name = "Алексей" }: AppNavProps) {
         <span className="brand-mark">Э</span><span>ЭКЗАМ</span>
       </Link>
       <nav className="side-links" aria-label="Кабинет">
-        <a className="side-link" href="/school"><span>▤</span>Школа 5–11</a>
-        <a className="side-link" href="/textbooks"><span>▦</span>Учебники</a>
+        <a className="side-link" href="/exam"><span>▤</span>ОГЭ / ЕГЭ</a>
         <a className={`side-link ${active === "home" ? "active" : ""}`} href="/dashboard"><span>⌂</span>Главная</a>
         <a className={`side-link ${active === "diagnostic" ? "active" : ""}`} href="/dashboard#diagnostic"><span>◎</span>Диагностика</a>
         <a className={`side-link ${active === "coach" ? "active" : ""}`} href="/dashboard#coach"><span>✦</span>AI-помощник</a>

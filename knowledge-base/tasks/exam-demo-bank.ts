@@ -8,10 +8,14 @@ export type ExamTask = {
   number: string;
   kind: ExamTaskKind;
   format: string;
+  interaction?: "choice" | "exam-blank";
+  answerOrder?: "fixed" | "any";
   topic?: string;
   familyId?: string;
   theory?: string;
   stimulus?: string;
+  audioText?: string;
+  maxPlays?: number;
   minWords?: number;
   prompt: string;
   options?: string[];

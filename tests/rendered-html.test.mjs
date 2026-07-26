@@ -2,17 +2,20 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("landing is parent-first, shows 15 subjects and researched prices", async () => {
-  const [page, layout] = await Promise.all([
+test("landing starts with an explicit OGE or EGE choice and explains prices", async () => {
+  const [page, entry, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ExamEntryClient.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
   ]);
-  assert.match(page, /Ребёнок готовится/);
+  assert.match(entry, /Что сдаёт ребёнок/);
+  assert.match(page, /ОГЭ/);
+  assert.match(page, /ЕГЭ/);
   assert.match(page, /За что платит родитель/);
-  assert.match(page, /15 предметов ЕГЭ/);
+  assert.match(page, /ExamEntryClient/);
   assert.match(page, /1 490 ₽/);
   assert.match(page, /4 490 ₽/);
-  assert.match(page, /7 990 ₽/);
+  assert.match(page, /0 ₽/);
   assert.doesNotMatch(page, /Олег|Кабинет директора|директор школы/i);
   assert.match(layout, /ЭКЗАМ/);
   assert.doesNotMatch(`${page}\n${layout}`, /codex-preview|react-loading-skeleton/i);
@@ -89,9 +92,10 @@ test("knowledge base keeps expert, levels and lesson cycle", async () => {
 });
 
 test("OGE and EGE subjects expose honest in-site sequential routes", async () => {
-  const [catalog, bank, simulator, official] = await Promise.all([
+  const [catalog, bank, ogeBank, simulator, official] = await Promise.all([
     readFile(new URL("../knowledge-base/exams/exam-subjects.ts", import.meta.url), "utf8"),
     readFile(new URL("../knowledge-base/tasks/exam-demo-bank.ts", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/tasks/oge-demo-bank.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
     readFile(new URL("../knowledge-base/exams/official-variants.ts", import.meta.url), "utf8"),
   ]);
@@ -106,6 +110,10 @@ test("OGE and EGE subjects expose honest in-site sequential routes", async () =>
   assert.match(simulator, /14 предметов ОГЭ/);
   assert.match(simulator, /getTrainingVariantTasks/);
   assert.match(simulator, /getOgeRouteTasks/);
+  assert.match(simulator, /Сначала выберите экзамен/);
+  assert.match(simulator, /exam-static-options/);
+  assert.match(simulator, /Ответ для бланка/);
+  assert.match(simulator, /speechSynthesis/);
   assert.match(simulator, /getRussianFamilyTasks/);
   assert.match(simulator, /Отработка слабого места/);
   assert.match(simulator, /Отработать похожее/);
@@ -126,6 +134,10 @@ test("OGE and EGE subjects expose honest in-site sequential routes", async () =>
   assert.match(simulator, /task\.solution\.map/);
   assert.equal((official.match(/_1_ege2026\.zip/g) ?? []).length, 15);
   assert.doesNotMatch(bank, /Тренировочная параллель/);
+  assert.match(ogeBank, /getRussianOgeVariantTasks/);
+  assert.match(ogeBank, /сжатое изложение/);
+  assert.match(ogeBank, /сочинение 13\.1 \/ 13\.2 \/ 13\.3/);
+  assert.match(ogeBank, /maxPlays: 2/);
 });
 
 test("interactive learning explanation separates automation, neural feedback and teacher review", async () => {
@@ -243,30 +255,17 @@ test("six lightweight subject AI visuals are bundled", async () => {
   ]) await access(new URL(path, import.meta.url));
 });
 
-test("unified grade 5-11 school exposes all roles, subjects and honest diary", async () => {
-  const [curriculum, school, schoolPage, css] = await Promise.all([
-    readFile(new URL("../knowledge-base/curriculum/school-curriculum.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/components/SchoolHubClient.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/school/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+test("public product no longer exposes grade-five school or textbooks", async () => {
+  const [home, nav, manifest] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/AppNav.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/manifest.ts", import.meta.url), "utf8"),
   ]);
-  assert.equal((curriculum.match(/^\s{4}slug: "/gm) ?? []).length, 15);
-  assert.match(curriculum, /schoolGrades: SchoolGrade\[\] = \[5, 6, 7, 8, 9, 10, 11\]/);
-  assert.match(curriculum, /const gradeFiveTopics/);
-  for (const grade of [6, 7, 8, 9, 10, 11]) assert.match(curriculum, new RegExp(`\\n\\s+${grade}: \\[`));
-  assert.equal((curriculum.match(/methodologyUrl:/g) ?? []).length, 16);
-  assert.equal((curriculum.match(/^\s{4}bankStatus: "expanded"/gm) ?? []).length, 1);
-  assert.equal((curriculum.match(/^\s{4}bankStatus: "starter"/gm) ?? []).length, 14);
-  assert.match(school, /Ученик/);
-  assert.match(school, /Родитель/);
-  assert.match(school, /Педагог/);
-  assert.match(school, /демо-данные/);
-  assert.match(school, /Реальный доступ родителя/);
-  assert.match(school, /Проверить и получить XP/);
-  assert.match(schoolPage, /SchoolHubClient/);
-  assert.match(css, /\.school-hub/);
-  assert.match(css, /@media \(max-width: 390px\)/);
-  assert.match(css, /\.exam-paper::after[^}]*pointer-events: none/);
+  assert.doesNotMatch(`${home}\n${nav}`, /href=["']\/(?:textbooks|school)/i);
+  assert.match(manifest, /подготовка к ОГЭ и ЕГЭ/);
+  assert.match(manifest, /start_url: "\/"/);
+  await assert.rejects(access(new URL("../app/school/page.tsx", import.meta.url)));
+  await assert.rejects(access(new URL("../app/textbooks/page.tsx", import.meta.url)));
 });
 
 test("teacher academy contains 15 methods, FIPI evidence and market limitations", async () => {
@@ -277,7 +276,7 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
     readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
   ]);
   assert.match(academyPage, /TeacherAcademyClient/);
-  assert.match(academy, /Академия педагога · 15 предметов/);
+  assert.match(academy, /Академия педагога · ОГЭ и ЕГЭ/);
   assert.match(academy, /Ошибки участников ЕГЭ-2025/);
   assert.match(academy, /Семь обязательных шагов/);
   assert.match(academy, /Цены репетиторов Москвы/);
@@ -288,44 +287,21 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
   assert.match(simulator, /Расширенный авторский банк проходит предметную редактуру/);
 });
 
-test("embedded textbooks cover grades 5-11 and expose offline caching", async () => {
-  const [page, client, library, foundations, worker, layout, home, school] = await Promise.all([
-    readFile(new URL("../app/textbooks/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/components/TextbookLibraryClient.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../knowledge-base/curriculum/textbook-library.ts", import.meta.url), "utf8"),
-    readFile(new URL("../knowledge-base/curriculum/grade-five-foundations.ts", import.meta.url), "utf8"),
-    readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+test("exam-only landing and simulator have mobile-responsive QA hooks", async () => {
+  const [home, entry, simulator, css] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/components/SchoolHubClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ExamEntryClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
-  assert.match(page, /TextbookLibraryClient/);
-  assert.match(client, /Учебники внутри платформы · 5–11 классы/);
-  assert.match(client, /Сохранить для офлайн/);
-  assert.match(client, /subjectSchoolProfiles\.map/);
-  assert.match(client, /schoolGrades\.map/);
-  assert.match(client, /caches\.open/);
-  assert.match(client, /Сначала правило/);
-  assert.match(client, /Новая задача на перенос/);
-  assert.match(client, /Диагноз:/);
-  assert.match(client, /Почему:/);
-  assert.match(client, /Решить другое похожее/);
-  assert.ok(client.indexOf("Сначала правило") < client.indexOf("Самостоятельная попытка"), "rule must render before task");
-  assert.match(library, /авторское учебное пособие/);
-  assert.match(library, /gradeFiveFoundationBank/);
-  assert.equal((foundations.match(/^  \w+: \[/gm) ?? []).length, 15);
-  assert.equal((foundations.match(/^\s{4}chapter\(/gm) ?? []).length, 51);
-  assert.equal((foundations.match(/^\s{6}challenge\(/gm) ?? []).length, 102);
-  assert.match(foundations, /Состав слова: морфемное расследование/);
-  assert.match(foundations, /Основа предложения: синтаксический радар/);
-  assert.match(foundations, /Геометрические фигуры: измерительная лаборатория/);
-  assert.match(foundations, /Простое предложение: порядок слов/);
-  assert.match(worker, /CACHE_NAME/);
-  assert.match(worker, /ekzam-offline-v3/);
-  assert.match(worker, /request\.mode === "navigate"/);
-  assert.match(layout, /OfflineServiceWorker/);
-  assert.match(home, /data-testid="textbooks-entry"/);
-  assert.match(home, /Учебники уже внутри платформы/);
-  assert.match(home, /Открыть библиотеку/);
-  assert.match(school, /data-testid="school-textbooks-entry"/);
+  assert.match(home, /ExamEntryClient/);
+  assert.match(entry, /id="exam-start"/);
+  assert.match(entry, /aria-pressed/);
+  assert.match(entry, /Полный вариант/);
+  assert.match(entry, /Практика по номеру/);
+  assert.match(entry, /Мои ошибки/);
+  assert.match(simulator, /exam-passport/);
+  assert.match(css, /@media \(max-width: 640px\)/);
+  assert.match(css, /\.exam-static-options/);
+  assert.match(css, /\.exam-audio-task/);
 });

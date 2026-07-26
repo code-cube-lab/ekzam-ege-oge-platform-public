@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ЭКЗАМ — школа 5–11",
+    name: "ЭКЗАМ — подготовка к ОГЭ и ЕГЭ",
     short_name: "ЭКЗАМ",
-    description: "Учебники, задания ОГЭ и ЕГЭ и дневник в одной платформе.",
-    start_url: "/school",
+    description: "Пробные варианты ОГЭ и ЕГЭ, разбор ошибок и персональная отработка.",
+    start_url: "/",
     display: "standalone",
     background_color: "#f3f5f8",
     theme_color: "#111e33",

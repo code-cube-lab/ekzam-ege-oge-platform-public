@@ -24,8 +24,19 @@ async function loadSeedBank() {
   return context.exports.demoTasksBySubject;
 }
 
+async function loadOgeBank() {
+  const source = await readFile(new URL("../knowledge-base/tasks/oge-demo-bank.ts", import.meta.url), "utf8");
+  const withoutImport = source.replace(/^import .*exam-demo-bank";\r?\n/m, "");
+  const javascript = ts.transpileModule(withoutImport, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const context = { exports: {}, getDemoTasks: () => [] };
+  vm.runInNewContext(javascript, context);
+  return context.exports;
+}
+
 function signature(task) {
-  return JSON.stringify([task.prompt, task.options ?? [], task.answer]);
+  return JSON.stringify([task.prompt, task.stimulus ?? "", task.audioText ?? "", task.options ?? [], task.answer]);
 }
 
 test("student audit passes every training variant for all 15 subjects", async () => {
@@ -103,4 +114,34 @@ test("Russian type bank contains 105 distinct authored tasks grouped by EGE skil
   });
   assert.equal(all.length, 105);
   assert.equal(new Set(all.map((task) => task.id)).size, 105);
+});
+
+test("twelve Russian OGE routes follow the official 13-task structure", async () => {
+  const { getRussianOgeVariantTasks } = await loadOgeBank();
+  const variants = Array.from({ length: 12 }, (_, index) => getRussianOgeVariantTasks(index + 1));
+  assert.equal(variants.length, 12);
+  for (const [variantIndex, tasks] of variants.entries()) {
+    assert.equal(tasks.length, 13, `OGE v${variantIndex + 1}: 13 tasks`);
+    assert.deepEqual(Array.from(tasks, (task) => task.number), Array.from({ length: 13 }, (_, index) => `Задание ${index + 1}`));
+    assert.equal(tasks[0].kind, "extended");
+    assert.equal(tasks[0].minWords, 70);
+    assert.ok(tasks[0].audioText.length > 300);
+    assert.equal(tasks[0].maxPlays, 2);
+    assert.ok(tasks.slice(1, 12).every((task) => task.interaction === "exam-blank"));
+    assert.ok(tasks.slice(1, 12).every((task) => typeof task.answer === "string"));
+    assert.equal(tasks[12].kind, "extended");
+    assert.equal(tasks[12].minWords, 70);
+    assert.equal(new Set(tasks.map((task) => task.id)).size, 13);
+  }
+  assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
+});
+
+test("Russian EGE choices are answered through the exam blank, not clickable guessing", async () => {
+  const bank = await loadSeedBank();
+  const tasks = buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, 1);
+  const tasksWithOptions = tasks.filter((task) => task.options?.length);
+  assert.ok(tasksWithOptions.length > 10);
+  assert.ok(tasksWithOptions.every((task) => task.interaction === "exam-blank"));
+  assert.ok(tasksWithOptions.every((task) => task.kind === "text"));
+  assert.ok(tasksWithOptions.every((task) => /^\d+$/.test(task.answer)));
 });

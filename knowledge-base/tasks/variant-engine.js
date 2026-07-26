@@ -246,6 +246,24 @@ function rotate(items, shift) {
   return [...items.slice(offset), ...items.slice(0, offset)];
 }
 
+function toExamBlank(task) {
+  if (!task?.options?.length || (task.kind !== "single" && task.kind !== "multiple")) return task;
+  const answers = Array.isArray(task.answer) ? task.answer : [task.answer];
+  const answer = answers
+    .map((item) => task.options.findIndex((option) => option === item) + 1)
+    .filter((index) => index > 0)
+    .sort((a, b) => a - b)
+    .join("");
+  return {
+    ...task,
+    kind: "text",
+    interaction: "exam-blank",
+    answerOrder: answers.length > 1 ? "any" : "fixed",
+    answer,
+    format: answers.length > 1 ? "последовательность цифр" : "цифра",
+  };
+}
+
 function russianTextTask(index, variant) {
   const source = russianTextCases[(variant - 1) % russianTextCases.length];
   const common = {
@@ -265,7 +283,7 @@ function russianTextTask(index, variant) {
 }
 
 function russianTask(index, variant) {
-  if (index <= 2 || (index >= 22 && index <= 25)) return russianTextTask(index, variant);
+  if (index <= 2 || (index >= 22 && index <= 25)) return toExamBlank(russianTextTask(index, variant));
   const source = russianTextCases[(variant - 1) % russianTextCases.length];
   if (index === 26) {
     return {
@@ -284,7 +302,7 @@ function russianTask(index, variant) {
   }
   if (index === 7) {
     const [start, options, answer] = grammarCases[(variant - 1) % grammarCases.length];
-    return {
+    return toExamBlank({
       id: `russian-v${variant}-8`,
       subject: "Русский язык",
       number: "Задание 8",
@@ -296,7 +314,7 @@ function russianTask(index, variant) {
       options: rotate(options, variant),
       answer,
       solution: ["Действие деепричастия и сказуемого должен выполнять один субъект."],
-    };
+    });
   }
   const familyByIndex = {
     3: "stress",
@@ -321,11 +339,11 @@ function russianTask(index, variant) {
   const family = getRussianTaskFamily(familyByIndex[index]);
   const familyIndex = (variant + index - 1) % family.count;
   const task = buildFamilyTask(family, familyIndex);
-  return {
+  return toExamBlank({
     ...task,
     id: `russian-v${variant}-${index + 1}`,
     number: `Задание ${index + 1}`,
-  };
+  });
 }
 
 const prefixPrompts = [
@@ -427,7 +445,7 @@ export function getRussianTaskFamily(familyId = "stress") {
 export function getRussianFamilyTasks(familyId = "stress", limit) {
   const family = getRussianTaskFamily(familyId);
   const count = Math.min(family.count, Number(limit) > 0 ? Number(limit) : family.count);
-  return Array.from({ length: count }, (_, index) => buildFamilyTask(family, index));
+  return Array.from({ length: count }, (_, index) => toExamBlank(buildFamilyTask(family, index)));
 }
 
 export function getRussianAuthorBankSize() {

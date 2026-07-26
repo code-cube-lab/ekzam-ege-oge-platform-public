@@ -20,8 +20,9 @@ type ExamLevel = "oge" | "ege";
 const RUSSIAN_VARIANT_COUNT = 12;
 const MISTAKE_STORAGE_KEY = "ekzam-mistakes-v1";
 
-function normal(value: string) {
-  return value.trim().toLowerCase().replace(/ё/g, "е").replace(/,/g, ".").replace(/\s+/g, "");
+function normal(value: string, order: ExamTask["answerOrder"] = "fixed") {
+  const cleaned = value.trim().toLowerCase().replace(/ё/g, "е").replace(/,/g, ".").replace(/\s+/g, "");
+  return order === "any" && /^\d+$/.test(cleaned) ? [...cleaned].sort().join("") : cleaned;
 }
 
 function lessonHref(subject: string, topic: string) {
@@ -41,10 +42,11 @@ export function ExamSimulatorClient({
   initialSubject = "russian",
   initialFamily = "stress",
   initialCount = 0,
-  initialLevel = "ege",
+  initialLevel,
   initialVariant = 1,
   initialMode = "route",
 }: Props) {
+  const [examChosen, setExamChosen] = useState(() => initialLevel === "oge" || initialLevel === "ege");
   const [subjectSlug, setSubjectSlug] = useState(() => {
     const requested = getExamSubject(initialSubject).slug;
     return initialLevel === "oge" && !getSubjectSchoolProfile(requested).ogeAvailable ? "russian" : requested;
@@ -58,6 +60,7 @@ export function ExamSimulatorClient({
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const [written, setWritten] = useState("");
+  const [audioPlays, setAudioPlays] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<Record<string, ResultState>>({});
   const [mistakeIds, setMistakeIds] = useState<string[]>([]);
@@ -66,6 +69,8 @@ export function ExamSimulatorClient({
   const family = getRussianTaskFamily(familyId);
   const authorBankSize = getRussianAuthorBankSize();
   const levelLabel = level === "oge" ? "ОГЭ" : "ЕГЭ";
+  const durationMinutes = level === "oge" && subjectSlug === "russian" ? 235 : level === "ege" && subjectSlug === "russian" ? 210 : undefined;
+  const partCount = level === "oge" && subjectSlug === "russian" ? 3 : level === "ege" && subjectSlug === "russian" ? 2 : undefined;
   const availableSubjects = examSubjects.filter((item) => level === "ege" || getSubjectSchoolProfile(item.slug).ogeAvailable);
 
   useEffect(() => {
@@ -81,10 +86,14 @@ export function ExamSimulatorClient({
   }, []);
 
   const tasks = useMemo(() => {
-    const ogeBase = getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9));
+    const ogeBase = getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9), variantId);
     if (mode === "mistakes") {
       const bank = level === "oge"
-        ? ogeBase
+        ? subjectSlug === "russian"
+          ? Array.from({ length: RUSSIAN_VARIANT_COUNT }, (_, variant) =>
+              getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9), variant + 1),
+            ).flat()
+          : ogeBase
         : subjectSlug === "russian"
           ? Array.from({ length: RUSSIAN_VARIANT_COUNT }, (_, variant) =>
               getTrainingVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus, variant + 1),
@@ -130,6 +139,7 @@ export function ExamSimulatorClient({
     setSelected([]);
     setWritten("");
     setSubmitted(false);
+    setAudioPlays(0);
   }
 
   function selectSubject(slug: string) {
@@ -147,6 +157,7 @@ export function ExamSimulatorClient({
   }
 
   function selectLevel(next: ExamLevel) {
+    setExamChosen(true);
     setLevel(next);
     setVariantId(1);
     if (next === "oge" && !getSubjectSchoolProfile(subjectSlug).ogeAvailable) setSubjectSlug("russian");
@@ -177,12 +188,22 @@ export function ExamSimulatorClient({
     }
   }
 
+  function playAudio() {
+    if (!task.audioText || audioPlays >= (task.maxPlays ?? 2) || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(task.audioText);
+    utterance.lang = "ru-RU";
+    utterance.rate = 0.86;
+    window.speechSynthesis.speak(utterance);
+    setAudioPlays((count) => count + 1);
+  }
+
   function submit() {
     let state: ResultState = "incorrect";
     if (task.kind === "extended") state = task.minWords ? wordCount >= task.minWords ? "review" : "incorrect" : written.trim().length >= minimumLength ? "review" : "incorrect";
     else if (Array.isArray(task.answer)) state = [...selected].sort().join("|") === [...task.answer].sort().join("|") ? "correct" : "incorrect";
     else if (task.kind === "single") state = selected[0] === task.answer ? "correct" : "incorrect";
-    else state = normal(written) === normal(task.answer) ? "correct" : "incorrect";
+    else state = normal(written, task.answerOrder) === normal(task.answer, task.answerOrder) ? "correct" : "incorrect";
     setResults((items) => ({ ...items, [task.id]: state }));
     const nextMistakes = state === "incorrect"
       ? [...new Set([...mistakeIds, task.id])]
@@ -214,8 +235,27 @@ export function ExamSimulatorClient({
     resetAnswer();
   }
 
-  const hasAnswer = task && (task.kind === "single" || task.kind === "multiple" ? selected.length > 0 : written.trim().length > 0);
+  const hasAnswer = task && (task.interaction !== "exam-blank" && (task.kind === "single" || task.kind === "multiple") ? selected.length > 0 : written.trim().length > 0);
   const result = task ? results[task.id] : undefined;
+
+  if (!examChosen) {
+    return <main className="exam-gate">
+      <header className="exam-sim-top">
+        <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
+        <div><b>Сначала выберите экзамен</b><span>ОГЭ и ЕГЭ откроются как две разные системы заданий</span></div>
+        <Link className="button button-ghost button-small" href="/">На главную</Link>
+      </header>
+      <section className="exam-gate-panel" aria-labelledby="exam-gate-title">
+        <span className="exam-label">Шаг 1 из 2</span>
+        <h1 id="exam-gate-title">Что сдаёт ребёнок?</h1>
+        <p>Выберите только один формат. После этого откроются предметы, полный вариант, практика по номеру и тетрадь ошибок.</p>
+        <div>
+          <button type="button" onClick={() => selectLevel("oge")}><span>9 класс</span><b>ОГЭ</b><small>Русский: 13 заданий · 235 минут · 3 части</small><em>Выбрать ОГЭ →</em></button>
+          <button type="button" onClick={() => selectLevel("ege")}><span>11 класс</span><b>ЕГЭ</b><small>Русский: 27 заданий · 210 минут · 2 части</small><em>Выбрать ЕГЭ →</em></button>
+        </div>
+      </section>
+    </main>;
+  }
 
   if (mode === "mistakes" && !task) {
     return <main className="exam-simulator">
@@ -259,20 +299,20 @@ export function ExamSimulatorClient({
       </div>
       <div className="exam-mode-tabs" aria-label="Режим работы">
         <button className={mode === "training" ? "active" : ""} onClick={() => selectMode("training")}><b>Практика по типу</b><span>Серия одного умения до закрепления</span></button>
-        <button className={mode === "route" ? "active" : ""} onClick={() => selectMode("route")}><b>Пробный вариант</b><span>27 линий идут одно за другим прямо на сайте</span></button>
+        <button className={mode === "route" ? "active" : ""} onClick={() => selectMode("route")}><b>Пробный вариант</b><span>{level === "oge" ? "13 заданий и три части" : "27 заданий и две части"} прямо на сайте</span></button>
         <button className={mode === "mistakes" ? "active" : ""} onClick={() => selectMode("mistakes")}><b>Мои ошибки · {mistakeIds.length}</b><span>Только неверные задания до повторного успеха</span></button>
       </div>
-      {mode === "route" && level === "ege" && subjectSlug === "russian" && <div className="variant-picker">
-        <div><span className="exam-label">12 пробных вариантов</span><b>Русский язык · ЕГЭ-2026 · вариант № {variantId}</b><small>Авторские задания выстроены по 27 линиям актуальной структуры. Это не закрытые КИМ.</small></div>
+      {mode === "route" && subjectSlug === "russian" && <div className="variant-picker">
+        <div><span className="exam-label">12 пробных вариантов</span><b>Русский язык · {levelLabel}-2026 · вариант № {variantId}</b><small>Авторские задания выстроены по официальной структуре: {level === "oge" ? "13 заданий, три части" : "27 заданий, две части"}. Это не закрытые КИМ.</small></div>
         <div className="exam-variant-tabs" aria-label="Пробные варианты русского языка">
           {Array.from({ length: RUSSIAN_VARIANT_COUNT }, (_, item) => item + 1).map((item) =>
-            <button key={item} className={variantId === item ? "active" : ""} onClick={() => selectVariant(item)}><b>№ {item}</b><span>27 заданий</span></button>,
+            <button key={item} className={variantId === item ? "active" : ""} onClick={() => selectVariant(item)}><b>№ {item}</b><span>{level === "oge" ? "13" : "27"} заданий</span></button>,
           )}
         </div>
       </div>}
       {mode === "route" && <div className="route-bank-note">
         <div><span className="exam-label">Без скачивания</span><b>{subject.name} · {levelLabel} · {tasks.length} заданий на сайте</b></div>
-        <p>Ребёнок отвечает здесь, сразу видит разбор и переходит к следующему заданию. В русском языке линии 1–27 идут в тематическом порядке экзамена; отдельные задания адаптированы для поочерёдной тренировки и не копируют бланк КИМ.</p>
+        <p>Ребёнок отвечает здесь, сразу видит разбор и переходит к следующему заданию. В русском языке задания идут в порядке выбранного экзамена, а поле ответа повторяет требуемый тип: слово, число, последовательность цифр или развёрнутая работа.</p>
       </div>}
       {mode === "training" && level === "ege" && subjectSlug === "russian" && <div className="family-bank">
         <div className="family-bank-head"><div><span className="exam-label">Банк по линиям ЕГЭ-2026</span><b>{authorBankSize} авторских заданий · {russianTaskFamilies.length} типов</b></div><small>Без копирования закрытых КИМ. Основа: спецификация, навигатор и методические рекомендации ФИПИ.</small></div>
@@ -295,6 +335,7 @@ export function ExamSimulatorClient({
       <aside className="exam-map">
         <span className="exam-label light">{levelLabel} · {subject.name}</span>
         <h1>{mode === "route" ? `Вариант № ${variantId}` : mode === "mistakes" ? "Тетрадь ошибок" : level === "ege" && subjectSlug === "russian" ? `№ ${family.egeNumber} · ${family.title}` : "Практика по умениям"}</h1>
+        {mode === "route" && subjectSlug === "russian" && <div className="exam-passport"><span><b>{tasks.length}</b> заданий</span><span><b>{durationMinutes}</b> минут</span><span><b>{partCount}</b> части</span></div>}
         <p className="exam-map-intro">{mode === "route"
           ? `${tasks.length} авторских заданий выполняются внутри платформы. После каждого ответа открывается разбор.`
           : mode === "mistakes"
@@ -315,11 +356,16 @@ export function ExamSimulatorClient({
 
       <section className="exam-paper">
         <div className="exam-paper-head"><div><span>{task.subject}</span><b>{task.number} · попытка {index + 1} из {tasks.length}</b></div><em>{task.format}</em></div>
+        {task.audioText && <div className="exam-audio-task">
+          <div><span>Текст для изложения</span><b>Прослушивание {audioPlays} из {task.maxPlays ?? 2}</b><small>Используется голосовое воспроизведение авторского текста в браузере.</small></div>
+          <button type="button" disabled={audioPlays >= (task.maxPlays ?? 2)} onClick={playAudio}>{audioPlays ? "Прослушать ещё раз" : "Включить текст"} →</button>
+        </div>}
         {task.stimulus && <article className="exam-stimulus"><span>Текст к заданиям</span><p>{task.stimulus}</p></article>}
         <h2>{task.prompt}</h2>
-        {task.options && <div className="exam-options">{task.options.map((option, optionIndex) => <button className={selected.includes(option) ? "selected" : ""} disabled={submitted} onClick={() => choose(option)} key={`${option}-${optionIndex}`}><span>{optionIndex + 1}</span>{option}</button>)}</div>}
-        {(task.kind === "text" || task.kind === "number") && <label className="exam-input"><span>Ответ для бланка</span><input disabled={submitted} value={written} onChange={(event) => setWritten(event.target.value)} placeholder={task.kind === "number" ? "Только число" : "Без лишних знаков"} /></label>}
-        {task.kind === "extended" && <label className="exam-input"><span>Развёрнутый ответ</span><textarea disabled={submitted} value={written} onChange={(event) => setWritten(event.target.value)} placeholder="Позиция → два примера → связь → своё отношение" /><small>{task.minWords ? `${wordCount} слов · минимум ${task.minWords} слов` : `${written.trim().length} знаков · минимум ${minimumLength} для отправки на проверку`}</small></label>}
+        {task.options && task.interaction === "exam-blank" && <ol className="exam-static-options">{task.options.map((option, optionIndex) => <li key={`${option}-${optionIndex}`}><span>{optionIndex + 1}</span><p>{option}</p></li>)}</ol>}
+        {task.options && task.interaction !== "exam-blank" && <div className="exam-options">{task.options.map((option, optionIndex) => <button className={selected.includes(option) ? "selected" : ""} disabled={submitted} onClick={() => choose(option)} key={`${option}-${optionIndex}`}><span>{optionIndex + 1}</span>{option}</button>)}</div>}
+        {(task.interaction === "exam-blank" || task.kind === "text" || task.kind === "number") && <label className="exam-input"><span>Ответ для бланка</span><input disabled={submitted} value={written} onChange={(event) => setWritten(event.target.value)} placeholder={task.kind === "number" ? "Только число" : task.answerOrder === "fixed" ? "Порядок символов важен" : "Без пробелов, запятых и лишних знаков"} /></label>}
+        {task.kind === "extended" && <label className="exam-input"><span>Развёрнутый ответ</span><textarea disabled={submitted} value={written} onChange={(event) => setWritten(event.target.value)} placeholder={level === "oge" && index === 0 ? "Сжатое изложение: микротемы → главное → связный текст" : "Тезис → примеры → объяснение → вывод"} /><small>{task.minWords ? `${wordCount} слов · минимум ${task.minWords} слов` : `${written.trim().length} знаков · минимум ${minimumLength} для отправки на проверку`}</small></label>}
         {!submitted ? <button className="button button-red" disabled={!hasAnswer} onClick={submit}>Проверить решение</button> : <>
           <div className={`exam-solution ${result}`}><div className="solution-title"><span>{result === "correct" ? "Верно" : result === "review" ? "Принято на проверку" : "Есть ошибка"}</span><b>Разбор ответа</b></div><ol>{task.solution.map((step) => <li key={step}>{step}</li>)}</ol></div>
           <section className="verification-lanes" aria-label="Кто проверяет ответ">

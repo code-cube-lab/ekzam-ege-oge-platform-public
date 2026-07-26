@@ -48,6 +48,7 @@ export default defineConfig(async () => {
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
       host: "127.0.0.1",
       port: 4173,
+      allowedHosts: [".loca.lt"],
     },
     plugins: [
       vinext(),

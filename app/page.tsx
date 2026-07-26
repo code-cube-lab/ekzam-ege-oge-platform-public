@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { examSubjects } from "../knowledge-base/exams/exam-subjects";
 import { ExamEntryClient } from "./components/ExamEntryClient";
 
 const workflow = [
   {
     number: "01",
-    title: "Выберите экзамен",
-    text: "ОГЭ и ЕГЭ не смешиваются. У каждого режима своё количество заданий, время, части и правила ответа.",
+    title: "Выберите экзамен и предмет",
+    text: "ОГЭ и ЕГЭ не смешиваются. После выбора формата ребёнок открывает один из 14 предметов ОГЭ или 15 предметов ЕГЭ.",
     href: "#exam-start",
     action: "Выбрать формат",
   },
@@ -37,6 +38,7 @@ export default function Home() {
         </Link>
         <nav aria-label="Основная навигация">
           <Link href="/exam">Задания</Link>
+          <a href="#subjects">Все предметы</a>
           <Link href="/for-teachers">Педагогам</Link>
           <Link href="/how-it-works">Как учит система</Link>
           <a href="#plans">Стоимость</a>
@@ -46,15 +48,15 @@ export default function Home() {
 
       <section className="exam-home-hero">
         <div className="exam-home-copy">
-          <span className="exam-kicker">ОГЭ / ЕГЭ · авторская практика · ФИПИ-2026</span>
-          <h1>Не угадывать.<br /><em>Решать как на экзамене.</em></h1>
-          <p>Сначала ребёнок выбирает ОГЭ или ЕГЭ. Затем решает полный вариант прямо на сайте, получает разбор каждой ошибки и повторяет слабый тип на новом материале.</p>
+          <span className="exam-kicker">Все предметы ОГЭ / ЕГЭ · авторская практика · ФИПИ-2026</span>
+          <h1>Все предметы.<br /><em>Один путь к экзамену.</em></h1>
+          <p>Русский, математика, информатика, физика, химия, биология, история, обществознание, география, литература и иностранные языки. Ребёнок выбирает свой экзамен, решает задания на сайте, получает разбор ошибок и повторяет слабые темы.</p>
         </div>
         <ExamEntryClient />
         <div className="exam-home-facts" aria-label="Факты о тренажёре">
-          <div><strong>13</strong><span>заданий в русском ОГЭ</span></div>
-          <div><strong>27</strong><span>заданий в русском ЕГЭ</span></div>
-          <div><strong>12 × 2</strong><span>авторских вариантов для старта</span></div>
+          <div><strong>14</strong><span>предметов ОГЭ на выбор</span></div>
+          <div><strong>15</strong><span>предметов ЕГЭ на выбор</span></div>
+          <div><strong>1</strong><span>система разбора и повторения ошибок</span></div>
         </div>
       </section>
 
@@ -66,11 +68,29 @@ export default function Home() {
         <span>Отчёт родителю</span>
       </section>
 
+      <section className="exam-subject-showcase" id="subjects" aria-labelledby="subjects-title">
+        <div>
+          <span className="exam-kicker">Вся платформа на первом экране</span>
+          <h2 id="subjects-title">Выберите свой предмет.</h2>
+          <p>Русский язык показан ниже только как наглядный пример экзаменационного задания. Сама платформа рассчитана на все предметы ОГЭ и ЕГЭ.</p>
+        </div>
+        <div className="exam-subject-links">
+          {examSubjects.map((subject, index) => (
+            <Link href={`/exam?subject=${subject.slug}`} key={subject.slug}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <b>{subject.name}</b>
+              <small>{subject.ogeAvailable ? "ОГЭ · ЕГЭ" : "ЕГЭ"}</small>
+            </Link>
+          ))}
+        </div>
+        <Link className="exam-subject-cta" href="/subjects">Посмотреть программу по всем предметам →</Link>
+      </section>
+
       <section className="exam-home-section" id="method">
         <div className="exam-section-heading">
           <span className="exam-kicker">Понятный маршрут</span>
-          <h2>Один экзамен.<br />Три шага до прогресса.</h2>
-          <p>На первом экране нет учебников, классов и смешанных тестов. Только выбор экзамена и работа по его структуре.</p>
+          <h2>Один выбранный предмет.<br />Три шага до прогресса.</h2>
+          <p>Ребёнок не получает смешанный тест. Он выбирает ОГЭ или ЕГЭ, затем нужный предмет и работает по его структуре.</p>
         </div>
         <div className="exam-workflow-grid">
           {workflow.map((item) => (
@@ -86,10 +106,10 @@ export default function Home() {
 
       <section className="exam-answer-demo" aria-labelledby="answer-demo-title">
         <div className="exam-answer-demo-copy">
-          <span className="exam-kicker light">Форма задания</span>
+          <span className="exam-kicker light">Пример: русский язык</span>
           <h2 id="answer-demo-title">Варианты видны.<br />Ответ вводится цифрами.</h2>
-          <p>Если инструкция говорит «запишите номера ответов», ученик не нажимает цветные карточки. Он сам вводит последовательность — именно это умение проверяет экзаменационный бланк.</p>
-          <Link className="button button-signal" href="/exam?level=ege&subject=russian&mode=route">Попробовать русский ЕГЭ →</Link>
+          <p>Ниже показан один пример по русскому. Для каждого предмета платформа подбирает свой формат ответа: число, слово, последовательность, решение, устную или развёрнутую работу.</p>
+          <Link className="button button-signal" href="#exam-start">Выбрать экзамен и предмет →</Link>
         </div>
         <div className="exam-sheet-demo" aria-label="Пример экзаменационного задания">
           <div className="exam-sheet-head"><span>Русский язык · ЕГЭ</span><b>Задание 4</b><em>краткий ответ</em></div>

@@ -287,15 +287,81 @@ export function getRussianOgeVariantTasks(variantId = 1): ExamTask[] {
 export function getOgeRouteTasks(subjectSlug: string, topics: string[], variantId = 1): ExamTask[] {
   if (subjectSlug === "russian") return getRussianOgeVariantTasks(variantId);
   const seeds = getDemoTasks(subjectSlug);
-  const count = Math.min(seeds.length, subjectSlug === "math" ? 10 : 10);
+  const profiles: Record<string, { count: number; extendedFrom?: number }> = {
+    math: { count: 25, extendedFrom: 20 },
+    informatics: { count: 16, extendedFrom: 13 },
+    physics: { count: 22, extendedFrom: 18 },
+    chemistry: { count: 23, extendedFrom: 20 },
+    biology: { count: 26, extendedFrom: 23 },
+    history: { count: 24, extendedFrom: 21 },
+    social: { count: 24, extendedFrom: 21 },
+    geography: { count: 30, extendedFrom: 27 },
+    literature: { count: 5, extendedFrom: 1 },
+    english: { count: 38, extendedFrom: 35 },
+    german: { count: 38, extendedFrom: 35 },
+    french: { count: 38, extendedFrom: 35 },
+    spanish: { count: 38, extendedFrom: 35 },
+  };
+  const profile = profiles[subjectSlug] ?? { count: Math.max(10, seeds.length) };
+  const automaticSeeds = seeds.filter((task) => task.kind !== "extended");
+  const extendedSeeds = seeds.filter((task) => task.kind === "extended");
 
-  return Array.from({ length: count }, (_, index) => {
-    const seed = seeds[(index + variantId - 1) % seeds.length];
-    return {
+  return Array.from({ length: profile.count }, (_, index) => {
+    const line = index + 1;
+    const needsExtended = Boolean(profile.extendedFrom && line >= profile.extendedFrom);
+    const pool = needsExtended && extendedSeeds.length ? extendedSeeds : automaticSeeds.length ? automaticSeeds : seeds;
+    const seed = pool[(index + variantId - 1) % Math.max(1, pool.length)];
+    const common: ExamTask = {
       ...seed,
-      id: `oge-${subjectSlug}-v${variantId}-${index + 1}`,
-      number: `Задание ${index + 1}`,
+      id: `oge-${subjectSlug}-v${variantId}-${line}`,
+      number: `Задание ${line}`,
       topic: topics[index % Math.max(1, topics.length)] ?? seed.topic ?? seed.format,
+      examYear: 2026,
+      sourceLabel: "Авторское задание по структуре и проверяемому умению ФИПИ-2026",
+      difficulty: needsExtended ? "высокий" : line > Math.ceil(profile.count * 0.55) ? "повышенный" : "базовый",
+      theory: seed.theory ?? "Выпишите данные, определите проверяемое умение и проверьте ответ по исходному условию.",
+      prompt: `${seed.prompt} Выполните линию ${line} в формате экзаменационного бланка; учитывайте все ограничения условия.`,
+    };
+    if (needsExtended) {
+      return {
+        ...common,
+        kind: "extended",
+        format: subjectSlug === "literature" ? "развёрнутый литературоведческий ответ" : "развёрнутое решение",
+        interaction: undefined,
+        options: undefined,
+        answer: "teacher-review",
+        responseInstruction: "Запишите полное решение и итоговый вывод.",
+        solution: [...seed.solution, "Итоговую оценку развёрнутого ответа выполняет преподаватель по предметным критериям."],
+      };
+    }
+    if (!common.options?.length || (common.kind !== "single" && common.kind !== "multiple")) {
+      return {
+        ...common,
+        interaction: "exam-blank",
+        responseInstruction: common.kind === "number" ? "Запишите только число." : "Запишите ответ без пробелов и лишних знаков.",
+      };
+    }
+    const options = [...common.options];
+    while (options.length < 5) options.push(`Вывод ${options.length + 1} не следует из условия задания ${line}`);
+    const shift = (variantId + index) % options.length;
+    const rotated = [...options.slice(shift), ...options.slice(0, shift)];
+    const sourceAnswers = Array.isArray(common.answer) ? common.answer : [common.answer];
+    const answer = sourceAnswers
+      .map((item) => rotated.findIndex((option) => option === item) + 1)
+      .filter((position) => position > 0)
+      .sort((a, b) => a - b)
+      .join("");
+    return {
+      ...common,
+      kind: "text",
+      format: sourceAnswers.length > 1 ? "последовательность цифр" : "цифра",
+      interaction: "exam-blank",
+      answerOrder: sourceAnswers.length > 1 ? "any" : "fixed",
+      options: rotated,
+      answer,
+      responseInstruction: sourceAnswers.length > 1
+        ? "Запишите номера всех выбранных позиций слитно."
+        : "Запишите номер выбранной позиции.",
     };
   });
 }

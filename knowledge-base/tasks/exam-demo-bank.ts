@@ -10,6 +10,10 @@ export type ExamTask = {
   format: string;
   interaction?: "choice" | "exam-blank";
   answerOrder?: "fixed" | "any";
+  examYear?: number;
+  sourceLabel?: string;
+  responseInstruction?: string;
+  difficulty?: "базовый" | "повышенный" | "высокий";
   topic?: string;
   familyId?: string;
   theory?: string;

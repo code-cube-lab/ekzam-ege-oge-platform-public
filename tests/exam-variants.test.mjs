@@ -24,13 +24,13 @@ async function loadSeedBank() {
   return context.exports.demoTasksBySubject;
 }
 
-async function loadOgeBank() {
+async function loadOgeBank(getDemoTasks = () => []) {
   const source = await readFile(new URL("../knowledge-base/tasks/oge-demo-bank.ts", import.meta.url), "utf8");
   const withoutImport = source.replace(/^import .*exam-demo-bank";\r?\n/m, "");
   const javascript = ts.transpileModule(withoutImport, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  const context = { exports: {}, getDemoTasks: () => [] };
+  const context = { exports: {}, getDemoTasks };
   vm.runInNewContext(javascript, context);
   return context.exports;
 }
@@ -63,7 +63,7 @@ test("student audit passes every training variant for all 15 subjects", async ()
   for (const [slug, fullCount, topics] of subjects) {
     for (const variant of Array.from({ length: 12 }, (_, index) => index + 1)) {
       const tasks = buildTrainingVariant(slug, fullCount, topics, bank[slug], variant);
-      assert.equal(tasks.length, slug === "russian" ? 27 : 10, `${slug} v${variant}: task count`);
+      assert.equal(tasks.length, fullCount, `${slug} v${variant}: full official task count`);
       assert.equal(new Set(tasks.map((task) => task.id)).size, tasks.length, `${slug} v${variant}: unique ids`);
       assert.equal(new Set(tasks.map(signature)).size, tasks.length, `${slug} v${variant}: no repeated task-answer pairs`);
       assert.ok(tasks.every((task) => !task.prompt.includes("Тренировочная параллель")), `${slug} v${variant}: old clone marker removed`);
@@ -71,6 +71,8 @@ test("student audit passes every training variant for all 15 subjects", async ()
         assert.ok(task.prompt.trim().length >= 10, `${task.id}: non-empty prompt`);
         assert.ok(task.solution.length > 0 && task.solution.every((step) => step.trim().length >= 5), `${task.id}: usable solution`);
         assert.ok(typeof task.answer === "string" ? task.answer.trim().length > 0 : task.answer.length > 0, `${task.id}: non-empty answer`);
+        assert.equal(task.examYear, 2026, `${task.id}: exam year`);
+        assert.match(task.sourceLabel, /ФИПИ-2026/, `${task.id}: honest source label`);
         if (task.options) assert.equal(new Set(task.options).size, task.options.length, `${task.id}: no duplicate options`);
         if (task.kind === "single") assert.ok(task.options.includes(task.answer), `${task.id}: answer exists in options`);
         if (task.kind === "multiple") assert.ok(task.answer.every((answer) => task.options.includes(answer)), `${task.id}: all answers exist in options`);
@@ -140,6 +142,24 @@ test("twelve Russian OGE routes follow the official 13-task structure", async ()
   assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
 });
 
+test("all OGE subjects expose complete 2026 routes instead of ten demo questions", async () => {
+  const bank = await loadSeedBank();
+  const { getOgeRouteTasks } = await loadOgeBank((slug) => bank[slug] ?? bank.russian);
+  const profiles = [
+    ["math", 25], ["informatics", 16], ["physics", 22], ["chemistry", 23], ["biology", 26],
+    ["history", 24], ["social", 24], ["geography", 30], ["literature", 5],
+    ["english", 38], ["german", 38], ["french", 38], ["spanish", 38],
+  ];
+  for (const [slug, count] of profiles) {
+    const tasks = getOgeRouteTasks(slug, ["основы", "анализ", "применение"], 3);
+    assert.equal(tasks.length, count, `${slug}: complete OGE route`);
+    assert.equal(new Set(tasks.map((task) => task.id)).size, count, `${slug}: unique ids`);
+    assert.ok(tasks.every((task) => task.examYear === 2026), `${slug}: current exam year`);
+    assert.ok(tasks.filter((task) => task.options).every((task) => task.options.length >= 5), `${slug}: no reduced choice cards`);
+    assert.ok(tasks.some((task) => task.kind === "extended"), `${slug}: extended response section`);
+  }
+});
+
 test("Russian EGE choices are answered through the exam blank, not clickable guessing", async () => {
   const bank = await loadSeedBank();
   const tasks = buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, 1);
@@ -148,6 +168,43 @@ test("Russian EGE choices are answered through the exam blank, not clickable gue
   assert.ok(tasksWithOptions.every((task) => task.interaction === "exam-blank"));
   assert.ok(tasksWithOptions.every((task) => task.kind === "text"));
   assert.ok(tasksWithOptions.every((task) => /^\d+$/.test(task.answer)));
+});
+
+test("Russian EGE route reproduces the response mechanics of all 27 lines", async () => {
+  const bank = await loadSeedBank();
+  const tasks = buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, 4);
+  assert.equal(tasks[0].format, "самостоятельный подбор слова");
+  for (const line of [2, 3, 4, 9, 10, 11, 12, 13, 14, 16, 23, 24]) {
+    assert.equal(tasks[line - 1].options.length, 5, `line ${line}: five positions`);
+    assert.equal(tasks[line - 1].interaction, "exam-blank", `line ${line}: exam blank`);
+  }
+  for (const line of [8, 22]) {
+    assert.equal(tasks[line - 1].format, "установление соответствия", `line ${line}: matching`);
+    assert.equal(tasks[line - 1].options.length, 9, `line ${line}: nine right-column positions`);
+    assert.match(tasks[line - 1].answer, /^\d{5}$/, `line ${line}: five-digit mapping`);
+  }
+  for (const line of [15, 17, 18, 19, 20, 21, 26]) {
+    assert.match(tasks[line - 1].answer, /^\d+$/, `line ${line}: digit sequence`);
+  }
+  assert.equal(tasks[26].kind, "extended");
+  assert.equal(tasks[26].minWords, 150);
+});
+
+test("every EGE subject exposes full routes with exam blanks and extended high-level work", async () => {
+  const bank = await loadSeedBank();
+  const profiles = [
+    ["math", 19], ["informatics", 27], ["physics", 26], ["chemistry", 34], ["biology", 28],
+    ["history", 21], ["social", 25], ["geography", 29], ["literature", 11],
+    ["english", 42], ["german", 42], ["french", 42], ["spanish", 42], ["chinese", 32],
+  ];
+  for (const [slug, count] of profiles) {
+    const tasks = buildTrainingVariant(slug, count, ["основы", "анализ", "применение"], bank[slug], 2);
+    assert.equal(tasks.length, count, `${slug}: complete route`);
+    assert.ok(tasks.some((task) => task.interaction === "exam-blank"), `${slug}: blank responses`);
+    assert.ok(tasks.filter((task) => task.options).every((task) => task.options.length >= 5), `${slug}: no reduced three-option questions`);
+    assert.ok(tasks.some((task) => task.difficulty === "повышенный" || task.difficulty === "высокий"), `${slug}: non-basic tasks`);
+    if (slug !== "informatics") assert.ok(tasks.some((task) => task.kind === "extended"), `${slug}: extended response`);
+  }
 });
 
 test("every subject has a non-repeating Telegram daily practice pool", async () => {

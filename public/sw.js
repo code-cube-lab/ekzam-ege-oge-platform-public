@@ -1,5 +1,13 @@
-const CACHE_NAME = "ekzam-offline-v3";
-const CORE_URLS = ["/", "/school", "/textbooks", "/exam?level=oge", "/exam?level=ege", "/favicon.svg"];
+const CACHE_NAME = "ekzam-offline-v4";
+const CORE_URLS = [
+  "/",
+  "/exam?level=oge",
+  "/exam?level=ege",
+  "/subjects",
+  "/telegram",
+  "/offline.html",
+  "/favicon.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => Promise.allSettled(CORE_URLS.map((url) => cache.add(url)))));
@@ -24,11 +32,13 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
-        .catch(async () => (await caches.match(request)) || (await caches.match("/textbooks")) || caches.match("/offline.html")),
+        .catch(async () => (await caches.match(request)) || caches.match("/offline.html")),
     );
     return;
   }

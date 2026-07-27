@@ -1,0 +1,14 @@
+{
+  "name": "ЭКЗАМ — подготовка к ОГЭ и ЕГЭ",
+  "short_name": "ЭКЗАМ",
+  "start_url": ".",
+  "display": "standalone",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

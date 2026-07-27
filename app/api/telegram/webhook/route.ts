@@ -112,9 +112,12 @@ async function handleMessage(message: Message, requestUrl: string) {
   if (!student) return;
   if (message.successful_payment) {
     const access = await recordSuccessfulTelegramPayment(student.telegramId, message.successful_payment);
+    const accessUntil = access.expiresAt
+      ? new Date(access.expiresAt).toLocaleDateString("ru-RU")
+      : "окончания оплаченного периода";
     await telegramApi("sendMessage", {
       chat_id: student.chatId,
-      text: `✅ Оплата подтверждена Telegram. Персональная практика открыта до ${new Date(access.expiresAt).toLocaleDateString("ru-RU")}.`,
+      text: `✅ Оплата подтверждена Telegram. Персональная практика открыта до ${accessUntil}.`,
       reply_markup: {
         inline_keyboard: [
           [{ text: "Открыть Mini App", web_app: { url: appLink(appUrl) } }],

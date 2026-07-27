@@ -48,7 +48,7 @@ export function ExamSimulatorClient({
   initialMode = "route",
 }: Props) {
   const [examChosen, setExamChosen] = useState(() => initialLevel === "oge" || initialLevel === "ege");
-  const [subjectSlug, setSubjectSlug] = useState(() => {
+  const [subjectSlug, setSubjectSlug] = useState<string>(() => {
     const requested = getExamSubject(initialSubject).slug;
     return initialLevel === "oge" && !getSubjectSchoolProfile(requested).ogeAvailable ? "russian" : requested;
   });

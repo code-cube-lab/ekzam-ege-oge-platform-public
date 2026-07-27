@@ -1,0 +1,2 @@
+:HL["/ekzam-ege-oge-platform-public/_next/static/chunks/0e9jz0ball0zq.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"teachers","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"yYTup9Py-5Xxdod69Bdst"}

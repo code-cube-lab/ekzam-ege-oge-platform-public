@@ -1,5 +1,6 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
+import { resolve } from "node:path";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
 
@@ -10,6 +11,7 @@ const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
+const isStaticExport = process.env.EKZAM_STATIC_EXPORT === "1";
 
 const localBindingConfig = {
   main: "./worker/index.ts",
@@ -40,8 +42,12 @@ export default defineConfig(async () => {
   process.env.WRANGLER_LOG_PATH ??= ".wrangler/logs";
   process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
 
-  // Wrangler snapshots its log path while the Cloudflare plugin is imported.
-  const { cloudflare } = await import("@cloudflare/vite-plugin");
+  // Cloudflare bindings are required by the real server application. GitHub
+  // Pages gets a browser-only export, so server-only imports are replaced with
+  // a build stub and no Worker runtime is bundled.
+  const { cloudflare } = isStaticExport
+    ? { cloudflare: null }
+    : await import("@cloudflare/vite-plugin");
 
   return {
     server: {
@@ -53,10 +59,26 @@ export default defineConfig(async () => {
     plugins: [
       vinext(),
       sites(),
-      cloudflare({
-        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-        config: localBindingConfig,
-      }),
+      ...(cloudflare
+        ? [
+            cloudflare({
+              viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+              config: localBindingConfig,
+            }),
+          ]
+        : []),
     ],
+    ...(isStaticExport
+      ? {
+          resolve: {
+            alias: {
+              "cloudflare:workers": resolve(
+                import.meta.dirname,
+                "build/static-cloudflare-workers.ts",
+              ),
+            },
+          },
+        }
+      : {}),
   };
 });

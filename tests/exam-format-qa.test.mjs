@@ -35,6 +35,22 @@ test("Russian tasks use exam blanks and separate OGE structure", async () => {
   assert.match(simulator, /Ответ для бланка/);
 });
 
+test("unverified subject banks are visibly blocked before student use", async () => {
+  const [validation, simulator, oge] = await Promise.all([
+    readFile(new URL("../knowledge-base/exams/exam-validation.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ExamSimulatorClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/tasks/oge-demo-bank.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(validation, /status: "blocked"/);
+  assert.match(validation, /Готово к вашей предварительной проверке/);
+  assert.match(validation, /базовый ЕГЭ \(21 задание, 180 минут\)/);
+  assert.match(validation, /профильный ЕГЭ \(19 заданий, 235 минут\)/);
+  assert.match(simulator, /if \(!routeReady\)/);
+  assert.match(simulator, /задания временно закрыты/);
+  assert.doesNotMatch(oge, /Вывод \$\{options\.length \+ 1\} не следует/);
+  assert.doesNotMatch(oge, /Выполните линию \$\{line\}/);
+});
+
 test("grade-five textbook routes are absent from the released app", async () => {
   await assert.rejects(access(new URL("../app/textbooks/page.tsx", import.meta.url)));
   await assert.rejects(access(new URL("../app/school/page.tsx", import.meta.url)));
@@ -52,4 +68,5 @@ test("mobile and accessible states have explicit styling", async () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /\.exam-audio-task/);
   assert.match(css, /\.exam-gate-panel/);
+  assert.match(css, /\.exam-audit-gate/);
 });

@@ -4,7 +4,6 @@ import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
 import {
-  analyzeTaskResults,
   buildTrainingVariant,
   getRussianAuthorBankSize,
   getRussianFamilyTasks,
@@ -35,58 +34,36 @@ async function loadOgeBank(getDemoTasks = () => []) {
   return context.exports;
 }
 
+async function loadValidationRegistry() {
+  const source = await readFile(new URL("../knowledge-base/exams/exam-validation.ts", import.meta.url), "utf8");
+  const withoutImport = source.replace(/^import type .*exam-subjects";\r?\n/m, "");
+  const javascript = ts.transpileModule(withoutImport, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const context = { exports: {} };
+  vm.runInNewContext(javascript, context);
+  return context.exports;
+}
+
 function signature(task) {
   return JSON.stringify([task.prompt, task.stimulus ?? "", task.audioText ?? "", task.options ?? [], task.answer]);
 }
 
-test("student audit passes every training variant for all 15 subjects", async () => {
+test("unverified EGE subject banks are quarantined instead of presented as full variants", async () => {
   const bank = await loadSeedBank();
-  const subjects = [
-    ["russian", 27, ["орфография", "пунктуация", "сочинение"]],
-    ["math", 19, ["алгебра", "геометрия", "практические задачи"]],
-    ["informatics", 27, ["алгоритмы", "логика", "программирование"]],
-    ["physics", 26, ["механика", "электричество", "квантовая физика"]],
-    ["chemistry", 34, ["реакции", "расчёты", "органическая химия"]],
-    ["biology", 28, ["клетка", "генетика", "экология"]],
-    ["history", 21, ["хронология", "источники", "аргументация"]],
-    ["social", 25, ["право", "экономика", "общество"]],
-    ["geography", 29, ["карты", "население", "хозяйство"]],
-    ["literature", 11, ["теория", "анализ текста", "сочинение"]],
-    ["english", 42, ["аудирование", "лексика", "говорение"]],
-    ["german", 42, ["чтение", "грамматика", "говорение"]],
-    ["french", 42, ["чтение", "лексика", "говорение"]],
-    ["spanish", 42, ["чтение", "лексика", "говорение"]],
-    ["chinese", 32, ["иероглифика", "чтение", "говорение"]],
-  ];
-
+  const validation = await loadValidationRegistry();
+  const subjects = Object.keys(bank);
   assert.equal(Object.keys(bank).length, 15);
-  for (const [slug, fullCount, topics] of subjects) {
-    for (const variant of Array.from({ length: 12 }, (_, index) => index + 1)) {
-      const tasks = buildTrainingVariant(slug, fullCount, topics, bank[slug], variant);
-      assert.equal(tasks.length, fullCount, `${slug} v${variant}: full official task count`);
-      assert.equal(new Set(tasks.map((task) => task.id)).size, tasks.length, `${slug} v${variant}: unique ids`);
-      assert.equal(new Set(tasks.map(signature)).size, tasks.length, `${slug} v${variant}: no repeated task-answer pairs`);
-      assert.ok(tasks.every((task) => !task.prompt.includes("Тренировочная параллель")), `${slug} v${variant}: old clone marker removed`);
-      for (const task of tasks) {
-        assert.ok(task.prompt.trim().length >= 10, `${task.id}: non-empty prompt`);
-        assert.ok(task.solution.length > 0 && task.solution.every((step) => step.trim().length >= 5), `${task.id}: usable solution`);
-        assert.ok(typeof task.answer === "string" ? task.answer.trim().length > 0 : task.answer.length > 0, `${task.id}: non-empty answer`);
-        assert.equal(task.examYear, 2026, `${task.id}: exam year`);
-        assert.match(task.sourceLabel, /ФИПИ-2026/, `${task.id}: honest source label`);
-        if (task.options) assert.equal(new Set(task.options).size, task.options.length, `${task.id}: no duplicate options`);
-        if (task.kind === "single") assert.ok(task.options.includes(task.answer), `${task.id}: answer exists in options`);
-        if (task.kind === "multiple") assert.ok(task.answer.every((answer) => task.options.includes(answer)), `${task.id}: all answers exist in options`);
-      }
-
-      const perfect = Object.fromEntries(tasks.map((task) => [task.id, task.kind === "extended" ? "review" : "correct"]));
-      const perfectAnalysis = analyzeTaskResults(tasks, perfect);
-      assert.equal(perfectAnalysis.weaknesses.length, 0, `${slug} v${variant}: perfect student has no weak topics`);
-
-      const mixed = Object.fromEntries(tasks.map((task, index) => [task.id, task.kind === "extended" ? "review" : index % 3 === 0 ? "incorrect" : "correct"]));
-      const mixedAnalysis = analyzeTaskResults(tasks, mixed);
-      assert.ok(mixedAnalysis.weaknesses.length > 0, `${slug} v${variant}: mistakes produce weak topics`);
-      assert.ok(mixedAnalysis.strengths.length > 0, `${slug} v${variant}: correct answers produce strong topics`);
+  for (const slug of subjects) {
+    const gate = validation.getExamRouteValidation("ege", slug);
+    if (slug === "russian") {
+      assert.equal(gate.status, "preview-ready");
+      continue;
     }
+    assert.equal(gate.status, "blocked", `${slug}: hidden from students until subject review`);
+    const draft = buildTrainingVariant(slug, Math.max(1, bank[slug].length), ["черновик"], bank[slug], 1);
+    assert.ok(draft.every((task) => /не допущен к ученикам/.test(task.sourceLabel)), `${slug}: draft label`);
+    assert.ok(draft.every((task) => !task.prompt.includes("Выполните линию")), `${slug}: no cosmetic exam suffix`);
   }
 });
 
@@ -99,7 +76,14 @@ test("twelve Russian routes follow all 27 lines and produce different complete v
     assert.deepEqual(tasks.map((task) => task.number), Array.from({ length: 27 }, (_, index) => `Задание ${index + 1}`));
     assert.equal(tasks[26].kind, "extended");
     assert.equal(tasks[26].minWords, 150);
-    assert.ok(tasks[0].stimulus.length > 200);
+    assert.ok(tasks[0].stimulus.length > 900, "line 1 uses a full-length authored source text");
+    assert.equal(tasks[1].stimulusHighlights.length, 5, "line 2 visibly identifies all five analyzed words");
+    for (const word of tasks[1].stimulusHighlights) {
+      assert.ok(tasks[1].stimulus.toLocaleLowerCase("ru-RU").includes(word.toLocaleLowerCase("ru-RU")), `line 2 contains highlighted word «${word}»`);
+    }
+    assert.ok(tasks[22].stimulus.length > 900, "line 23 uses a second full-length authored source text");
+    assert.ok(tasks[26].stimulus.length > 900, "line 27 essay uses a full-length authored source text");
+    assert.notEqual(tasks[0].stimulus, tasks[22].stimulus, "the first and second source blocks are different");
   }
 });
 
@@ -131,32 +115,34 @@ test("twelve Russian OGE routes follow the official 13-task structure", async ()
     assert.deepEqual(Array.from(tasks, (task) => task.number), Array.from({ length: 13 }, (_, index) => `Задание ${index + 1}`));
     assert.equal(tasks[0].kind, "extended");
     assert.equal(tasks[0].minWords, 70);
-    assert.ok(tasks[0].audioText.length > 300);
+    assert.ok(tasks[0].audioText.length > 800, "OGE summary uses a full listening text");
     assert.equal(tasks[0].maxPlays, 2);
     assert.ok(tasks.slice(1, 12).every((task) => task.interaction === "exam-blank"));
     assert.ok(tasks.slice(1, 12).every((task) => typeof task.answer === "string"));
     assert.equal(tasks[12].kind, "extended");
     assert.equal(tasks[12].minWords, 70);
+    assert.ok(tasks[9].stimulus.length > 900, "OGE text-analysis block uses a full-length source");
+    assert.ok((tasks[9].stimulus.match(/\(\d+\)/g) ?? []).length >= 15, "OGE reading text is numbered like the exam source");
     assert.equal(new Set(tasks.map((task) => task.id)).size, 13);
   }
   assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
 });
 
-test("all OGE subjects expose complete 2026 routes instead of ten demo questions", async () => {
+test("unverified OGE routes contain no fabricated answer options and stay behind the release gate", async () => {
   const bank = await loadSeedBank();
+  const validation = await loadValidationRegistry();
   const { getOgeRouteTasks } = await loadOgeBank((slug) => bank[slug] ?? bank.russian);
   const profiles = [
-    ["math", 25], ["informatics", 16], ["physics", 22], ["chemistry", 23], ["biology", 26],
-    ["history", 24], ["social", 24], ["geography", 30], ["literature", 5],
-    ["english", 38], ["german", 38], ["french", 38], ["spanish", 38],
+    "math", "informatics", "physics", "chemistry", "biology",
+    "history", "social", "geography", "literature",
+    "english", "german", "french", "spanish",
   ];
-  for (const [slug, count] of profiles) {
+  for (const slug of profiles) {
+    assert.equal(validation.getExamRouteValidation("oge", slug).status, "blocked", `${slug}: blocked pending subject review`);
     const tasks = getOgeRouteTasks(slug, ["основы", "анализ", "применение"], 3);
-    assert.equal(tasks.length, count, `${slug}: complete OGE route`);
-    assert.equal(new Set(tasks.map((task) => task.id)).size, count, `${slug}: unique ids`);
-    assert.ok(tasks.every((task) => task.examYear === 2026), `${slug}: current exam year`);
-    assert.ok(tasks.filter((task) => task.options).every((task) => task.options.length >= 5), `${slug}: no reduced choice cards`);
-    assert.ok(tasks.some((task) => task.kind === "extended"), `${slug}: extended response section`);
+    assert.ok(tasks.every((task) => /не допущен к ученикам/.test(task.sourceLabel)), `${slug}: draft-only label`);
+    assert.ok(tasks.every((task) => !task.prompt.includes("Выполните линию")), `${slug}: no fake line suffix`);
+    assert.ok(tasks.flatMap((task) => task.options ?? []).every((option) => !option.includes("не следует из условия задания")), `${slug}: no padded options`);
   }
 });
 
@@ -167,13 +153,17 @@ test("Russian EGE choices are answered through the exam blank, not clickable gue
   assert.ok(tasksWithOptions.length > 10);
   assert.ok(tasksWithOptions.every((task) => task.interaction === "exam-blank"));
   assert.ok(tasksWithOptions.every((task) => task.kind === "text"));
-  assert.ok(tasksWithOptions.every((task) => /^\d+$/.test(task.answer)));
+  assert.ok(tasksWithOptions.filter((task) => task.number !== "Задание 4").every((task) => /^\d+$/.test(task.answer)));
+  assert.match(tasks[3].answer, /^[а-яё]+$/i, "line 4 is answered with the incorrectly stressed word");
 });
 
 test("Russian EGE route reproduces the response mechanics of all 27 lines", async () => {
   const bank = await loadSeedBank();
   const tasks = buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, 4);
   assert.equal(tasks[0].format, "самостоятельный подбор слова");
+  assert.match(tasks[1].prompt, /лексическое значение слова соответствует его значению в данном тексте/);
+  assert.match(tasks[3].prompt, /неверно выделена буква/i);
+  assert.match(tasks[3].responseInstruction, /только слово/i);
   for (const line of [2, 3, 4, 9, 10, 11, 12, 13, 14, 16, 23, 24]) {
     assert.equal(tasks[line - 1].options.length, 5, `line ${line}: five positions`);
     assert.equal(tasks[line - 1].interaction, "exam-blank", `line ${line}: exam blank`);
@@ -186,24 +176,20 @@ test("Russian EGE route reproduces the response mechanics of all 27 lines", asyn
   for (const line of [15, 17, 18, 19, 20, 21, 26]) {
     assert.match(tasks[line - 1].answer, /^\d+$/, `line ${line}: digit sequence`);
   }
+  assert.equal(tasks[18].answer, "1234", "line 19: all four subordinate-clause boundaries");
   assert.equal(tasks[26].kind, "extended");
   assert.equal(tasks[26].minWords, 150);
 });
 
-test("every EGE subject exposes full routes with exam blanks and extended high-level work", async () => {
+test("Russian answer explanations follow the shuffled order shown to the student", async () => {
   const bank = await loadSeedBank();
-  const profiles = [
-    ["math", 19], ["informatics", 27], ["physics", 26], ["chemistry", 34], ["biology", 28],
-    ["history", 21], ["social", 25], ["geography", 29], ["literature", 11],
-    ["english", 42], ["german", 42], ["french", 42], ["spanish", 42], ["chinese", 32],
-  ];
-  for (const [slug, count] of profiles) {
-    const tasks = buildTrainingVariant(slug, count, ["основы", "анализ", "применение"], bank[slug], 2);
-    assert.equal(tasks.length, count, `${slug}: complete route`);
-    assert.ok(tasks.some((task) => task.interaction === "exam-blank"), `${slug}: blank responses`);
-    assert.ok(tasks.filter((task) => task.options).every((task) => task.options.length >= 5), `${slug}: no reduced three-option questions`);
-    assert.ok(tasks.some((task) => task.difficulty === "повышенный" || task.difficulty === "высокий"), `${slug}: non-basic tasks`);
-    if (slug !== "informatics") assert.ok(tasks.some((task) => task.kind === "extended"), `${slug}: extended response`);
+  for (const variant of Array.from({ length: 12 }, (_, index) => index + 1)) {
+    const tasks = buildTrainingVariant("russian", 27, ["орфография", "пунктуация", "сочинение"], bank.russian, variant);
+    for (const line of [8, 9, 10, 11, 12, 13, 14, 16, 21, 22]) {
+      const task = tasks[line - 1];
+      assert.match(task.solution.join(" "), new RegExp(`Ответ[^.]*${task.answer}`), `variant ${variant}, line ${line}: visible-order answer`);
+    }
+    assert.ok(tasks.every((task) => /Авторск/.test(task.sourceLabel)), `variant ${variant}: authored label`);
   }
 });
 

@@ -18,6 +18,7 @@ export type ExamTask = {
   familyId?: string;
   theory?: string;
   stimulus?: string;
+  stimulusHighlights?: string[];
   audioText?: string;
   maxPlays?: number;
   minWords?: number;

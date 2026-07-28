@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { examSubjects, getExamSubject } from "../../knowledge-base/exams/exam-subjects";
+import { getExamRouteValidation } from "../../knowledge-base/exams/exam-validation";
 import { getTrainingVariantTasks, type ExamTask } from "../../knowledge-base/tasks/exam-demo-bank";
 import { getOgeRouteTasks } from "../../knowledge-base/tasks/oge-demo-bank";
 import { getSchoolTopics, getSubjectSchoolProfile, officialSchoolLinks } from "../../knowledge-base/curriculum/school-curriculum";
@@ -28,6 +29,30 @@ function normal(value: string, order: ExamTask["answerOrder"] = "fixed") {
 
 function lessonHref(subject: string, topic: string) {
   return `/learn?${new URLSearchParams({ subject, topic, variant: "1" }).toString()}`;
+}
+
+function renderStimulus(text: string, highlights: string[] = []) {
+  if (!highlights.length) return text;
+
+  const loweredText = text.toLocaleLowerCase("ru-RU");
+  const ranges = highlights
+    .map((word) => {
+      const start = loweredText.indexOf(word.toLocaleLowerCase("ru-RU"));
+      return { start, end: start + word.length };
+    })
+    .filter((range) => range.start >= 0)
+    .sort((left, right) => left.start - right.start);
+
+  const fragments: ReactNode[] = [];
+  let cursor = 0;
+  for (const [rangeIndex, range] of ranges.entries()) {
+    if (range.start < cursor) continue;
+    if (range.start > cursor) fragments.push(text.slice(cursor, range.start));
+    fragments.push(<mark className="exam-highlighted-word" title="Выделенное слово" key={`${range.start}-${rangeIndex}`}>{text.slice(range.start, range.end)}</mark>);
+    cursor = range.end;
+  }
+  if (cursor < text.length) fragments.push(text.slice(cursor));
+  return fragments;
 }
 
 type Props = {
@@ -75,6 +100,13 @@ export function ExamSimulatorClient({
   const plannedTaskCount = level === "oge" ? subject.ogeTaskCount ?? 0 : subject.fullTaskCount;
   const subjectProfile = subjectExamProfiles[subjectSlug as keyof typeof subjectExamProfiles];
   const availableSubjects = examSubjects.filter((item) => level === "ege" || getSubjectSchoolProfile(item.slug).ogeAvailable);
+  const validation = getExamRouteValidation(level, subject.slug);
+  const routeReady = validation.status === "preview-ready";
+  const nextVariantId = variantId >= EXAM_VARIANT_COUNT ? 1 : variantId + 1;
+  const officialBankUrl = level === "oge" ? officialSchoolLinks.ogeBank : officialSchoolLinks.egeBank;
+  const formatExampleUrl = level === "oge"
+    ? "https://rus-oge.sdamgia.ru/archive"
+    : "https://rus-ege.sdamgia.ru/test?id=57153574";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -88,7 +120,8 @@ export function ExamSimulatorClient({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const tasks = useMemo(() => {
+  const tasks = (() => {
+    if (!routeReady) return [];
     const ogeBase = getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9), variantId);
     if (mode === "mistakes") {
       const bank = level === "oge"
@@ -115,7 +148,7 @@ export function ExamSimulatorClient({
       : getTrainingVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus, 1);
     const grouped = subjectFocus === "all" ? base : base.filter((item) => item.topic === subjectFocus);
     return assignmentCount ? grouped.slice(0, assignmentCount) : grouped;
-  }, [assignmentCount, familyId, level, mistakeIds, mode, schoolProfile, subject.focus, subject.fullTaskCount, subjectFocus, subjectSlug, variantId]);
+  })();
   const task: ExamTask = tasks[index] ?? tasks[0];
   const subjectResults = tasks.map((item) => results[item.id]).filter(Boolean);
   const done = subjectResults.length;
@@ -220,6 +253,12 @@ export function ExamSimulatorClient({
   }
 
   function practiceSimilar() {
+    if (mode === "route") {
+      setVariantId(nextVariantId);
+      setResults({});
+      resetAnswer();
+      return;
+    }
     if (subjectSlug === "russian" && level === "ege" && task.familyId) {
       setFamilyId(task.familyId);
       setMode("training");
@@ -256,6 +295,55 @@ export function ExamSimulatorClient({
     </main>;
   }
 
+  if (!routeReady) {
+    return <main className="exam-simulator">
+      <header className="exam-sim-top">
+        <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
+        <div><b>Предварительная проверка банка заданий</b><span>Неверные маршруты закрыты до предметной редакции</span></div>
+        <Link className="button button-ghost button-small" href="/">На главную</Link>
+      </header>
+
+      <section className="exam-subject-picker" aria-label="Выбор предмета">
+        <div><span className="exam-label">Выберите предмет</span><b>{level === "oge" ? "14 предметов ОГЭ" : "Все 15 предметов ЕГЭ"}</b></div>
+        <div className="exam-subject-scroll">
+          {availableSubjects.map((item) => {
+            const itemValidation = getExamRouteValidation(level, item.slug);
+            return <button className={item.slug === subjectSlug ? "active" : ""} onClick={() => selectSubject(item.slug)} key={item.slug}>
+              <span>{item.shortName}</span>
+              <small>{itemValidation.status === "preview-ready" ? "можно проверять" : "банк на редактуре"}</small>
+            </button>;
+          })}
+        </div>
+      </section>
+
+      <section className="exam-audit-gate">
+        <div className="exam-audit-levels" aria-label="Выберите экзамен">
+          <button className={level === "oge" ? "active" : ""} onClick={() => selectLevel("oge")}><b>ОГЭ</b><span>9 класс</span></button>
+          <button className={level === "ege" ? "active" : ""} onClick={() => selectLevel("ege")}><b>ЕГЭ</b><span>11 класс</span></button>
+        </div>
+        <div className="exam-audit-card">
+          <span className="exam-label">Результат аудита · {validation.checkedAt}</span>
+          <h1>{subject.name}: задания временно закрыты</h1>
+          <p>{validation.reason}</p>
+          <div className="exam-audit-facts">
+            <span><b>{plannedTaskCount}</b> заданий по спецификации</span>
+            <span><b>{durationMinutes}</b> минут</span>
+            <span><b>{partCount}</b> {partCount === 1 ? "часть" : partCount && partCount < 5 ? "части" : "разделов"}</span>
+          </div>
+          <div className="exam-audit-work">
+            <b>Что нужно закончить перед открытием ученикам</b>
+            <ol>{validation.requirements.map((item) => <li key={item}>{item}</li>)}</ol>
+          </div>
+          <div className="exam-audit-actions">
+            <button className="button button-red" onClick={() => selectSubject("russian")}>Проверить готовый русский →</button>
+            <a className="button button-ghost" href={validation.sourceUrl} target="_blank" rel="noreferrer">Открыть документы ФИПИ ↗</a>
+          </div>
+          <small>На GitHub эта предварительная версия ещё не опубликована. После вашей проверки будет отдельное подтверждение на публикацию.</small>
+        </div>
+      </section>
+    </main>;
+  }
+
   if (mode === "mistakes" && !task) {
     return <main className="exam-simulator">
       <header className="exam-sim-top">
@@ -283,7 +371,7 @@ export function ExamSimulatorClient({
       <div><span className="exam-label">Выберите предмет</span><b>{level === "oge" ? "14 предметов ОГЭ" : "Все 15 предметов ЕГЭ"}</b></div>
       <div className="exam-subject-scroll">
         {availableSubjects.map((item) => <button className={item.slug === subjectSlug ? "active" : ""} onClick={() => selectSubject(item.slug)} key={item.slug}>
-          <span>{item.shortName}</span><small>{level === "oge" ? "ОГЭ · 9 класс" : item.exam}</small>
+          <span>{item.shortName}</span><small>{getExamRouteValidation(level, item.slug).status === "preview-ready" ? "можно проверять" : "банк на редактуре"}</small>
         </button>)}
       </div>
     </section>
@@ -360,11 +448,17 @@ export function ExamSimulatorClient({
           <span>{task.difficulty ?? "базовый"} уровень</span>
           <small>{task.sourceLabel ?? "Авторская тренировка по проверяемому умению экзамена"}</small>
         </div>
+        <div className="exam-format-references" aria-label="Источники формата задания">
+          <span>Сверить тип вопроса</span>
+          <a href={officialBankUrl} target="_blank" rel="noreferrer">Открытый банк ФИПИ ↗</a>
+          {subjectSlug === "russian" && <a href={formatExampleUrl} target="_blank" rel="noreferrer">Образец полного варианта ↗</a>}
+          <small>Вопрос ниже — авторский аналог: структура сохранена, чужой текст не копируется.</small>
+        </div>
         {task.audioText && <div className="exam-audio-task">
           <div><span>Текст для изложения</span><b>Прослушивание {audioPlays} из {task.maxPlays ?? 2}</b><small>Используется голосовое воспроизведение авторского текста в браузере.</small></div>
           <button type="button" disabled={audioPlays >= (task.maxPlays ?? 2)} onClick={playAudio}>{audioPlays ? "Прослушать ещё раз" : "Включить текст"} →</button>
         </div>}
-        {task.stimulus && <article className="exam-stimulus"><span>Текст к заданиям</span><p>{task.stimulus}</p></article>}
+        {task.stimulus && <article className="exam-stimulus"><span>Текст к заданиям</span><p>{renderStimulus(task.stimulus, task.stimulusHighlights)}</p></article>}
         <h2>{task.prompt}</h2>
         {task.options && task.interaction === "exam-blank" && <ol className="exam-static-options">{task.options.map((option, optionIndex) => <li key={`${option}-${optionIndex}`}><span>{optionIndex + 1}</span><p>{option}</p></li>)}</ol>}
         {task.options && task.interaction !== "exam-blank" && <div className="exam-options">{task.options.map((option, optionIndex) => <button className={selected.includes(option) ? "selected" : ""} disabled={submitted} onClick={() => choose(option)} key={`${option}-${optionIndex}`}><span>{optionIndex + 1}</span>{option}</button>)}</div>}
@@ -383,10 +477,12 @@ export function ExamSimulatorClient({
             <div className="remediation-steps">
               <article><span>01</span><div><b>Короткая теория</b><p>{task.theory ?? `${currentRisk.intervention}. Сначала назовите проверяемый признак по теме «${task.topic ?? "текущий тип"}», затем снова решайте задачу.`}</p></div></article>
               <article><span>02</span><div><b>Почему возникла ошибка</b><p>{task.solution[0]}</p></div></article>
-              <article><span>03</span><div><b>Сразу похожее задание</b><p>Ошибка сохранена в «Мои ошибки». Следующая попытка проверяет это же умение на другом материале.</p><button className="button button-dark" onClick={practiceSimilar}>Отработать похожее →</button></div></article>
+              <article><span>03</span><div><b>Сразу похожее задание</b><p>{mode === "route"
+                ? `Ошибка сохранена в «Мои ошибки». Откроется задание № ${index + 1} из пробного варианта № ${nextVariantId}: тот же тип, другой авторский материал.`
+                : "Ошибка сохранена в «Мои ошибки». Следующая попытка проверяет это же умение на другом материале."}</p><button className="button button-dark" onClick={practiceSimilar}>{mode === "route" ? `Открыть похожее из варианта № ${nextVariantId} →` : "Отработать похожее →"}</button></div></article>
             </div>
           </section>}
-          {result === "correct" && <button className="button button-ghost next-similar" onClick={practiceSimilar}>Закрепить ещё одним похожим →</button>}
+          {result === "correct" && <button className="button button-ghost next-similar" onClick={practiceSimilar}>{mode === "route" ? `Закрепить заданием № ${index + 1} из варианта № ${nextVariantId} →` : "Закрепить ещё одним похожим →"}</button>}
         </>}
         <div className="exam-nav"><button disabled={index === 0} onClick={() => jump(index - 1)}>← Предыдущее</button><span>{index + 1} / {tasks.length}</span><button disabled={index === tasks.length - 1} onClick={() => jump(index + 1)}>Следующее →</button></div>
         {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">{mode === "route" ? `Итог маршрута ${levelLabel}` : "Освоение типа"}</span><b>{accuracy >= 80 ? "Можно переходить дальше" : "Нужна отработка слабых тем"}</b><strong>{accuracy}% автоматически проверяемых ответов верны</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это учебная аналитика, а не официальный балл {levelLabel}.</span><p><b>Сильные темы:</b> {strongTopics.length ? strongTopics.slice(0, 3).join(", ") : "пока не выявлены"}.</p><p><b>Слабые темы:</b> {weakTopics.length ? weakTopics.slice(0, 3).join(", ") : "ошибок не выявлено"}.</p></div><Link className="button button-dark" href={lessonHref(subjectSlug, nextTopic)}>Открыть занятие →</Link></div>}

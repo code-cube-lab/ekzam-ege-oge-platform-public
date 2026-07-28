@@ -13,7 +13,7 @@
     "qa:exam": "node --test tests/exam-format-qa.test.mjs tests/exam-variants.test.mjs",
     "qa:telegram": "node --test tests/telegram-rebuild.test.mjs",
     "qa:browser": "node quality-assurance/run-browser-qa.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern work",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern docs --ignore-pattern tmp --ignore-pattern work",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

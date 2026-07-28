@@ -287,8 +287,313 @@ export function getRussianOgeVariantTasks(variantId = 1): ExamTask[] {
   ];
 }
 
+function mathOgeTask(variant: number, number: number, task: Omit<ExamTask, "id" | "subject" | "number">): ExamTask {
+  return {
+    id: `oge-math-v${variant}-${number}`,
+    subject: "Математика",
+    number: `Задание ${number}`,
+    examYear: 2026,
+    sourceLabel: "Авторский материал · структура ответа сверена со спецификацией ФИПИ-2026",
+    difficulty: number >= 20 ? "высокий" : number >= 14 ? "повышенный" : "базовый",
+    ...task,
+  };
+}
+
+function mathOgeBlank(variant: number, number: number, task: Omit<ExamTask, "id" | "subject" | "number" | "interaction">): ExamTask {
+  return examBlank(mathOgeTask(variant, number, {
+    responseInstruction: "Запишите только полученный ответ без единиц измерения.",
+    ...task,
+  }));
+}
+
+function getMathOgeVariantTasks(variantId = 1): ExamTask[] {
+  const variant = Math.min(12, Math.max(1, Number(variantId) || 1));
+  const length = 12 + variant;
+  const width = 6 + variant;
+  const pricePerSquareMeter = 40 + 5 * variant;
+  const area = length * width;
+  const perimeter = 2 * (length + width);
+  const context = [
+    "К заданиям 1–5 используйте описание участка.",
+    `Прямоугольный участок имеет длину ${length} м и ширину ${width} м.`,
+    `По его границе устанавливают секции ограждения длиной 2 м. Покрытие для участка стоит ${pricePerSquareMeter} рублей за 1 м².`,
+    `Тариф А на доставку материалов: ${800 + 50 * variant} рублей без дополнительной платы.`,
+    `Тариф Б: ${300 + 20 * variant} рублей и ${10 + variant} рублей за каждый квадратный метр участка.`,
+  ].join("\n");
+  const tariffA = 800 + 50 * variant;
+  const tariffB = 300 + 20 * variant + (10 + variant) * area;
+  const line7Base = variant + 2;
+  const line8Factor = variant + 3;
+  const line9Root = variant + 4;
+  const line10Probability = variant / 20;
+  const line11Slope = variant % 4 + 1;
+  const line12Mass = 4 + variant;
+  const line12Density = 2;
+  const line13Boundary = variant + 1;
+  const line14First = variant + 2;
+  const line14Difference = variant % 4 + 2;
+  const line15Angle = 30 + variant;
+  const line16Angle = 40 + variant;
+  const line17SideA = variant + 5;
+  const line17SideB = variant + 7;
+  const line18Base = variant + 4;
+  const line18Height = variant + 3;
+
+  return [
+    mathOgeBlank(variant, 1, {
+      kind: "number",
+      format: "практическая задача · участок",
+      topic: "чтение условия и периметр",
+      stimulus: context,
+      theory: "Периметр прямоугольника равен удвоенной сумме его длины и ширины.",
+      prompt: "Найдите периметр участка в метрах.",
+      answer: String(perimeter),
+      solution: [`P = 2 · (${length} + ${width}) = ${perimeter}.`, `Ответ: ${perimeter}.`],
+    }),
+    mathOgeBlank(variant, 2, {
+      kind: "number",
+      format: "практическая задача · участок",
+      topic: "площадь прямоугольника",
+      stimulus: context,
+      theory: "Площадь прямоугольника равна произведению его длины и ширины.",
+      prompt: "Найдите площадь участка в квадратных метрах.",
+      answer: String(area),
+      solution: [`S = ${length} · ${width} = ${area}.`, `Ответ: ${area}.`],
+    }),
+    mathOgeBlank(variant, 3, {
+      kind: "number",
+      format: "практическая задача · участок",
+      topic: "делимость и округление",
+      stimulus: context,
+      theory: "Число одинаковых секций равно общей длине ограждения, делённой на длину одной секции.",
+      prompt: "Сколько двухметровых секций ограждения потребуется для всей границы участка?",
+      answer: String(perimeter / 2),
+      solution: [`${perimeter} : 2 = ${perimeter / 2}.`, `Ответ: ${perimeter / 2}.`],
+    }),
+    mathOgeBlank(variant, 4, {
+      kind: "number",
+      format: "практическая задача · участок",
+      topic: "стоимость покупки",
+      stimulus: context,
+      theory: "Общая стоимость покрытия равна площади, умноженной на цену одного квадратного метра.",
+      prompt: "Сколько рублей стоит покрытие для всего участка без учёта доставки?",
+      answer: String(area * pricePerSquareMeter),
+      solution: [`${area} · ${pricePerSquareMeter} = ${area * pricePerSquareMeter}.`, `Ответ: ${area * pricePerSquareMeter}.`],
+    }),
+    mathOgeBlank(variant, 5, {
+      kind: "number",
+      format: "практическая задача · выбор тарифа",
+      topic: "сравнение величин",
+      stimulus: context,
+      theory: "Рассчитайте полную стоимость каждого тарифа по его формуле и сравните результаты.",
+      prompt: "На сколько рублей более дешёвый тариф доставки отличается от более дорогого?",
+      answer: String(Math.abs(tariffA - tariffB)),
+      solution: [`Тариф А: ${tariffA}.`, `Тариф Б: ${300 + 20 * variant} + ${10 + variant} · ${area} = ${tariffB}.`, `Разница: ${Math.abs(tariffA - tariffB)}.`, `Ответ: ${Math.abs(tariffA - tariffB)}.`],
+    }),
+    mathOgeBlank(variant, 6, {
+      kind: "number",
+      format: "числовой ответ",
+      topic: "вычисления",
+      theory: "Сначала выполните действие в скобках, затем умножение.",
+      prompt: `Вычислите (${variant + 7} − ${variant + 2}) · ${variant + 1}.`,
+      answer: String(5 * (variant + 1)),
+      solution: [`(${variant + 7} − ${variant + 2}) · ${variant + 1} = 5 · ${variant + 1} = ${5 * (variant + 1)}.`, `Ответ: ${5 * (variant + 1)}.`],
+    }),
+    mathOgeBlank(variant, 7, {
+      kind: "number",
+      format: "число на координатной прямой",
+      topic: "числа и координатная прямая",
+      theory: "Середина двух чисел равна их полусумме.",
+      prompt: `На координатной прямой отмечены точки A(${line7Base}) и B(${line7Base + 6}). Найдите координату середины отрезка AB.`,
+      answer: String(line7Base + 3),
+      solution: [`(${line7Base} + ${line7Base + 6}) : 2 = ${line7Base + 3}.`, `Ответ: ${line7Base + 3}.`],
+    }),
+    mathOgeBlank(variant, 8, {
+      kind: "number",
+      format: "алгебраическое выражение",
+      topic: "тождественные преобразования",
+      theory: "Вынесите общий множитель или сначала раскройте скобки, затем приведите подобные слагаемые.",
+      prompt: `Найдите значение выражения ${line8Factor}(x + 2) − ${line8Factor}x при любом допустимом x.`,
+      answer: String(2 * line8Factor),
+      solution: [`${line8Factor}x + ${2 * line8Factor} − ${line8Factor}x = ${2 * line8Factor}.`, `Ответ: ${2 * line8Factor}.`],
+    }),
+    mathOgeBlank(variant, 9, {
+      kind: "number",
+      format: "уравнение",
+      topic: "линейные уравнения",
+      theory: "Перенесите свободный член в правую часть и разделите обе части на коэффициент при x.",
+      prompt: `Решите уравнение 3x − ${variant + 2} = ${3 * line9Root - variant - 2}.`,
+      answer: String(line9Root),
+      solution: [`3x = ${3 * line9Root}.`, `x = ${line9Root}.`, `Ответ: ${line9Root}.`],
+    }),
+    mathOgeBlank(variant, 10, {
+      kind: "number",
+      format: "вероятность",
+      topic: "классическая вероятность",
+      theory: "При равновозможных исходах разделите число благоприятных исходов на общее число исходов.",
+      prompt: `Из 20 карточек ${variant} отмечены звёздочкой. Наугад выбирают одну карточку. Найдите вероятность выбрать карточку со звёздочкой.`,
+      answer: String(line10Probability),
+      solution: [`P = ${variant} : 20 = ${line10Probability}.`, `Ответ: ${line10Probability}.`],
+    }),
+    mathOgeBlank(variant, 11, {
+      kind: "text",
+      format: "номер графика",
+      topic: "графики функций",
+      theory: "Коэффициент k в формуле y = kx + b задаёт наклон прямой, а b — точку пересечения с осью Oy.",
+      prompt: `Укажите номер формулы линейной функции, график которой имеет угловой коэффициент ${line11Slope} и проходит через точку (0; ${variant}).`,
+      options: [
+        `y = ${line11Slope}x + ${variant}`,
+        `y = ${variant}x + ${line11Slope}`,
+        `y = −${line11Slope}x + ${variant}`,
+        `y = ${line11Slope}x − ${variant}`,
+      ],
+      answer: "1",
+      solution: [`Нужная формула имеет коэффициент при x, равный ${line11Slope}, и свободный член ${variant}.`, "Ответ: 1."],
+    }),
+    mathOgeBlank(variant, 12, {
+      kind: "number",
+      format: "формула",
+      topic: "подстановка в формулу",
+      theory: "Из формулы ρ = m/V следует V = m/ρ.",
+      prompt: `Плотность вещества вычисляют по формуле ρ = m/V. Найдите объём тела массой ${line12Mass} кг при плотности ${line12Density} кг/л.`,
+      answer: String(line12Mass / line12Density),
+      solution: [`V = m : ρ = ${line12Mass} : ${line12Density} = ${line12Mass / line12Density}.`, `Ответ: ${line12Mass / line12Density}.`],
+    }),
+    mathOgeBlank(variant, 13, {
+      kind: "text",
+      format: "промежуток",
+      topic: "неравенства",
+      theory: "Для неравенства x > a ответом служит интервал (a; +∞); граничная точка не включается.",
+      prompt: `Решите неравенство 2x > ${2 * line13Boundary}. В ответе запишите наименьшее целое число, которое является его решением.`,
+      answer: String(line13Boundary + 1),
+      solution: [`x > ${line13Boundary}.`, `Наименьшее целое решение: ${line13Boundary + 1}.`, `Ответ: ${line13Boundary + 1}.`],
+    }),
+    mathOgeBlank(variant, 14, {
+      kind: "number",
+      format: "последовательность",
+      topic: "арифметическая прогрессия",
+      theory: "n-й член арифметической прогрессии равен aₙ = a₁ + (n − 1)d.",
+      prompt: `В арифметической прогрессии a₁ = ${line14First}, d = ${line14Difference}. Найдите a₆.`,
+      answer: String(line14First + 5 * line14Difference),
+      solution: [`a₆ = ${line14First} + 5 · ${line14Difference} = ${line14First + 5 * line14Difference}.`, `Ответ: ${line14First + 5 * line14Difference}.`],
+    }),
+    mathOgeBlank(variant, 15, {
+      kind: "number",
+      format: "геометрия",
+      topic: "углы треугольника",
+      theory: "Сумма углов треугольника равна 180°.",
+      prompt: `Два угла треугольника равны ${line15Angle}° и ${line15Angle + 20}°. Найдите третий угол.`,
+      answer: String(180 - 2 * line15Angle - 20),
+      solution: [`180 − ${line15Angle} − ${line15Angle + 20} = ${180 - 2 * line15Angle - 20}.`, `Ответ: ${180 - 2 * line15Angle - 20}.`],
+    }),
+    mathOgeBlank(variant, 16, {
+      kind: "number",
+      format: "геометрия",
+      topic: "вписанный угол",
+      theory: "Вписанный угол равен половине центрального угла, опирающегося на ту же дугу.",
+      prompt: `Центральный угол, опирающийся на дугу AB, равен ${2 * line16Angle}°. Найдите вписанный угол, опирающийся на ту же дугу.`,
+      answer: String(line16Angle),
+      solution: [`${2 * line16Angle} : 2 = ${line16Angle}.`, `Ответ: ${line16Angle}.`],
+    }),
+    mathOgeBlank(variant, 17, {
+      kind: "number",
+      format: "геометрия",
+      topic: "площадь прямоугольника",
+      theory: "Площадь прямоугольника равна произведению длин его соседних сторон.",
+      prompt: `Стороны прямоугольника равны ${line17SideA} и ${line17SideB}. Найдите его площадь.`,
+      answer: String(line17SideA * line17SideB),
+      solution: [`S = ${line17SideA} · ${line17SideB} = ${line17SideA * line17SideB}.`, `Ответ: ${line17SideA * line17SideB}.`],
+    }),
+    mathOgeBlank(variant, 18, {
+      kind: "number",
+      format: "геометрия",
+      topic: "площадь треугольника",
+      theory: "Площадь треугольника равна половине произведения основания на проведённую к нему высоту.",
+      prompt: `Основание треугольника равно ${line18Base}, а высота к нему равна ${line18Height}. Найдите площадь треугольника.`,
+      answer: String(line18Base * line18Height / 2),
+      solution: [`S = ${line18Base} · ${line18Height} : 2 = ${line18Base * line18Height / 2}.`, `Ответ: ${line18Base * line18Height / 2}.`],
+    }),
+    mathOgeBlank(variant, 19, {
+      kind: "text",
+      format: "последовательность цифр",
+      answerOrder: "any",
+      topic: "геометрические утверждения",
+      theory: "Проверяйте каждое утверждение независимо и используйте точную формулировку теоремы.",
+      prompt: `Какие из утверждений верны? Дополнительное число варианта: ${variant}. Запишите номера верных утверждений.`,
+      options: [
+        "Диагонали прямоугольника равны.",
+        "Сумма углов любого треугольника равна 360°.",
+        "Через точку, не лежащую на данной прямой, проходит ровно одна прямая, параллельная данной.",
+      ],
+      answer: "13",
+      solution: ["Верны утверждения 1 и 3.", "Во втором утверждении правильная сумма равна 180°.", "Ответ: 13."],
+    }),
+    mathOgeTask(variant, 20, {
+      kind: "extended",
+      format: "развёрнутое решение",
+      topic: "квадратное уравнение",
+      theory: "Приведите уравнение к стандартному виду, вычислите дискриминант и проверьте найденные корни.",
+      prompt: `Решите уравнение x² − ${2 * (variant + 2)}x + ${(variant + 2) ** 2 - 4} = 0.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите полное решение и оба корня.",
+      solution: [`Уравнение имеет вид (x − ${variant + 2})² = 4.`, `Корни: ${variant} и ${variant + 4}.`],
+    }),
+    mathOgeTask(variant, 21, {
+      kind: "extended",
+      format: "развёрнутое решение",
+      topic: "текстовая задача",
+      theory: "Обозначьте неизвестную величину, составьте уравнение по условию и проверьте смысл полученного ответа.",
+      prompt: `Два велосипедиста выехали одновременно навстречу друг другу из пунктов, расстояние между которыми ${90 + 6 * variant} км. Скорость первого на 6 км/ч больше скорости второго. Они встретились через 3 часа. Найдите скорость каждого велосипедиста.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите математическую модель, решение и обе скорости.",
+      solution: [`Пусть скорость второго равна x, тогда скорость первого x + 6.`, `3x + 3(x + 6) = ${90 + 6 * variant}.`, "Решите линейное уравнение и проверьте сумму пройденных расстояний."],
+    }),
+    mathOgeTask(variant, 22, {
+      kind: "extended",
+      format: "график функции",
+      topic: "квадратичная функция",
+      theory: "Для построения параболы найдите вершину, ось симметрии, направление ветвей и несколько контрольных точек.",
+      prompt: `Постройте график функции y = (x − ${variant})² − 4. По графику определите значения x, при которых y = 0.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите построение графика и найденные абсциссы точек пересечения с осью Ox.",
+      solution: [`Вершина параболы: (${variant}; −4), ось симметрии x = ${variant}.`, `(x − ${variant})² = 4, поэтому x = ${variant - 2} или x = ${variant + 2}.`],
+    }),
+    mathOgeTask(variant, 23, {
+      kind: "extended",
+      format: "геометрическое доказательство",
+      topic: "равнобедренный треугольник",
+      theory: "Для доказательства равенства отрезков найдите равные треугольники и укажите признак их равенства.",
+      prompt: `В равнобедренном треугольнике ABC (AB = BC) угол ABC равен ${40 + variant}°. Проведена биссектриса BD. Докажите, что AD = DC.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите доказательство с указанием признака равенства треугольников.",
+      solution: ["Треугольники ABD и CBD имеют AB = BC, общую сторону BD и равные углы ABD и DBC.", "По первому признаку треугольники равны, значит AD = DC."],
+    }),
+    mathOgeTask(variant, 24, {
+      kind: "extended",
+      format: "геометрическая задача",
+      topic: "теорема Пифагора",
+      theory: "В прямоугольном треугольнике квадрат гипотенузы равен сумме квадратов катетов.",
+      prompt: `Катеты прямоугольного треугольника равны ${3 * variant} и ${4 * variant}. Найдите гипотенузу и площадь треугольника.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите вычисление гипотенузы и площади.",
+      solution: [`Гипотенуза равна ${5 * variant} по тройке 3–4–5, умноженной на ${variant}.`, `Площадь равна ${3 * variant} · ${4 * variant} : 2 = ${6 * variant * variant}.`],
+    }),
+    mathOgeTask(variant, 25, {
+      kind: "extended",
+      format: "геометрическая задача",
+      topic: "окружность и касательная",
+      theory: "Радиус, проведённый в точку касания, перпендикулярен касательной.",
+      prompt: `Из точки A к окружности с центром O проведена касательная AB. Известно, что OA = ${5 * variant}, OB = ${3 * variant}. Найдите длину AB и обоснуйте решение.`,
+      answer: "teacher-review",
+      responseInstruction: "Запишите обоснование прямого угла и вычисление длины касательной.",
+      solution: [`OB ⟂ AB, поэтому треугольник AOB прямоугольный.`, `AB = √(OA² − OB²) = √(${25 * variant * variant} − ${9 * variant * variant}) = ${4 * variant}.`],
+    }),
+  ];
+}
+
 export function getOgeRouteTasks(subjectSlug: string, topics: string[], variantId = 1): ExamTask[] {
   if (subjectSlug === "russian") return getRussianOgeVariantTasks(variantId);
+  if (subjectSlug === "math") return getMathOgeVariantTasks(variantId);
   const seeds = getDemoTasks(subjectSlug);
   const profiles: Record<string, { count: number; extendedFrom?: number }> = {
     math: { count: 25, extendedFrom: 20 },
@@ -299,7 +604,7 @@ export function getOgeRouteTasks(subjectSlug: string, topics: string[], variantI
     history: { count: 24, extendedFrom: 21 },
     social: { count: 24, extendedFrom: 21 },
     geography: { count: 30, extendedFrom: 27 },
-    literature: { count: 5, extendedFrom: 1 },
+    literature: { count: 12, extendedFrom: 1 },
     english: { count: 38, extendedFrom: 35 },
     german: { count: 38, extendedFrom: 35 },
     french: { count: 38, extendedFrom: 35 },

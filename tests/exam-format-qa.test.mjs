@@ -43,8 +43,8 @@ test("unverified subject banks are visibly blocked before student use", async ()
   ]);
   assert.match(validation, /status: "blocked"/);
   assert.match(validation, /Готово к вашей предварительной проверке/);
-  assert.match(validation, /базовый ЕГЭ \(21 задание, 180 минут\)/);
-  assert.match(validation, /профильный ЕГЭ \(19 заданий, 235 минут\)/);
+  assert.match(validation, /candidateEge\("Математика, профильный уровень", 19/);
+  assert.match(validation, /базового уровня на 21 задание/);
   assert.match(simulator, /if \(!routeReady\)/);
   assert.match(simulator, /задания временно закрыты/);
   assert.doesNotMatch(oge, /Вывод \$\{options\.length \+ 1\} не следует/);

@@ -120,7 +120,7 @@ export default function Home() {
             <li><span>3</span>облегчИть</li>
             <li><span>4</span>красИвее</li>
           </ol>
-          <label><span>Ответ для бланка</span><input value="134" readOnly aria-label="Пример ответа" /></label>
+          <label><span>Ответ для бланка</span><output aria-label="Пример ответа">134</output></label>
           <small>Авторский пример формы. Не является заданием закрытого КИМ.</small>
         </div>
       </section>

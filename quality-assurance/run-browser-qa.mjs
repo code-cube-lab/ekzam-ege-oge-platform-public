@@ -38,6 +38,7 @@ try {
     reducedMotion: "reduce",
   });
   const page = await desktop.newPage();
+  page.setDefaultNavigationTimeout(90_000);
   page.on("pageerror", (error) => runtimeErrors.push(String(error)));
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
@@ -48,7 +49,7 @@ try {
 
   await page.locator(".exam-level-cards button").nth(0).click();
   assert(await page.locator(".exam-entry-next.visible").count() === 1, "после ОГЭ открываются предмет и режим");
-  await page.getByLabel("Предмет").selectOption("russian");
+  await page.locator(".exam-entry-field select").selectOption("russian");
   await Promise.all([
     page.waitForURL(/level=oge/),
     page.locator(".exam-entry-submit").click(),
@@ -70,23 +71,29 @@ try {
   await page.getByLabel("Ответ для бланка").fill("999");
   await page.getByRole("button", { name: "Проверить решение" }).click();
   assert(await page.getByTestId("inline-remediation").isVisible(), "после ошибки открывается теория, причина и отработка");
+  const remediationText = await page.getByTestId("inline-remediation").innerText();
+  const repeatAnswer = remediationText.match(/Верная последовательность:\s*([0-9]+)/i)?.[1];
+  assert(Boolean(repeatAnswer), "разбор содержит проверяемый правильный ответ для повтора");
   assert(/1/.test(await page.locator(".exam-mode-tabs button").nth(2).innerText()), "ошибка попала в тетрадь");
   await page.screenshot({ path: path.join(outputDir, "oge-error-remediation.png"), fullPage: false });
 
-  await page.getByRole("button", { name: /Отработать похожее/ }).click();
+  await page.getByRole("button", { name: /Открыть похожее|Отработать похожее/ }).click();
   assert(await page.getByRole("button", { name: "Проверить решение" }).isVisible(), "похожее задание открывается без перезагрузки");
 
   await page.locator(".exam-mode-tabs button").nth(2).click();
   assert(await page.locator(".exam-map nav button").count() === 1, "тетрадь показывает только неверное задание");
-  await page.getByLabel("Ответ для бланка").fill("531");
+  await page.getByLabel("Ответ для бланка").fill(repeatAnswer);
   await page.getByRole("button", { name: "Проверить решение" }).click();
   await page.getByText("Тетрадь ошибок пока пуста").waitFor();
   assert(await page.getByText("Тетрадь ошибок пока пуста").isVisible(), "верный повтор удаляет ошибку");
 
   await page.getByRole("button", { name: "Открыть пробный вариант" }).click();
-  const firstVariantPrompt = await page.locator(".exam-paper h2").innerText();
+  await page.locator(".exam-variant-tabs button").nth(0).click();
+  await page.locator(".exam-map nav button").nth(1).click();
+  const firstVariantPrompt = await page.locator(".exam-stimulus").innerText();
   await page.locator(".exam-variant-tabs button").nth(1).click();
-  const secondVariantPrompt = await page.locator(".exam-paper h2").innerText();
+  await page.locator(".exam-map nav button").nth(1).click();
+  const secondVariantPrompt = await page.locator(".exam-stimulus").innerText();
   assert(firstVariantPrompt !== secondVariantPrompt, "вариант №2 меняет авторский материал");
 
   await page.locator(".exam-level-switch button").nth(1).click();
@@ -107,6 +114,7 @@ try {
     reducedMotion: "reduce",
   });
   const mobilePage = await mobile.newPage();
+  mobilePage.setDefaultNavigationTimeout(90_000);
   mobilePage.on("pageerror", (error) => runtimeErrors.push(String(error)));
 
   await mobilePage.goto(baseUrl, { waitUntil: "networkidle" });

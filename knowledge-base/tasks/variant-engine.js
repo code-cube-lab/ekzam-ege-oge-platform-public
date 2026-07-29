@@ -1,3 +1,15 @@
+import { buildPhysicsEgeVariant } from "./ege-physics-authored-bank.js";
+import { buildChemistryEgeVariant } from "./ege-chemistry-authored-bank.js";
+import { buildBiologyEgeVariant } from "./ege-biology-authored-bank.js";
+import { buildInformaticsEgeVariant } from "./ege-informatics-authored-bank.js";
+import { buildLanguageEgeVariant } from "./ege-languages-authored-bank.js";
+import {
+  buildGeographyEgeVariant,
+  buildHistoryEgeVariant,
+  buildLiteratureEgeVariant,
+  buildSocialEgeVariant,
+} from "./ege-humanities-authored-bank.js";
+
 export const trainingVariants = [
   { id: 1, label: "Вариант 1", note: "стартовый срез" },
   { id: 2, label: "Вариант 2", note: "другая расстановка" },
@@ -1585,6 +1597,17 @@ export function buildTrainingVariant(subjectSlug, fullTaskCount, topics, seeds, 
   const variant = Math.min(12, Math.max(1, Number(variantId) || 1));
   if (subjectSlug === "russian") return Array.from({ length: fullTaskCount }, (_, index) => russianTask(index, variant));
   if (subjectSlug === "math") return Array.from({ length: fullTaskCount }, (_, index) => mathTask(index, variant));
+  if (subjectSlug === "physics") return buildPhysicsEgeVariant(variant);
+  if (subjectSlug === "chemistry") return buildChemistryEgeVariant(variant);
+  if (subjectSlug === "biology") return buildBiologyEgeVariant(variant);
+  if (subjectSlug === "informatics") return buildInformaticsEgeVariant(variant);
+  if (["english", "german", "french", "spanish", "chinese"].includes(subjectSlug)) {
+    return buildLanguageEgeVariant(subjectSlug, variant);
+  }
+  if (subjectSlug === "history") return buildHistoryEgeVariant(variant);
+  if (subjectSlug === "geography") return buildGeographyEgeVariant(variant);
+  if (subjectSlug === "social") return buildSocialEgeVariant(variant);
+  if (subjectSlug === "literature") return buildLiteratureEgeVariant(variant);
   const offset = (variant - 1) * 3;
   const automaticSeeds = seeds.filter((task) => task.kind !== "extended");
   const extendedSeeds = seeds.filter((task) => task.kind === "extended");

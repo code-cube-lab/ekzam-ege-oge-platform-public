@@ -56,6 +56,17 @@ async function loadOfficialStructure() {
   return context.exports;
 }
 
+async function loadEgeBlueprints() {
+  const source = await readFile(new URL("../knowledge-base/exams/ege-line-blueprints-2026.ts", import.meta.url), "utf8");
+  const withoutImport = source.replace(/^import type .*exam-subjects";\r?\n/m, "");
+  const javascript = ts.transpileModule(withoutImport, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const context = { exports: {} };
+  vm.runInNewContext(javascript, context);
+  return context.exports;
+}
+
 function signature(task) {
   return JSON.stringify([task.prompt, task.stimulus ?? "", task.audioText ?? "", task.options ?? [], task.answer]);
 }
@@ -78,6 +89,28 @@ test("unverified EGE subject banks are quarantined instead of presented as full 
       assert.ok(draft.every((task) => !task.prompt.includes("Линия ")), "math: no generic line filler");
       continue;
     }
+    const authoredCandidateCounts = {
+      physics: 26,
+      chemistry: 34,
+      biology: 28,
+      informatics: 27,
+      history: 21,
+      geography: 29,
+      social: 25,
+      literature: 11,
+      english: 42,
+      german: 42,
+      french: 42,
+      spanish: 42,
+      chinese: 32,
+    };
+    if (authoredCandidateCounts[slug]) {
+      const expectedTaskCount = authoredCandidateCounts[slug];
+      assert.equal(draft.length, expectedTaskCount, `${slug}: complete candidate route`);
+      assert.ok(draft.every((task) => /Авторский материал/.test(task.sourceLabel)), `${slug}: authored route awaits subject review`);
+      assert.ok(draft.every((task) => !task.prompt.includes("Линия ")), `${slug}: no generic line filler`);
+      continue;
+    }
     assert.ok(draft.every((task) => /не допущен к ученикам/.test(task.sourceLabel)), `${slug}: draft label`);
     assert.ok(draft.every((task) => !task.prompt.includes("Выполните линию")), `${slug}: no cosmetic exam suffix`);
   }
@@ -93,6 +126,38 @@ test("official 2026 registry covers every EGE and OGE subject with exact route c
   assert.equal(registry.getOfficialExamTrack2026("ege", "math").taskCount, 19);
   assert.equal(registry.officialMathBaseEge2026.taskCount, 21);
   assert.equal(registry.getOfficialExamTrack2026("oge", "literature").taskCount, 12);
+});
+
+test("every EGE 2026 subject has a line-by-line blueprint with response and resource contracts", async () => {
+  const registry = await loadOfficialStructure();
+  const { egeBlueprints2026 } = await loadEgeBlueprints();
+  assert.equal(Object.keys(egeBlueprints2026).length, 15);
+  for (const official of registry.officialEgeTracks2026) {
+    const blueprint = egeBlueprints2026[official.subject];
+    assert.ok(blueprint, `${official.subject}: blueprint exists`);
+    assert.equal(blueprint.taskCount, official.taskCount, `${official.subject}: official task count`);
+    assert.equal(blueprint.durationMinutes, official.durationMinutes, `${official.subject}: official duration`);
+    assert.equal(blueprint.lines.length, official.taskCount, `${official.subject}: every line described`);
+    assert.equal(
+      JSON.stringify(blueprint.lines.map((item) => item.line)),
+      JSON.stringify(Array.from({ length: official.taskCount }, (_, index) => index + 1)),
+      `${official.subject}: consecutive line numbers`,
+    );
+    assert.ok(blueprint.lines.every((item) => item.section && item.skill && item.response && item.resource), `${official.subject}: complete line contracts`);
+    assert.ok(blueprint.lines.every((item) => item.maxScore > 0), `${official.subject}: positive maximum scores`);
+    assert.ok(blueprint.officialArchive.startsWith("https://doc.fipi.ru/"), `${official.subject}: official source`);
+  }
+  assert.equal(
+    JSON.stringify(egeBlueprints2026.informatics.lines.filter((item) => ["spreadsheet", "document", "dataset"].includes(item.resource)).map((item) => item.line)),
+    JSON.stringify([3, 9, 10, 17, 18, 22, 24, 26, 27]),
+  );
+  assert.ok(egeBlueprints2026.history.lines.slice(8, 12).every((item) => item.resource === "map"));
+  assert.ok(egeBlueprints2026.english.lines.slice(0, 9).every((item) => item.resource === "audio"));
+  assert.ok(egeBlueprints2026.english.lines.slice(38).every((item) => item.response === "oral"));
+  assert.equal(
+    JSON.stringify(egeBlueprints2026.literature.lines.filter((item) => item.review === "teacher").map((item) => item.line)),
+    JSON.stringify([4, 5, 9, 10, 11]),
+  );
 });
 
 test("twelve Russian routes follow all 27 lines and produce different complete variants", async () => {
@@ -308,6 +373,173 @@ test("twelve mathematics EGE routes follow the 2026 profile structure without ge
       12,
       `mathematics line ${line}: twelve authored versions`,
     );
+  }
+});
+
+test("twelve physics EGE candidate routes contain all 26 authored lines and valid answer contracts", async () => {
+  const bank = await loadSeedBank();
+  const variants = Array.from(
+    { length: 12 },
+    (_, index) => buildTrainingVariant("physics", 26, ["механика", "термодинамика", "электродинамика"], bank.physics, index + 1),
+  );
+  assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
+  for (const [variantIndex, tasks] of variants.entries()) {
+    const variant = variantIndex + 1;
+    assert.equal(tasks.length, 26, `variant ${variant}: 26 lines`);
+    for (const [index, task] of tasks.entries()) {
+      assert.equal(task.id, `physics-v${variant}-${index + 1}`);
+      assert.ok(task.prompt?.trim(), `variant ${variant}, line ${index + 1}: prompt`);
+      assert.ok(task.theory?.trim(), `variant ${variant}, line ${index + 1}: theory`);
+      assert.ok(task.solution?.length, `variant ${variant}, line ${index + 1}: solution`);
+      assert.match(task.sourceLabel, /Авторский материал/);
+      assert.doesNotMatch(task.prompt, /Линия \d+\.|номер корректного вывода/i);
+      if (task.interaction === "exam-blank" && task.kind === "number") {
+        assert.ok(Number.isFinite(Number(String(task.answer).replace(",", "."))), `variant ${variant}, line ${index + 1}: numeric answer`);
+      }
+      if (task.options?.length && /^\d+$/.test(String(task.answer))) {
+        for (const digit of String(task.answer)) {
+          assert.ok(Number(digit) >= 1 && Number(digit) <= task.options.length, `variant ${variant}, line ${index + 1}: option ${digit}`);
+        }
+      }
+    }
+    assert.ok(tasks.slice(0, 20).every((task) => task.interaction === "exam-blank"), `variant ${variant}: lines 1-20 use exam blanks`);
+    assert.ok(tasks.slice(20).every((task) => task.kind === "extended" && task.answer === "teacher-review"), `variant ${variant}: lines 21-26 require expert review`);
+    assert.equal(
+      JSON.stringify(tasks.slice(20).map((task) => task.maxScore)),
+      JSON.stringify([3, 2, 2, 3, 3, 4]),
+      `variant ${variant}: official extended-answer scores`,
+    );
+  }
+});
+
+test("twelve chemistry EGE candidate routes contain all 34 authored lines and official extended scores", async () => {
+  const bank = await loadSeedBank();
+  const variants = Array.from(
+    { length: 12 },
+    (_, index) => buildTrainingVariant("chemistry", 34, ["неорганическая химия", "органическая химия", "расчёты"], bank.chemistry, index + 1),
+  );
+  assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
+  for (const [variantIndex, tasks] of variants.entries()) {
+    const variant = variantIndex + 1;
+    assert.equal(tasks.length, 34, `variant ${variant}: 34 lines`);
+    for (const [index, task] of tasks.entries()) {
+      assert.equal(task.id, `chemistry-v${variant}-${index + 1}`);
+      assert.ok(task.prompt?.trim());
+      assert.ok(task.theory?.trim());
+      assert.ok(task.solution?.length);
+      assert.match(task.sourceLabel, /Авторский материал/);
+      assert.doesNotMatch(task.prompt, /Линия \d+\.|номер корректного вывода/i);
+      if (task.interaction === "exam-blank" && task.kind === "number") {
+        assert.ok(Number.isFinite(Number(String(task.answer).replace(",", "."))), `variant ${variant}, line ${index + 1}: numeric answer`);
+      }
+      if (task.options?.length && /^\d+$/.test(String(task.answer))) {
+        for (const digit of String(task.answer)) {
+          assert.ok(Number(digit) >= 1 && Number(digit) <= task.options.length, `variant ${variant}, line ${index + 1}: option ${digit}`);
+        }
+      }
+    }
+    assert.ok(tasks.slice(0, 28).every((task) => task.interaction === "exam-blank"), `variant ${variant}: lines 1-28 use exam blanks`);
+    assert.ok(tasks.slice(28).every((task) => task.kind === "extended" && task.answer === "teacher-review"), `variant ${variant}: lines 29-34 require expert review`);
+    assert.equal(JSON.stringify(tasks.slice(28).map((task) => task.maxScore)), JSON.stringify([2, 2, 4, 5, 3, 4]));
+  }
+});
+
+test("twelve biology EGE candidate routes contain all 28 authored lines and official extended scores", async () => {
+  const bank = await loadSeedBank();
+  const variants = Array.from(
+    { length: 12 },
+    (_, index) => buildTrainingVariant("biology", 28, ["клетка", "организм", "экосистемы"], bank.biology, index + 1),
+  );
+  assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12);
+  for (const [variantIndex, tasks] of variants.entries()) {
+    const variant = variantIndex + 1;
+    assert.equal(tasks.length, 28, `variant ${variant}: 28 lines`);
+    for (const [index, task] of tasks.entries()) {
+      assert.equal(task.id, `biology-v${variant}-${index + 1}`);
+      assert.ok(task.prompt?.trim(), `variant ${variant}, line ${index + 1}: prompt`);
+      assert.ok(task.theory?.trim(), `variant ${variant}, line ${index + 1}: theory`);
+      assert.ok(task.solution?.length, `variant ${variant}, line ${index + 1}: solution`);
+      assert.match(task.sourceLabel, /Авторский материал/);
+      assert.doesNotMatch(task.prompt, /Линия \d+\.|номер корректного вывода/i);
+      if (task.interaction === "exam-blank" && task.kind === "number") {
+        assert.ok(Number.isFinite(Number(String(task.answer).replace(",", "."))), `variant ${variant}, line ${index + 1}: numeric answer`);
+      }
+      if (task.options?.length && /^\d+$/.test(String(task.answer))) {
+        for (const digit of String(task.answer)) {
+          assert.ok(Number(digit) >= 1 && Number(digit) <= task.options.length, `variant ${variant}, line ${index + 1}: option ${digit}`);
+        }
+      }
+    }
+    assert.ok(tasks.slice(0, 21).every((task) => task.interaction === "exam-blank"), `variant ${variant}: lines 1-21 use exam blanks`);
+    assert.ok(tasks.slice(21).every((task) => task.kind === "extended" && task.answer === "teacher-review"), `variant ${variant}: lines 22-28 require expert review`);
+    assert.equal(JSON.stringify(tasks.slice(21).map((task) => task.maxScore)), JSON.stringify([3, 3, 3, 3, 3, 3, 3]));
+  }
+});
+
+test("humanities EGE candidates follow their complete 2026 line and score contracts", async () => {
+  const bank = await loadSeedBank();
+  const contracts = {
+    history: { count: 21, extended: [13, 14, 15, 16, 17, 18, 19, 20, 21], scores: [2, 2, 2, 2, 3, 3, 2, 3, 3] },
+    geography: { count: 29, extended: [22, 23, 24, 25, 26, 27, 28, 29], scores: [1, 1, 2, 2, 2, 2, 2, 3] },
+    social: { count: 25, extended: [17, 18, 19, 20, 21, 22, 23, 24, 25], scores: [2, 2, 3, 3, 3, 4, 3, 4, 6] },
+    literature: { count: 11, extended: [4, 5, 9, 10, 11], scores: [4, 7, 4, 7, 20] },
+  };
+  for (const [slug, contract] of Object.entries(contracts)) {
+    const variants = Array.from(
+      { length: 12 },
+      (_, index) => buildTrainingVariant(slug, contract.count, ["анализ источника", "предметные знания"], bank[slug], index + 1),
+    );
+    assert.equal(new Set(variants.map((tasks) => JSON.stringify(tasks.map(signature)))).size, 12, `${slug}: twelve route signatures`);
+    for (const [variantIndex, tasks] of variants.entries()) {
+      const variant = variantIndex + 1;
+      assert.equal(tasks.length, contract.count, `${slug} v${variant}: task count`);
+      assert.equal(JSON.stringify(tasks.map((task) => task.id)), JSON.stringify(Array.from({ length: contract.count }, (_, index) => `${slug}-v${variant}-${index + 1}`)));
+      assert.ok(tasks.every((task) => task.prompt?.trim() && task.theory?.trim() && task.solution?.length), `${slug} v${variant}: complete explanations`);
+      assert.ok(tasks.every((task) => /Авторский материал/.test(task.sourceLabel)), `${slug} v${variant}: authored label`);
+      const extendedTasks = contract.extended.map((line) => tasks[line - 1]);
+      assert.ok(extendedTasks.every((task) => task.kind === "extended" && task.answer === "teacher-review"), `${slug} v${variant}: review-only extended lines`);
+      assert.equal(JSON.stringify(extendedTasks.map((task) => task.maxScore)), JSON.stringify(contract.scores), `${slug} v${variant}: official maximum scores`);
+    }
+  }
+});
+
+test("informatics EGE candidates contain all 27 lines and declare every required computer resource", async () => {
+  const bank = await loadSeedBank();
+  const resourceLines = [3, 9, 10, 17, 18, 22, 24, 26, 27];
+  for (let variant = 1; variant <= 12; variant += 1) {
+    const tasks = buildTrainingVariant("informatics", 27, ["алгоритмы", "программирование", "данные"], bank.informatics, variant);
+    assert.equal(tasks.length, 27);
+    assert.equal(JSON.stringify(tasks.map((task) => task.id)), JSON.stringify(Array.from({ length: 27 }, (_, index) => `informatics-v${variant}-${index + 1}`)));
+    assert.ok(tasks.every((task) => task.prompt?.trim() && task.theory?.trim() && task.solution?.length));
+    assert.ok(tasks.every((task) => task.interaction === "exam-blank"));
+    assert.ok(resourceLines.every((line) => tasks[line - 1].attachment && tasks[line - 1].resourceStatus), `variant ${variant}: file manifests`);
+    assert.equal(JSON.stringify(tasks.slice(25).map((task) => task.maxScore)), JSON.stringify([2, 2]));
+  }
+});
+
+test("foreign-language EGE candidates reproduce written and oral section contracts", async () => {
+  const bank = await loadSeedBank();
+  const european = ["english", "german", "french", "spanish"];
+  const europeanScores = [2, 3, ...Array(7).fill(1), 3, 2, ...Array(25).fill(1), 6, 14, 1, 4, 5, 10];
+  for (const slug of european) {
+    for (let variant = 1; variant <= 12; variant += 1) {
+      const tasks = buildTrainingVariant(slug, 42, ["аудирование", "чтение", "письмо", "говорение"], bank[slug], variant);
+      assert.equal(tasks.length, 42, `${slug} v${variant}: task count`);
+      assert.equal(JSON.stringify(tasks.map((task) => task.maxScore)), JSON.stringify(europeanScores), `${slug} v${variant}: scores`);
+      assert.ok(tasks.slice(0, 9).every((task) => task.audioText && task.resourceStatus), `${slug} v${variant}: listening resources`);
+      assert.ok(tasks.slice(36).every((task) => task.answer === "teacher-review"), `${slug} v${variant}: productive tasks reviewed`);
+      assert.ok(tasks.slice(38).every((task) => task.kind === "oral"), `${slug} v${variant}: oral section`);
+      assert.ok(tasks.slice(38).every((task) => task.resourceStatus), `${slug} v${variant}: oral media manifests`);
+    }
+  }
+  for (let variant = 1; variant <= 12; variant += 1) {
+    const tasks = buildTrainingVariant("chinese", 32, ["аудирование", "чтение", "письмо", "говорение"], bank.chinese, variant);
+    const scores = [6, ...Array(8).fill(1), 6, 4, ...Array(16).fill(1), 8, 12, 5, 7, 8];
+    assert.equal(tasks.length, 32);
+    assert.equal(JSON.stringify(tasks.map((task) => task.maxScore)), JSON.stringify(scores));
+    assert.ok(tasks.slice(0, 9).every((task) => task.audioText && task.resourceStatus));
+    assert.ok(tasks.slice(27).every((task) => task.answer === "teacher-review"));
+    assert.ok(tasks.slice(29).every((task) => task.kind === "oral" && task.resourceStatus));
   }
 });
 

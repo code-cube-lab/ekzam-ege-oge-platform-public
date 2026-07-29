@@ -1,4 +1,6 @@
-const CACHE_NAME = "ekzam-offline-v4";
+const CACHE_NAME = "ekzam-offline-v5";
+const SCOPE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, "");
+const scopedUrl = (path) => `${SCOPE_PATH}${path}`;
 const CORE_URLS = [
   "/",
   "/exam?level=oge",
@@ -7,7 +9,7 @@ const CORE_URLS = [
   "/telegram",
   "/offline.html",
   "/favicon.svg",
-];
+].map(scopedUrl);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => Promise.allSettled(CORE_URLS.map((url) => cache.add(url)))));
@@ -26,7 +28,7 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+  if (url.origin !== self.location.origin || url.pathname.startsWith(scopedUrl("/api/"))) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
@@ -38,7 +40,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(async () => (await caches.match(request)) || caches.match("/offline.html")),
+        .catch(async () => (await caches.match(request)) || caches.match(scopedUrl("/offline.html"))),
     );
     return;
   }

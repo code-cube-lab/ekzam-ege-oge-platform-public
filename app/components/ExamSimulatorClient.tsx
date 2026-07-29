@@ -82,7 +82,7 @@ export function ExamSimulatorClient({
   const [variantId, setVariantId] = useState(() => Math.min(EXAM_VARIANT_COUNT, Math.max(1, initialVariant || 1)));
   const [familyId, setFamilyId] = useState(() => getRussianTaskFamily(initialFamily).id);
   const [subjectFocus, setSubjectFocus] = useState("all");
-  const [assignmentCount] = useState(() => Math.max(0, initialCount));
+  const [assignmentCount, setAssignmentCount] = useState(() => Math.max(0, initialCount));
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const [written, setWritten] = useState("");
@@ -107,6 +107,28 @@ export function ExamSimulatorClient({
   const formatExampleUrl = level === "oge"
     ? "https://rus-oge.sdamgia.ru/archive"
     : "https://rus-ege.sdamgia.ru/test?id=57153574";
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedLevel = params.get("level");
+    if (requestedLevel !== "oge" && requestedLevel !== "ege") return;
+
+    const requestedSubject = getExamSubject(params.get("subject") ?? initialSubject).slug;
+    const safeSubject = requestedLevel === "oge" && !getSubjectSchoolProfile(requestedSubject).ogeAvailable
+      ? "russian"
+      : requestedSubject;
+    const requestedMode = params.get("mode");
+    const requestedVariant = Number(params.get("variant"));
+    const requestedCount = Number(params.get("count"));
+
+    setExamChosen(true);
+    setLevel(requestedLevel);
+    setSubjectSlug(safeSubject);
+    setMode(requestedMode === "mistakes" ? "mistakes" : requestedMode === "training" ? "training" : "route");
+    setVariantId(Math.min(EXAM_VARIANT_COUNT, Math.max(1, requestedVariant || 1)));
+    setFamilyId(getRussianTaskFamily(params.get("family") ?? initialFamily).id);
+    setAssignmentCount(Math.max(0, requestedCount || 0));
+  }, [initialFamily, initialSubject]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {

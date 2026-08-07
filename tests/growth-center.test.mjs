@@ -117,3 +117,27 @@ test("channel launch series has five original image-backed posts", async () => {
     "post-05-miniapp.jpg",
   ]) await access(new URL(`../public/marketing/channel/${file}`, import.meta.url));
 });
+
+test("Russian teacher pilot has a complete path from short video to an honest order gate", async () => {
+  const [pilot, component] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/russian-teacher-pilot.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/GrowthCenterClient.tsx", import.meta.url), "utf8"),
+  ]);
+
+  const funnel = pilot.split("funnel:")[1].split("contentPlan:")[0];
+  const content = pilot.split("contentPlan:")[1].split("offers:")[0];
+  const offers = pilot.split("offers:")[1].split("channels:")[0];
+  const channels = pilot.split("channels:")[1].split("messages:")[0];
+  assert.equal((funnel.match(/step: "/g) ?? []).length, 6);
+  assert.equal((content.match(/day: "/g) ?? []).length, 7);
+  assert.equal((offers.match(/label: "/g) ?? []).length, 3);
+  assert.equal((channels.match(/name: "/g) ?? []).length, 4);
+  assert.match(pilot, /task=5/);
+  assert.match(pilot, /ответ \/start/);
+  assert.match(pilot, /не писать участникам канала в личку/);
+  assert.match(component, /id="russian-pilot"/);
+  assert.match(component, /Открыть бесплатное задание № 5/);
+  assert.match(component, /Скопировать весь запуск/);
+  assert.match(component, /russianTeacherPilot\.contentPlan\.map/);
+  assert.match(component, /russianTeacherPilot\.channels\.map/);
+});

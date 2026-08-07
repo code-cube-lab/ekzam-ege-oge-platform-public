@@ -103,6 +103,12 @@ try {
   assert(/Сергей Геннадьевич Дедов/.test(mathTeacherPlan) && /Где потерян знак/.test(mathTeacherPlan), "выбор преподавателя меняет персональное позиционирование и серию Reels");
   assert(await page.locator(".channel-post-grid article").count() === 5, "на сайте опубликован комплект из пяти постов канала");
   assert(await page.locator(".channel-post-grid img").count() === 5, "каждый пост канала имеет отдельное изображение");
+  assert(await page.locator(".russian-funnel article").count() === 6, "пилот русского показывает полный путь от ролика до заказа");
+  assert(await page.locator(".russian-content-plan article").count() === 7, "пилот русского содержит семь предметных роликов");
+  assert(await page.locator(".russian-channel-list article").count() === 4, "пилот русского разделяет четыре канала привлечения");
+  await page.getByRole("button", { name: "Скопировать весь запуск" }).click();
+  await page.getByRole("button", { name: "План скопирован ✓" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "План скопирован ✓" }).isVisible(), "пилот преподавателя русского копируется одним действием");
   await page.locator(".growth-controls fieldset button").nth(1).click();
   await page.locator(".growth-controls label select").nth(0).selectOption("english");
   assert(await page.locator(".growth-controls label select").nth(1).locator("option").count() === 42, "для английского ЕГЭ доступны все 42 номера");
@@ -282,6 +288,7 @@ try {
   assert(growthOverflow.scroll <= growthOverflow.client, "/growth на 390 px не имеет горизонтального переполнения");
   assert(await mobilePage.getByLabel("Преподаватель для рекламного плана").locator("option").count() === 27, "мобильный центр роста сохраняет все персональные брифы");
   assert(await mobilePage.getByRole("button", { name: "Скопировать задание преподавателю" }).isVisible(), "мобильный центр роста показывает главный инструмент преподавателя");
+  assert(await mobilePage.locator(".russian-content-plan article").count() === 7, "мобильный центр роста сохраняет семь роликов русского пилота");
   await mobilePage.screenshot({ path: path.join(outputDir, "growth-mobile.png"), fullPage: false });
 
   await mobilePage.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });

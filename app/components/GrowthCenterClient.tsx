@@ -23,6 +23,7 @@ import {
   teacherGrowthProfiles,
   type TeacherGrowthProfile,
 } from "../../knowledge-base/marketing/teacher-growth";
+import { russianPilotCopy, russianTeacherPilot } from "../../knowledge-base/marketing/russian-teacher-pilot";
 import { telegramChannelPosts } from "../../knowledge-base/marketing/telegram-channel-posts";
 
 type PartnerFilter = "all" | "teacher" | "exam" | "parent" | "school";
@@ -148,11 +149,14 @@ export function GrowthCenterClient() {
   const practiceUrl = currentAppUrl(campaign.practicePath);
   const teacherBrief = fullCampaignText(campaign, practiceUrl);
   const teacherPlan = fullTeacherPlanText(teacherProfile, campaign, practiceUrl);
+  const russianPracticeUrl = currentAppUrl(russianTeacherPilot.practicePath);
+  const russianParentUrl = currentAppUrl(russianTeacherPilot.parentPath);
+  const russianLaunchPlan = russianPilotCopy(russianPracticeUrl, russianParentUrl);
 
   return <main className="growth-center" id="top">
     <header className="growth-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>центр роста</small></Link>
-      <nav aria-label="Навигация центра роста"><a href="#teachers">Преподаватели</a><a href="#constructor">Конструктор</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#channel">Канал</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
+      <nav aria-label="Навигация центра роста"><a href="#teachers">Преподаватели</a><a href="#russian-pilot">Русский: пилот</a><a href="#constructor">Конструктор</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#channel">Канал</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
       <Link className="button button-dark button-small" href="/reels">Видеолаборатория</Link>
     </header>
 
@@ -194,6 +198,60 @@ export function GrowthCenterClient() {
           <p className="teacher-growth-proof">{teacherProfile.proofRule}</p>
         </article>
       </div>
+    </section>
+
+    <section className="russian-pilot" id="russian-pilot">
+      <header className="growth-section-head">
+        <span className="exam-kicker">Первый управляемый запуск</span>
+        <h2>Как преподаватель русского приводит ученика к заказу.</h2>
+        <p>Не рекламировать «всю платформу». Преподаватель показывает один экзаменационный навык, ведёт сразу в бесплатную отработку и предлагает человеческий разбор только после обнаруженной ошибки.</p>
+      </header>
+
+      <div className="russian-pilot-lead">
+        <div><span>ПРЕПОДАВАТЕЛЬ ПИЛОТА</span><strong>{teacherGrowthProfiles[0].name}</strong><p>{russianTeacherPilot.status}</p></div>
+        <blockquote><span>ОБЕЩАНИЕ УЧЕНИКУ</span><p>{russianTeacherPilot.promise}</p></blockquote>
+      </div>
+
+      <div className="russian-funnel" aria-label="Путь ученика от ролика до заказа">
+        {russianTeacherPilot.funnel.map((item) => <article key={item.step}>
+          <span>{item.step}</span><h3>{item.title}</h3><p>{item.action}</p><small>СЧИТАЕМ: {item.metric}</small>
+        </article>)}
+      </div>
+
+      <div className="russian-pilot-actions">
+        <Link className="button button-red" href={russianTeacherPilot.practicePath}>Открыть бесплатное задание № 5 →</Link>
+        <button type="button" className="button button-dark" onClick={() => handleCopy("russian-launch", russianLaunchPlan)}>{copied === "russian-launch" ? "План скопирован ✓" : "Скопировать весь запуск"}</button>
+        <a className="button button-ghost" href="https://t.me/ekzam_oge_ege" target="_blank" rel="noreferrer">Открыть канал</a>
+      </div>
+
+      <div className="russian-pilot-grid">
+        <section>
+          <div className="russian-pilot-subhead"><span>01</span><div><small>КОНТЕНТ</small><h3>Семь роликов — семь причин перейти к практике.</h3></div></div>
+          <div className="russian-content-plan">{russianTeacherPilot.contentPlan.map((item) => <article key={item.day}>
+            <header><span>{item.day}</span><b>{item.task}</b></header><h4>{item.hook}</h4><p>{item.format}</p><small>CTA: {item.cta}</small>
+          </article>)}</div>
+        </section>
+
+        <section>
+          <div className="russian-pilot-subhead"><span>02</span><div><small>ПЛОЩАДКИ</small><h3>Где искать ученика и когда платить за рекламу.</h3></div></div>
+          <div className="russian-channel-list">{russianTeacherPilot.channels.map((item) => <article key={item.name}>
+            <header><h4>{item.name}</h4><span>{item.role}</span></header><p>{item.action}</p><small>{item.gate}</small><a href={item.sourceUrl} target="_blank" rel="noreferrer">{item.sourceLabel} ↗</a>
+          </article>)}</div>
+        </section>
+      </div>
+
+      <div className="russian-offers">
+        <header><span className="exam-kicker">Лестница предложения</span><h3>Платят не за тесты, а за понятный следующий шаг.</h3></header>
+        <div>{russianTeacherPilot.offers.map((item) => <article key={item.label}><span>{item.label}</span><strong>{item.price}</strong><h4>{item.title}</h4><p>{item.text}</p></article>)}</div>
+      </div>
+
+      <div className="russian-copy-bank">
+        <article><span>ПОДПИСЬ К РОЛИКУ</span><p>{russianTeacherPilot.messages.reel}</p><button type="button" onClick={() => handleCopy("russian-reel", russianTeacherPilot.messages.reel)}>{copied === "russian-reel" ? "Скопировано ✓" : "Скопировать"}</button></article>
+        <article><span>СООБЩЕНИЕ РОДИТЕЛЮ</span><p>{russianTeacherPilot.messages.parent}</p><button type="button" onClick={() => handleCopy("russian-parent", russianTeacherPilot.messages.parent)}>{copied === "russian-parent" ? "Скопировано ✓" : "Скопировать"}</button></article>
+        <article><span>ПРЕДЛОЖЕНИЕ ПАРТНЁРУ</span><p>{russianTeacherPilot.messages.partner}</p><button type="button" onClick={() => handleCopy("russian-partner", russianTeacherPilot.messages.partner)}>{copied === "russian-partner" ? "Скопировано ✓" : "Скопировать"}</button></article>
+      </div>
+
+      <div className="russian-metrics"><div><span>МЕРЯЕМ ПО ЦЕПОЧКЕ</span><ol>{russianTeacherPilot.metrics.map((metric) => <li key={metric}>{metric}</li>)}</ol></div><p><b>Перед платной рекламой:</b> {russianTeacherPilot.orderGate}</p></div>
     </section>
 
     <section className="growth-constructor" id="constructor">

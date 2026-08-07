@@ -58,7 +58,27 @@ try {
   assert(await page.locator(".exam-level-cards button").count() === 2, "главная требует выбор ОГЭ или ЕГЭ");
   assert(await page.locator('a[href="/school"], a[href="/textbooks"]').count() === 0, "нет ссылок на школу и учебники");
   assert(await page.getByText("Что сдаёт ребёнок?").isVisible(), "вопрос выбора экзамена виден");
+  assert(await page.locator(".sales-audience-card").count() === 3, "главная разделяет путь родителя, репетитора и школы");
+  assert(await page.getByText("Сейчас открыт проверяемый пилот по русскому языку.").isVisible(), "главная честно показывает границу публичного предметного банка");
+  await page.locator(".sales-story-visuals").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => Array.from(document.querySelectorAll(".sales-story-visuals img")).every((image) => image.complete));
+  const marketingImages = await page.locator(".sales-story-visuals img").evaluateAll((images) => images.map((image) => ({ complete: image.complete, width: image.naturalWidth })));
+  assert(marketingImages.length === 3 && marketingImages.every((image) => image.complete && image.width > 0), "три новые продающие обложки загружены");
   await page.screenshot({ path: path.join(outputDir, "home-desktop.png"), fullPage: true });
+
+  await page.goto(`${baseUrl}/for-parents`, { waitUntil: "networkidle" });
+  assert(await page.getByText("Первый результат за 10 минут").isVisible(), "страница родителя объясняет первый полезный результат");
+  assert(await page.getByText("Это заменяет репетитора?").isVisible(), "страница родителя честно разделяет платформу и преподавателя");
+
+  await page.goto(`${baseUrl}/for-schools`, { waitUntil: "networkidle" });
+  assert(await page.getByText("ПИЛОТ · 4 НЕДЕЛИ").isVisible(), "страница школы предлагает ограниченный проверяемый пилот");
+  assert(await page.getByText("Автоматика не подменяет предметную комиссию").isVisible(), "страница школы показывает границы автоматической оценки");
+
+  await page.goto(`${baseUrl}/for-teachers`, { waitUntil: "networkidle" });
+  assert(await page.locator(".teacher-skill-stack article").count() === 8, "педагог видит восемь методических навыков");
+  assert(await page.getByText("Бесплатная практика приводит к вашей платной экспертизе.").isVisible(), "репетитор видит путь от демо к своей услуге");
+
+  await page.goto(baseUrl, { waitUntil: "networkidle" });
 
   await page.locator(".exam-level-cards button").nth(0).click();
   assert(await page.locator(".exam-entry-next.visible").count() === 1, "после ОГЭ открываются предмет и режим");
@@ -201,6 +221,12 @@ try {
   }));
   assert(homeOverflow.scroll <= homeOverflow.client, "главная 390 px не имеет горизонтального переполнения");
   await mobilePage.screenshot({ path: path.join(outputDir, "home-mobile.png"), fullPage: false });
+
+  for (const route of ["/for-parents", "/for-schools", "/for-teachers"]) {
+    await mobilePage.goto(`${baseUrl}${route}`, { waitUntil: "networkidle" });
+    const audienceOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+    assert(audienceOverflow.scroll <= audienceOverflow.client, `${route} на 390 px не имеет горизонтального переполнения`);
+  }
 
   await mobilePage.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
   const examOverflow = await mobilePage.evaluate(() => ({

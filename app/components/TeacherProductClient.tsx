@@ -5,6 +5,17 @@ import Link from "next/link";
 import { examSubjects } from "../../knowledge-base/exams/exam-subjects";
 import { russianTaskFamilies } from "../../knowledge-base/tasks/variant-engine.js";
 
+const tutorSkills = [
+  ["Диагностировать", "Отделить незнание правила от неверного чтения условия, спешки и нехватки времени."],
+  ["Выбрать одно умение", "Не смешивать пять тем в одной отработке и объяснить ученику, почему назначен этот номер."],
+  ["Дать попытку без подсказки", "Сохранить исходный ответ, время и использованные подсказки до показа решения."],
+  ["Объяснить причину", "Показать место ошибки и короткое правило, а не просто правильную цифру."],
+  ["Проверить перенос", "Сразу дать другое авторское условие того же типа и затем смешанную задачу."],
+  ["Вернуть тему позже", "Назначить повтор без подсказки после паузы, а не считать один успех освоением."],
+  ["Разделить проверку", "Автоматике оставить однозначные ответы, учителю — сочинения и спорные случаи."],
+  ["Показать доказательства", "Родителю — следующий шаг, педагогу — сырые попытки и динамику по умению."],
+];
+
 export function TeacherProductClient() {
   const [subject, setSubject] = useState("russian");
   const [family, setFamily] = useState("stress");
@@ -40,7 +51,7 @@ export function TeacherProductClient() {
   return <main className="teacher-product">
     <nav className="teacher-product-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-      <div><Link href="/teacher-academy">Методики 15 предметов</Link><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
+      <div><a href="#methodology">Навыки репетитора</a><Link href="/teacher-academy">Методики 15 предметов</Link><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
       <Link className="button button-small button-red" href="#builder">Попробовать бесплатно</Link>
     </nav>
 
@@ -71,6 +82,16 @@ export function TeacherProductClient() {
       </div>
     </section>
 
+    <section className="teacher-skill-stack" id="methodology">
+      <header>
+        <span className="exam-label">Навыки сильного репетитора внутри системы</span>
+        <h2>Платформа не заменяет методику.<br />Она заставляет её работать каждый раз.</h2>
+        <p>Каждый предметный модуль проходит один и тот же учебный цикл. Преподаватель может менять формулировки и порядок, но не теряет доказательства попытки и следующий шаг.</p>
+      </header>
+      <div>{tutorSkills.map(([title, text], index) => <article key={title}><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
+      <footer><Link href="/teacher-academy">Открыть методики по 15 предметам →</Link><Link href="/teachers">Посмотреть предметные профили →</Link></footer>
+    </section>
+
     <section className="assignment-builder" id="builder">
       <div className="builder-copy"><span className="exam-label">Рабочий конструктор</span><h2>Соберите ссылку на задание за минуту.</h2><p>Ссылка уже открывает выбранный предмет, тип и нужное количество заданий. Для русского языка подключён расширенный авторский банк; другие предметы пока работают в стартовом режиме и подключаются предметными редакторами.</p></div>
       <div className="builder-panel">
@@ -80,6 +101,16 @@ export function TeacherProductClient() {
         <div className="assignment-preview"><span>Готовая работа</span><b>{currentSubject.name}{subject === "russian" ? ` · № ${currentFamily.egeNumber} ${currentFamily.title}` : ""}</b><small>{Math.min(count, subject === "russian" ? currentFamily.count : 10)} заданий · разбор после попытки · повтор ошибок</small><code>{path}</code></div>
         <div className="builder-actions"><Link className="button button-red" href={path}>Открыть как ученик →</Link><button className="button button-dark" onClick={copyAssignment}>{copied ? "Ссылка скопирована ✓" : "Скопировать ссылку"}</button></div>
       </div>
+    </section>
+
+    <section className="teacher-service-model">
+      <div className="teacher-service-copy"><span className="exam-label light">Как репетитору зарабатывать через платформу</span><h2>Бесплатная практика приводит к вашей платной экспертизе.</h2><p>Не продавайте ученику ещё один доступ к тестам. Дайте короткую открытую тренировку, покажите конкретную проблему и предложите тот формат, где действительно нужен человек.</p></div>
+      <div className="teacher-service-steps">
+        <article><span>01 · ПРИВЛЕЧЕНИЕ</span><h3>Один номер бесплатно</h3><p>Отправьте ссылку на 3–5 заданий по теме, о которой ученик уже спрашивал.</p><b>Цель: ученик завершил серию</b></article>
+        <article><span>02 · ДИАГНОЗ</span><h3>Короткий разбор</h3><p>Покажите повторяющуюся ошибку и объясните, что можно закрыть самостоятельно, а где нужна встреча.</p><b>Цель: понятна причина</b></article>
+        <article><span>03 · УСЛУГА</span><h3>Ваше сопровождение</h3><p>Проверка сочинений, еженедельный урок, индивидуальный маршрут или малая группа — с вашей ценой и расписанием.</p><b>Цель: оплачивается работа педагога</b></article>
+      </div>
+      <p className="teacher-service-limit">В текущем публичном пилоте профиль, оплата и запись ещё не подключены. Сначала преподаватель подтверждает участие, программу, стоимость и юридический формат.</p>
     </section>
 
     <section className="teacher-pricing" id="teacher-plans">

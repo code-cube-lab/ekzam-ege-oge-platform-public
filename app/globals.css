@@ -2269,3 +2269,210 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .report-score { color: black; border: 1px solid black; background: white; box-shadow: none; }
   .parent-next-step { color: black; border: 1px solid black; background: white; }
 }
+
+/* Sales-focused public routes */
+.sales-home { --sales-cream: #fff8ea; --sales-green: #dff4df; }
+.sales-hero .exam-home-copy > p { max-width: 760px; }
+.sales-hero-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+.sales-trust-line { max-width: 720px; margin-top: 20px; display: block; color: #59667a; line-height: 1.5; }
+.sales-audience,.sales-story,.sales-final-cta { width: min(1240px,calc(100% - 40px)); margin: 0 auto; }
+.sales-audience { padding: 94px 0; }
+.sales-section-head { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(280px,.7fr); gap: 44px; align-items: end; }
+.sales-section-head .exam-kicker { grid-column: 1 / -1; }
+.sales-section-head h2 { max-width: 760px; margin: 0; font-size: clamp(48px,6.5vw,86px); line-height: .92; letter-spacing: -.055em; }
+.sales-section-head p { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.65; }
+.sales-audience-grid { margin-top: 46px; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); }
+.sales-audience-card { min-height: 390px; padding: 32px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; border-right: 1px solid var(--exam-ink); background: white; transition: .2s ease; }
+.sales-audience-card:last-child { border-right: 0; }
+.sales-audience-card > span { font: 900 11px/1 ui-monospace,monospace; letter-spacing: .12em; }
+.sales-audience-card h3 { margin: 0; font-size: 31px; line-height: 1.04; }
+.sales-audience-card p { margin: 0; color: #526079; line-height: 1.58; }
+.sales-audience-card b { align-self: end; }
+.sales-audience-card:hover,.sales-audience-card:focus-visible { color: white; background: var(--exam-blue); transform: translateY(-7px); box-shadow: 0 12px 0 #a8bbff; }
+.sales-audience-card:hover p,.sales-audience-card:focus-visible p { color: #e4eaff; }
+.sales-audience-card.role-2 { background: #fff5cc; }
+.sales-audience-card.role-2:hover,.sales-audience-card.role-2:focus-visible { color: var(--exam-ink); background: var(--exam-yellow); box-shadow: 0 12px 0 #b58c00; }
+.sales-audience-card.role-2:hover p,.sales-audience-card.role-2:focus-visible p { color: #3d4655; }
+
+.sales-story { padding: 76px 0; display: grid; grid-template-columns: minmax(0,.86fr) minmax(520px,1.14fr); gap: 56px; align-items: center; }
+.sales-story-copy { min-height: 650px; padding: clamp(34px,5vw,68px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; color: white; background: var(--exam-ink); }
+.sales-story-copy h2 { margin: 16px 0 20px; font-size: clamp(46px,5vw,72px); line-height: .93; letter-spacing: -.055em; }
+.sales-story-copy > p { margin: 0; color: #c7d1df; font-size: 18px; line-height: 1.65; }
+.sales-story-copy ol { width: 100%; margin: 30px 0; padding: 0; display: grid; gap: 0; list-style: none; border-top: 1px solid #42516a; }
+.sales-story-copy li { padding: 17px 0; display: grid; grid-template-columns: 110px 1fr; gap: 16px; border-bottom: 1px solid #42516a; }
+.sales-story-copy li b { color: var(--exam-yellow); }
+.sales-story-copy li span { color: #c7d1df; line-height: 1.45; }
+.sales-story-visuals { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sales-story-visuals figure { min-width: 0; margin: 0; position: relative; overflow: hidden; border: 1px solid var(--exam-ink); background: white; }
+.sales-story-visuals .visual-main { grid-column: 1 / -1; }
+.sales-story-visuals img { width: 100%; height: 100%; display: block; object-fit: cover; aspect-ratio: 1; }
+.sales-story-visuals .visual-main img { aspect-ratio: 2 / 1.08; object-position: center 25%; }
+.sales-story-visuals figcaption { position: absolute; inset: auto 12px 12px; width: fit-content; padding: 8px 10px; color: white; background: var(--exam-ink); font: 900 10px/1 ui-monospace,monospace; letter-spacing: .08em; }
+
+.sales-method-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--exam-ink); }
+.sales-method-grid article { min-height: 300px; padding: 28px; border-right: 1px solid var(--exam-ink); background: white; }
+.sales-method-grid article:last-child { border-right: 0; }
+.sales-method-grid span { color: var(--exam-blue); font: 900 12px/1 ui-monospace,monospace; }
+.sales-method-grid h3 { margin: 72px 0 12px; font-size: 26px; }
+.sales-method-grid p { margin: 0; color: var(--muted); line-height: 1.55; }
+.sales-method-links { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 22px; }
+.sales-method-links a { color: var(--exam-blue); font-weight: 900; }
+.sales-pricing .exam-plan-grid small { min-height: 18px; display: block; color: #66738a; }
+.sales-price-note { max-width: 950px; margin: 24px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.sales-final-cta { margin-top: 60px; padding: 58px; display: flex; align-items: center; justify-content: space-between; gap: 40px; color: white; background: var(--exam-blue); box-shadow: 12px 12px 0 #a7baff; }
+.sales-final-cta h2 { max-width: 760px; margin: 12px 0 0; font-size: clamp(38px,5vw,68px); line-height: .95; letter-spacing: -.045em; }
+.sales-final-cta > div:last-child { min-width: 250px; display: grid; gap: 10px; }
+.button-ghost.light { color: white; border-color: white; background: transparent; }
+
+.audience-page { min-height: 100vh; color: var(--exam-ink); background: #f2f4f8; }
+.audience-topbar { width: min(1240px,calc(100% - 40px)); min-height: 86px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid #c7cfda; }
+.audience-topbar nav { display: flex; gap: 26px; font-weight: 800; }
+.audience-hero { width: min(1240px,calc(100% - 40px)); margin: 0 auto; padding: 74px 0; display: grid; grid-template-columns: minmax(0,1fr) minmax(390px,.72fr); gap: 56px; align-items: center; }
+.audience-hero h1 { max-width: 850px; margin: 15px 0 20px; font-size: clamp(52px,7vw,94px); line-height: .89; letter-spacing: -.06em; }
+.audience-hero h1 em { color: var(--exam-red); font-style: normal; }
+.audience-hero > div > p { max-width: 730px; margin: 0; color: var(--muted); font-size: 19px; line-height: 1.65; }
+.audience-hero figure { margin: 0; position: relative; border: 1px solid var(--exam-ink); background: white; box-shadow: 10px 10px 0 #a8bbff; }
+.audience-hero figure img { width: 100%; height: auto; display: block; }
+.audience-hero figure figcaption { padding: 15px 18px; color: white; background: var(--exam-ink); font-weight: 850; }
+.audience-checks { margin: 27px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 9px 22px; list-style: none; }
+.audience-checks li { padding-left: 22px; position: relative; color: #43516a; line-height: 1.45; }
+.audience-checks li::before { content: "✓"; position: absolute; left: 0; color: #13834e; font-weight: 950; }
+
+.parent-first-result,.parent-value,.audience-faq,.school-pilot-plan,.school-boundaries { width: min(1240px,calc(100% - 40px)); margin: 0 auto; padding: 84px 0; }
+.parent-first-result header,.school-pilot-plan header { display: grid; grid-template-columns: .55fr 1.45fr; gap: 40px; align-items: start; }
+.parent-first-result h2,.school-pilot-plan h2,.audience-faq h2 { margin: 0; font-size: clamp(42px,5vw,68px); line-height: .98; letter-spacing: -.045em; }
+.parent-first-result ol { margin: 42px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4,1fr); list-style: none; border: 1px solid var(--exam-ink); }
+.parent-first-result li { min-height: 270px; padding: 26px; display: grid; align-content: space-between; border-right: 1px solid var(--exam-ink); background: white; }
+.parent-first-result li:last-child { border-right: 0; }
+.parent-first-result li > span { color: var(--exam-blue); font: 900 16px/1 ui-monospace,monospace; }
+.parent-first-result li b { font-size: 23px; }
+.parent-first-result li p { margin: 10px 0 0; color: var(--muted); line-height: 1.5; }
+.parent-value { padding: 68px; color: white; background: var(--exam-ink); }
+.parent-value-copy { display: grid; grid-template-columns: .7fr 1fr; gap: 38px; }
+.parent-value-copy .exam-kicker { grid-column: 1 / -1; }
+.parent-value-copy h2 { margin: 0; font-size: clamp(44px,5vw,72px); }
+.parent-value-copy p { margin: 0; color: #c7d1df; font-size: 18px; line-height: 1.6; }
+.parent-value-grid { margin-top: 38px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.parent-value-grid article { min-height: 300px; padding: 27px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 15px; color: var(--exam-ink); background: white; }
+.parent-value-grid article:nth-child(2) { background: var(--exam-yellow); }
+.parent-value-grid span { font: 900 10px/1 ui-monospace,monospace; letter-spacing: .1em; }
+.parent-value-grid h3 { margin: 0; font-size: 27px; }
+.parent-value-grid p { margin: 0; color: #536078; line-height: 1.5; }
+.parent-value-grid strong { font-size: 20px; }
+.audience-limit { margin: 20px 0 0; color: #bdc8d8; line-height: 1.5; }
+.audience-faq { display: grid; grid-template-columns: .75fr 1.25fr; gap: 54px; }
+.audience-faq details { padding: 22px 0; border-top: 1px solid #c5cedb; }
+.audience-faq details:last-child { border-bottom: 1px solid #c5cedb; }
+.audience-faq summary { cursor: pointer; font-size: 21px; font-weight: 900; }
+.audience-faq p { color: var(--muted); line-height: 1.6; }
+.audience-final { width: min(1240px,calc(100% - 40px)); margin: 0 auto; padding: 56px; display: flex; align-items: center; justify-content: space-between; gap: 36px; color: white; background: var(--exam-blue); }
+.audience-final h2 { max-width: 820px; margin: 12px 0 0; font-size: clamp(38px,5vw,64px); line-height: .98; }
+.audience-final > div:last-child { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.school-hero { grid-template-columns: minmax(0,1.2fr) minmax(330px,.48fr); }
+.school-pilot-card { min-height: 440px; padding: 36px; display: grid; align-content: space-between; gap: 22px; color: white; background: var(--exam-blue); box-shadow: 10px 10px 0 #a8bbff; }
+.school-pilot-card > span { color: var(--exam-yellow); font: 900 11px/1 ui-monospace,monospace; letter-spacing: .1em; }
+.school-pilot-card strong { font-size: 46px; line-height: 1.05; }
+.school-pilot-card p { margin: 0; color: #dce4ff; line-height: 1.55; }
+.school-benefits { width: min(1240px,calc(100% - 40px)); margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); }
+.school-benefits article { min-height: 260px; padding: 30px; border-right: 1px solid var(--exam-ink); background: white; }
+.school-benefits article:last-child { border-right: 0; }
+.school-benefits span { color: var(--exam-red); font: 900 12px/1 ui-monospace,monospace; }
+.school-benefits h2 { margin: 65px 0 10px; font-size: 30px; }
+.school-benefits p { margin: 0; color: var(--muted); line-height: 1.55; }
+.school-pilot-plan > div { margin-top: 42px; border-top: 1px solid #c5cedb; }
+.school-pilot-plan article { padding: 22px 0; display: grid; grid-template-columns: 150px 1fr; gap: 32px; border-bottom: 1px solid #c5cedb; }
+.school-pilot-plan article > span { color: var(--exam-blue); font-weight: 900; }
+.school-pilot-plan h3 { margin: 0 0 7px; font-size: 26px; }
+.school-pilot-plan p { margin: 0; color: var(--muted); line-height: 1.55; }
+.school-boundaries { padding: 62px; display: grid; grid-template-columns: .75fr 1.25fr; gap: 48px; color: white; background: var(--exam-ink); }
+.school-boundaries h2 { margin: 14px 0 0; font-size: clamp(40px,5vw,66px); line-height: .98; }
+.school-boundaries ul { margin: 0; padding: 0; list-style: none; }
+.school-boundaries li { padding: 18px 0; display: grid; grid-template-columns: 190px 1fr; gap: 20px; border-top: 1px solid #43516a; }
+.school-boundaries li:last-child { border-bottom: 1px solid #43516a; }
+.school-boundaries li b { color: var(--exam-yellow); }
+.school-boundaries li span { color: #c7d1df; line-height: 1.5; }
+
+.teacher-skill-stack,.teacher-service-model { width: min(1240px,calc(100% - 40px)); margin: 0 auto; padding: 90px 0; }
+.teacher-skill-stack header { max-width: 970px; }
+.teacher-skill-stack h2,.teacher-service-copy h2 { margin: 14px 0 18px; font-size: clamp(46px,6vw,78px); line-height: .94; letter-spacing: -.05em; }
+.teacher-skill-stack header p,.teacher-service-copy p { color: var(--muted); font-size: 18px; line-height: 1.6; }
+.teacher-skill-stack > div { margin-top: 40px; display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--exam-ink); }
+.teacher-skill-stack article { min-height: 270px; padding: 24px; border-right: 1px solid var(--exam-ink); border-bottom: 1px solid var(--exam-ink); background: white; }
+.teacher-skill-stack article:nth-child(4n) { border-right: 0; }
+.teacher-skill-stack article:nth-last-child(-n+4) { border-bottom: 0; }
+.teacher-skill-stack article > span { color: var(--exam-blue); font: 900 12px/1 ui-monospace,monospace; }
+.teacher-skill-stack article h3 { margin: 58px 0 10px; font-size: 23px; }
+.teacher-skill-stack article p { margin: 0; color: var(--muted); line-height: 1.5; }
+.teacher-skill-stack footer { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 24px; }
+.teacher-skill-stack footer a { color: var(--exam-blue); font-weight: 900; }
+.teacher-service-model { padding: 70px; color: white; background: var(--exam-ink); }
+.teacher-service-copy { max-width: 960px; }
+.teacher-service-copy p { color: #c7d1df; }
+.teacher-service-steps { margin-top: 38px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.teacher-service-steps article { min-height: 300px; padding: 27px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 16px; color: var(--exam-ink); background: white; }
+.teacher-service-steps article:nth-child(3) { background: var(--exam-yellow); }
+.teacher-service-steps span { font: 900 10px/1 ui-monospace,monospace; letter-spacing: .08em; }
+.teacher-service-steps h3 { margin: 0; font-size: 27px; }
+.teacher-service-steps p { margin: 0; color: var(--muted); line-height: 1.5; }
+.teacher-service-limit { margin: 20px 0 0; color: #bdc8d8; line-height: 1.5; }
+.subject-skill-list { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.subject-skill-list > span { width: 100%; color: var(--muted); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.subject-skill-list b { padding: 6px 8px; color: #173b9a; background: #e9efff; font-size: 11px; }
+.lead-foot { flex-wrap: wrap; }
+
+@media (max-width: 980px) {
+  .sales-section-head,.sales-story,.audience-hero,.parent-value-copy,.audience-faq,.school-boundaries { grid-template-columns: 1fr; }
+  .sales-audience-grid,.parent-first-result ol,.parent-value-grid,.school-benefits,.teacher-service-steps { grid-template-columns: 1fr; }
+  .sales-audience-card,.parent-first-result li,.school-benefits article { border-right: 0; border-bottom: 1px solid var(--exam-ink); }
+  .sales-audience-card:last-child,.parent-first-result li:last-child,.school-benefits article:last-child { border-bottom: 0; }
+  .sales-story-copy { min-height: 0; }
+  .sales-method-grid,.teacher-skill-stack > div { grid-template-columns: 1fr 1fr; }
+  .sales-method-grid article:nth-child(2n),.teacher-skill-stack article:nth-child(2n) { border-right: 0; }
+  .sales-method-grid article:nth-child(-n+2),.teacher-skill-stack article:nth-last-child(-n+4) { border-bottom: 1px solid var(--exam-ink); }
+  .sales-method-grid article:nth-last-child(-n+2),.teacher-skill-stack article:nth-last-child(-n+2) { border-bottom: 0; }
+  .audience-hero figure { max-width: 620px; }
+  .parent-first-result header,.school-pilot-plan header { grid-template-columns: 1fr; }
+  .audience-final,.sales-final-cta { align-items: flex-start; flex-direction: column; }
+  .teacher-product-nav > div { display: none; }
+}
+
+@media (max-width: 640px) {
+  .sales-audience,.sales-story,.sales-final-cta,.teacher-skill-stack,.teacher-service-model { width: calc(100% - 24px); }
+  .sales-audience { padding: 64px 0; }
+  .sales-section-head h2 { font-size: 47px; }
+  .sales-audience-card { min-height: 320px; padding: 24px 20px; }
+  .sales-audience-card h3 { font-size: 27px; }
+  .sales-story { padding: 54px 0; gap: 18px; }
+  .sales-story-copy { padding: 34px 22px; }
+  .sales-story-copy h2 { font-size: 44px; }
+  .sales-story-copy li { grid-template-columns: 1fr; gap: 6px; }
+  .sales-story-visuals { grid-template-columns: 1fr; }
+  .sales-story-visuals .visual-main { grid-column: auto; }
+  .sales-story-visuals .visual-main img { aspect-ratio: 1; }
+  .sales-method-grid,.teacher-skill-stack > div { grid-template-columns: 1fr; }
+  .sales-method-grid article,.teacher-skill-stack article { min-height: 235px; border-right: 0; border-bottom: 1px solid var(--exam-ink) !important; }
+  .sales-method-grid article:last-child,.teacher-skill-stack article:last-child { border-bottom: 0 !important; }
+  .sales-method-grid h3,.teacher-skill-stack article h3 { margin-top: 42px; }
+  .sales-final-cta { padding: 34px 22px; }
+  .sales-final-cta > div:last-child { min-width: 0; width: 100%; }
+  .audience-topbar { width: calc(100% - 24px); min-height: 72px; }
+  .audience-topbar nav { display: none; }
+  .audience-topbar > .button { display: none; }
+  .audience-hero,.parent-first-result,.parent-value,.audience-faq,.school-pilot-plan,.school-boundaries,.school-benefits,.audience-final { width: calc(100% - 24px); }
+  .audience-hero { padding: 48px 0; gap: 28px; }
+  .audience-hero h1 { font-size: 52px; }
+  .audience-hero > div > p { font-size: 16px; }
+  .audience-checks { grid-template-columns: 1fr; }
+  .parent-first-result,.school-pilot-plan,.audience-faq { padding: 64px 0; }
+  .parent-first-result h2,.school-pilot-plan h2,.audience-faq h2 { font-size: 40px; }
+  .parent-value,.school-boundaries,.teacher-service-model { padding: 38px 20px; }
+  .parent-value-copy h2,.school-boundaries h2,.teacher-service-copy h2,.teacher-skill-stack h2 { font-size: 42px; }
+  .audience-final { padding: 36px 22px; }
+  .school-pilot-card { min-height: 340px; padding: 28px; }
+  .school-pilot-card strong { font-size: 39px; }
+  .school-pilot-plan article { grid-template-columns: 1fr; gap: 8px; }
+  .school-boundaries li { grid-template-columns: 1fr; gap: 7px; }
+  .teacher-skill-stack { padding: 64px 0; }
+  .teacher-service-steps article { min-height: 260px; }
+}

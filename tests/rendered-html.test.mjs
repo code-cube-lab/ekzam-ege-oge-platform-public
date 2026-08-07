@@ -21,10 +21,36 @@ test("landing starts with an explicit OGE or EGE choice and explains prices", as
   assert.doesNotMatch(`${page}\n${layout}`, /codex-preview|react-loading-skeleton/i);
 });
 
-test("required support and consent pages exist", async () => {
-  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx", "../app/offer/page.tsx", "../app/privacy/page.tsx", "../app/consent/page.tsx"]) {
+test("required support, audience and consent pages exist", async () => {
+  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx", "../app/offer/page.tsx", "../app/privacy/page.tsx", "../app/consent/page.tsx", "../app/for-parents/page.tsx", "../app/for-schools/page.tsx"]) {
     await access(new URL(path, import.meta.url));
   }
+});
+
+test("sales release separates parent, tutor and school value without false readiness", async () => {
+  const [home, parents, schools, teachers, profiles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/for-parents/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/for-schools/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TeacherProductClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/teachers/page.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(home, /Три понятные пользы/);
+  assert.match(home, /Сейчас открыт проверяемый пилот по русскому языку/);
+  assert.match(home, /marketing\/mistake-loop\.webp/);
+  assert.match(parents, /Первый результат за 10 минут/);
+  assert.match(parents, /Это заменяет репетитора/);
+  assert.match(schools, /один класс, один предмет, одна линия/i);
+  assert.match(schools, /Автоматика не подменяет предметную комиссию/);
+  assert.equal((teachers.match(/\["[А-ЯЁа-яё ]+", "/g) ?? []).length >= 8, true);
+  assert.match(teachers, /Бесплатная практика приводит к вашей платной экспертизе/);
+  assert.match(profiles, /Предметные умения/);
+  assert.match(profiles, /Участие уточняется/);
+  for (const path of [
+    "../public/marketing/mistake-loop.webp",
+    "../public/marketing/parent-report.webp",
+    "../public/marketing/tutor-practice.webp",
+  ]) await access(new URL(path, import.meta.url));
 });
 
 test("personal data consent is separate and accounts for minors", async () => {

@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T00:58:01.2059544Z",
+    "updated_at":  "2026-08-07T03:57:18.8054843Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -16,15 +16,18 @@
                        "name":  "audit",
                        "state":  "passed",
                        "evidence":  [
-                                        "Audited ExamSimulatorClient, local mistake storage, extended-answer flow, parent analytics, Telegram Mini App APIs, validation gates and public Pages configuration."
+                                        "Audited ExamSimulatorClient, local mistake storage, extended-answer flow, parent analytics, Telegram Mini App APIs, validation gates and public Pages configuration.",
+                                        "Current public product, tutor offer, acquisition board and Telegram image assets are being re-audited for the sales-focused release.",
+                                        "Re-audited the public offer, Telegram channel visuals, tutor methodology, private lead board and GitHub Pages release boundaries for the sales-focused version."
                                     ],
-                       "note":  "Inspecting current exam, analytics, Telegram, routes and lead-generation surfaces."
+                       "note":  "Public marketing and private acquisition data remain separated."
                    },
                    {
                        "name":  "plan",
                        "state":  "passed",
                        "evidence":  [
-                                        "Updated product-brief.md and acceptance-criteria.md for single-line mastery, resumable writing, parent report, Telegram entry points and safe outreach."
+                                        "Updated product-brief.md and acceptance-criteria.md for single-line mastery, resumable writing, parent report, Telegram entry points and safe outreach.",
+                                        "Defined separate parent, tutor and school acquisition paths, a free-first product ladder and a 14-day Telegram content plan."
                                     ],
                        "note":  ""
                    },
@@ -32,7 +35,8 @@
                        "name":  "build",
                        "state":  "passed",
                        "evidence":  [
-                                        "Adaptive single-task practice, pause/resume writing, versioned local learning progress, game mastery loop and parent report implemented; Next.js static export completed for 23 routes."
+                                        "Adaptive single-task practice, pause/resume writing, versioned local learning progress, game mastery loop and parent report implemented; Next.js static export completed for 23 routes.",
+                                        "Added sales homepage, parent and school pages, eight tutor teaching skills, three generated campaign visuals and a private priority board of 96 public business contacts."
                                     ],
                        "note":  "Russian OGE/EGE is the verified preview bank; other subjects remain gated pending specialist review."
                    },
@@ -57,20 +61,22 @@
                        "state":  "passed",
                        "evidence":  [
                                         "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed.",
-                                        "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export."
+                                        "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export.",
+                                        "56/56 automated tests passed; Next static export passed type checking; local GitHub-subpath browser QA passed 70/70 with no runtime errors and no 390px horizontal overflow."
                                     ],
-                       "note":  "Awaiting repeat of the 48 browser checks on the public GitHub Pages URL."
+                       "note":  "Public GitHub Pages regression remains the final release gate."
                    },
                    {
                        "name":  "handoff",
-                       "state":  "passed",
+                       "state":  "doing",
                        "evidence":  [
                                         "Static GitHub Pages package generated in docs and ready for commit/push.",
                                         "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors.",
                                         "Updated static export copied to docs; local GitHub-subpath QA passed 48/48.",
-                                        "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1."
+                                        "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1.",
+                                        "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification."
                                     ],
-                       "note":  "Release 82fff31 is public; report-only follow-up commit will not change runtime assets."
+                       "note":  "Do not call the release public until the GitHub Pages URL passes."
                    }
                ]
 }

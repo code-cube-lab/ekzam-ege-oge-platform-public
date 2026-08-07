@@ -19,10 +19,14 @@ test("extended answers can pause, persist and resume", async () => {
   ]);
   assert.match(simulator, /Поставить на паузу/);
   assert.match(simulator, /Сохранить и выйти/);
+  assert.match(simulator, /appHref\("\/resume\/"\)/);
+  assert.doesNotMatch(simulator, /window\.location\.assign\("\/practice"\)/);
   assert.match(simulator, /Черновик восстановлен/);
   assert.match(progress, /ekzam-learning-progress-v2/);
   assert.match(progress, /drafts/);
-  assert.match(resume, /Продолжить изложение или сочинение/);
+  assert.match(resume, /продолжить изложение или сочинение/i);
+  assert.match(resume, /Отрабатывать только задание/);
+  assert.match(resume, /searchParams\.set\("mode", "training"\)/);
 });
 
 test("parent report derives weaknesses from real attempts and states its limits", async () => {

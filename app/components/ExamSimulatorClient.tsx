@@ -41,6 +41,12 @@ function lessonHref(subject: string, topic: string) {
   return `/learn?${new URLSearchParams({ subject, topic, variant: "1" }).toString()}`;
 }
 
+function appHref(path: string) {
+  const examSegment = window.location.pathname.indexOf("/exam");
+  const basePath = examSegment >= 0 ? window.location.pathname.slice(0, examSegment) : "";
+  return `${basePath}${path}`;
+}
+
 function formatClock(totalSeconds: number) {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -289,7 +295,7 @@ export function ExamSimulatorClient({
 
   function saveAndExit() {
     saveAndPause();
-    window.location.assign("/practice");
+    window.location.assign(appHref("/resume/"));
   }
 
   function resetAnswer() {
@@ -625,7 +631,7 @@ export function ExamSimulatorClient({
         {task.kind === "extended" && <section className={`writing-session ${isPaused ? "paused" : ""}`}>
           <div className="writing-session-head"><div><span>РАЗВЁРНУТАЯ РАБОТА</span><b>{isPaused ? "Работа на паузе" : "Время работы идёт"}</b></div><time>{formatClock(elapsedSeconds)}</time></div>
           <label className="exam-input"><span>Ваш текст</span><textarea disabled={submitted || isPaused} value={written} onChange={(event) => updateWritten(event.target.value)} placeholder={level === "oge" && currentLine === 1 ? "Сжатое изложение: микротемы → главное → связный текст" : "Тезис → примеры → объяснение → вывод"} /><small>{task.minWords ? `${wordCount} слов · минимум ${task.minWords} слов` : `${written.trim().length} знаков · минимум ${minimumLength} для отправки на проверку`}</small></label>
-          {!submitted && <div className="writing-controls"><button className="button button-ghost" type="button" onClick={() => isPaused ? setIsPaused(false) : saveAndPause()}>{isPaused ? "Продолжить работу" : "Поставить на паузу"}</button><button className="button button-dark" type="button" onClick={saveAndExit}>Сохранить и выйти</button></div>}
+          {!submitted && <div className="writing-controls"><button className="button button-ghost" type="button" onClick={() => isPaused ? setIsPaused(false) : saveAndPause()}>{isPaused ? "Продолжить работу" : "Поставить на паузу"}</button><button className="button button-dark" type="button" onClick={saveAndExit}>{isPaused ? "Выйти к сохранённым работам" : "Сохранить и выйти"}</button></div>}
           {draftStatus && <p className="draft-status" role="status">{draftStatus}</p>}
         </section>}
         {!submitted ? <button className="button button-red" disabled={!hasAnswer || isPaused} onClick={submit}>Проверить решение</button> : <>

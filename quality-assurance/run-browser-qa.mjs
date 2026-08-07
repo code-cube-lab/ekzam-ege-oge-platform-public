@@ -113,10 +113,9 @@ try {
   const lineFiveHref = await page.locator(".practice-line-grid a").nth(4).getAttribute("href");
   assert(lineFiveHref?.includes("mode=training") && lineFiveHref.includes("task=5"), "номер 5 ведёт в точечную отработку задания 5");
 
-  await page.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
-  await page.locator(".exam-map nav button").nth(12).click();
+  await page.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1&task=1`, { waitUntil: "networkidle" });
   const essay = page.getByLabel("Ваш текст");
-  await essay.fill("Это сохранённый черновик сочинения. Он нужен, чтобы проверить паузу, восстановление текста и безопасное продолжение работы после возвращения ученика на сайт.");
+  await essay.fill("Это сохранённый черновик изложения. Он нужен, чтобы проверить паузу, восстановление текста и безопасное продолжение работы после возвращения ученика на сайт.");
   await page.getByRole("button", { name: "Поставить на паузу" }).click();
   assert(await essay.isDisabled(), "сочинение останавливается по кнопке паузы");
   await page.reload({ waitUntil: "networkidle" });
@@ -124,6 +123,18 @@ try {
   assert(await page.getByText(/Черновик восстановлен/).isVisible(), "ученик видит подтверждение восстановления черновика");
   await page.getByRole("button", { name: "Продолжить работу" }).click();
   assert(!(await page.getByLabel("Ваш текст").isDisabled()), "после паузы сочинение можно продолжить");
+  await page.getByRole("button", { name: "Сохранить и выйти" }).click();
+  await page.waitForURL(/\/resume\/?$/);
+  assert(await page.getByText("Работа сохранена. Что делать дальше?").isVisible(), "сохранить и выйти ведёт к списку сохранённых работ внутри приложения");
+  const oneTaskPractice = page.getByRole("link", { name: /Отрабатывать только задание № 1/ });
+  await oneTaskPractice.waitFor({ state: "visible" });
+  assert(await oneTaskPractice.isVisible(), "после выхода доступна отработка только задания № 1");
+  const oneTaskHref = await oneTaskPractice.getAttribute("href");
+  assert(oneTaskHref?.includes("mode=training") && oneTaskHref.includes("task=1"), "точечная отработка сохраняет номер задания № 1");
+  await oneTaskPractice.click();
+  await page.waitForURL(/mode=training.*task=1|task=1.*mode=training/);
+  await page.getByText("Отработка одного номера").waitFor({ state: "visible" });
+  assert(await page.getByText("Отработка одного номера").isVisible(), "после сохранения открывается серия только выбранного номера");
 
   await page.goto(`${baseUrl}/parent-report`, { waitUntil: "networkidle" });
   assert(await page.getByText("Что ребёнок уже умеет и что делать дальше").isVisible(), "отчёт родителю открывается отдельной страницей");

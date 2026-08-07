@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T00:38:22.3310663Z",
+    "updated_at":  "2026-08-07T00:56:02.4532152Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -56,18 +56,20 @@
                        "name":  "qa",
                        "state":  "passed",
                        "evidence":  [
-                                        "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed."
+                                        "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed.",
+                                        "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export."
                                     ],
-                       "note":  ""
+                       "note":  "Awaiting repeat of the 48 browser checks on the public GitHub Pages URL."
                    },
                    {
                        "name":  "handoff",
-                       "state":  "passed",
+                       "state":  "doing",
                        "evidence":  [
                                         "Static GitHub Pages package generated in docs and ready for commit/push.",
-                                        "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors."
+                                        "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors.",
+                                        "Updated static export copied to docs; local GitHub-subpath QA passed 48/48."
                                     ],
-                       "note":  "Static release is public. Live Telegram webhook and real Stars payment remain a separate server deployment."
+                       "note":  "Publishing regression fix and waiting for public CDN."
                    }
                ]
 }

@@ -9,7 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
-    "test": "pnpm run build && node --test",
+    "test": "pnpm run build && node scripts/run-tests.mjs",
     "qa:exam": "node --test tests/exam-format-qa.test.mjs tests/exam-variants.test.mjs",
     "qa:telegram": "node --test tests/telegram-rebuild.test.mjs",
     "qa:browser": "node quality-assurance/run-browser-qa.mjs",

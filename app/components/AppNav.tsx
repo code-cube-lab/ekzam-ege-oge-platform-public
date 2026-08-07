@@ -10,6 +10,8 @@ export function AppNav({ active, name = "Алексей" }: AppNavProps) {
       </Link>
       <nav className="side-links" aria-label="Кабинет">
         <a className="side-link" href="/exam"><span>▤</span>ОГЭ / ЕГЭ</a>
+        <a className="side-link" href="/practice"><span>🎯</span>По номеру</a>
+        <a className="side-link" href="/parent-report"><span>↗</span>Отчёт родителю</a>
         <a className={`side-link ${active === "home" ? "active" : ""}`} href="/dashboard"><span>⌂</span>Главная</a>
         <a className={`side-link ${active === "diagnostic" ? "active" : ""}`} href="/dashboard#diagnostic"><span>◎</span>Диагностика</a>
         <a className={`side-link ${active === "coach" ? "active" : ""}`} href="/dashboard#coach"><span>✦</span>AI-помощник</a>

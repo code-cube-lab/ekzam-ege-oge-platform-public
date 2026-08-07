@@ -1,10 +1,13 @@
-const CACHE_NAME = "ekzam-offline-v5";
+const CACHE_NAME = "ekzam-offline-v6";
 const SCOPE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const scopedUrl = (path) => `${SCOPE_PATH}${path}`;
 const CORE_URLS = [
   "/",
   "/exam?level=oge",
   "/exam?level=ege",
+  "/practice",
+  "/resume",
+  "/parent-report",
   "/subjects",
   "/telegram",
   "/offline.html",

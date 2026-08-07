@@ -1,50 +1,72 @@
-{
-  "schema_version": 1,
-  "project_path": "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-  "current_stage": "release_blocked",
-  "updated_at": "2026-07-26T17:50:59.210Z",
-  "stages": [
-    {
-      "name": "research",
-      "state": "passed",
-      "evidence": [
-        "Exam structure verified against FIPI 2026: Russian OGE 13 tasks and Russian EGE 27 tasks",
-        "rus-ege.sdamgia.ru product mechanics reviewed without copying its protected task bank or design"
-      ]
-    },
-    {
-      "name": "build",
-      "state": "passed",
-      "evidence": [
-        "Explicit OGE or EGE choice added to the first route and direct exam gate",
-        "Public grade 5-11 school and textbook routes removed",
-        "Russian OGE rebuilt as 12 authored 13-task variants",
-        "Russian EGE choices converted to exam-blank input and 12 full variants retained",
-        "Telegram rebuilt as an exam-first flow with 15 EGE and 14 OGE subjects",
-        "Mini App rebuilt with Today, Variant, Mistakes and Profile sections",
-        "Telegram Stars webhook now subscribes to pre_checkout_query"
-      ]
-    },
-    {
-      "name": "qa",
-      "state": "passed",
-      "evidence": [
-        "35 of 35 automated regression tests passed",
-        "10 of 10 exam-format tests passed",
-        "5 of 5 Telegram rebuild tests passed",
-        "29 of 29 Playwright browser checks passed",
-        "Desktop and 390x844 mobile screenshots inspected; Telegram Mini App has no JavaScript errors or horizontal overflow"
-      ]
-    },
-    {
-      "name": "release",
-      "state": "blocked",
-      "evidence": [
-        "Exam-format base is committed; Telegram rebuild is locally verified and ready for commit",
-        "Sites get_site returned 404 project_not_found for the persisted project ID",
-        "The previous public URL still serves the older textbook version and was not reported as updated",
-        "GitHub plugin has no connected account and gh is unavailable, so no GitHub remote can be created or pushed yet"
-      ]
-    }
-  ]
+﻿{
+    "schema_version":  1,
+    "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
+    "current_stage":  "handoff",
+    "updated_at":  "2026-08-07T00:34:14.5715012Z",
+    "stages":  [
+                   {
+                       "name":  "intake",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "User requested adaptive single-task practice, pauseable essays, parent weakness reports, Telegram Mini App improvements, and a public-prospect outreach board."
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "audit",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Audited ExamSimulatorClient, local mistake storage, extended-answer flow, parent analytics, Telegram Mini App APIs, validation gates and public Pages configuration."
+                                    ],
+                       "note":  "Inspecting current exam, analytics, Telegram, routes and lead-generation surfaces."
+                   },
+                   {
+                       "name":  "plan",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Updated product-brief.md and acceptance-criteria.md for single-line mastery, resumable writing, parent report, Telegram entry points and safe outreach."
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "build",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Adaptive single-task practice, pause/resume writing, versioned local learning progress, game mastery loop and parent report implemented; Next.js static export completed for 23 routes."
+                                    ],
+                       "note":  "Russian OGE/EGE is the verified preview bank; other subjects remain gated pending specialist review."
+                   },
+                   {
+                       "name":  "telegram",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Mini App preview and webhook commands /practice, /resume and /report implemented; Telegram tests and mobile browser preview passed."
+                                    ],
+                       "note":  "Live bot is not claimed: BotFather token, HTTPS webhook and real initData are absent in this workspace."
+                   },
+                   {
+                       "name":  "payments",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "Existing Telegram Stars invoice and entitlement contracts remain covered by automated tests."
+                                    ],
+                       "note":  "Live payment is not claimed without a server-side successful_payment event."
+                   },
+                   {
+                       "name":  "qa",
+                       "state":  "passed",
+                       "evidence":  [
+                                        "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed."
+                                    ],
+                       "note":  ""
+                   },
+                   {
+                       "name":  "handoff",
+                       "state":  "doing",
+                       "evidence":  [
+                                        "Static GitHub Pages package generated in docs and ready for commit/push."
+                                    ],
+                       "note":  "Waiting for public URL HTTP and rendered-flow verification."
+                   }
+               ]
 }

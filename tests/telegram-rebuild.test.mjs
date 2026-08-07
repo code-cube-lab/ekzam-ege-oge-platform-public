@@ -35,18 +35,21 @@ test("bot uses exam-first routing, all-subject keyboards and safe payment update
   assert.match(webhook, /task\.exam !== student\.exam \|\| task\.subject !== student\.subject/);
   assert.match(webhook, /command === "\/exam"/);
   assert.match(webhook, /command === "\/mistakes"/);
+  assert.match(webhook, /command === "\/practice"/);
+  assert.match(webhook, /command === "\/resume"/);
+  assert.match(webhook, /command === "\/report"/);
   assert.match(setup, /pre_checkout_query/);
   assert.match(setup, /getWebhookInfo/);
   assert.match(setup, /PublicUrl must use HTTPS/);
 });
 
-test("Mini App changes the verified server track and exposes four mobile sections", async () => {
+test("Mini App changes the verified server track and exposes adaptive mobile sections", async () => {
   const [miniApp, trackApi, css] = await Promise.all([
     readFile(new URL("../app/components/TelegramMiniAppClient.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/telegram/track/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
-  for (const label of ["Сегодня", "Вариант", "Ошибки", "Профиль"]) assert.match(miniApp, new RegExp(label));
+  for (const label of ["Сегодня", "Практика", "Вариант", "Ошибки", "Профиль"]) assert.match(miniApp, new RegExp(label));
   assert.match(miniApp, /\/api\/telegram\/track/);
   assert.match(miniApp, /level: student\.exam/);
   assert.match(miniApp, /source: "telegram"/);

@@ -21,8 +21,8 @@ const workflow = [
     number: "03",
     title: "Закройте слабые места",
     text: "После ошибки открываются правило, причина и новое авторское задание того же типа. Ошибка остаётся в личной тетради до верного повтора.",
-    href: "/exam?mode=mistakes",
-    action: "Посмотреть тетрадь",
+    href: "/practice",
+    action: "Выбрать номер",
   },
 ];
 
@@ -37,13 +37,14 @@ export default function Home() {
           <small>подготовка по форме ФИПИ</small>
         </Link>
         <nav aria-label="Основная навигация">
-          <Link href="/exam">Задания</Link>
+          <Link href="/practice">По номеру</Link>
+          <Link href="/exam">Пробники</Link>
           <a href="#subjects">Все предметы</a>
           <Link href="/for-teachers">Педагогам</Link>
           <Link href="/how-it-works">Как учит система</Link>
           <a href="#plans">Стоимость</a>
         </nav>
-        <Link className="button button-dark button-small" href="/exam">Начать</Link>
+        <Link className="button button-dark button-small" href="/practice">Начать</Link>
       </header>
 
       <section className="exam-home-hero">
@@ -56,7 +57,7 @@ export default function Home() {
         <div className="exam-home-facts" aria-label="Факты о тренажёре">
           <div><strong>14</strong><span>предметов ОГЭ на выбор</span></div>
           <div><strong>15</strong><span>предметов ЕГЭ на выбор</span></div>
-          <div><strong>1</strong><span>система разбора и повторения ошибок</span></div>
+          <div><strong>3×</strong><span>верных подряд для закрепления линии</span></div>
         </div>
       </section>
 
@@ -130,13 +131,13 @@ export default function Home() {
           <span>УЧЕНИКУ</span>
           <h3>Понятно, что делать сегодня</h3>
           <p>Полный вариант, практика по номеру и тетрадь ошибок. За верный повтор слабое задание исчезает из списка.</p>
-          <Link href="/exam">Начать бесплатно →</Link>
+          <Link href="/practice">Выбрать задание →</Link>
         </article>
         <article>
           <span>РОДИТЕЛЮ</span>
           <h3>Видно, за что платить</h3>
           <p>Не «часы у экрана», а выполненные задания, точность, слабые темы, повторные попытки и работы, которые проверил преподаватель.</p>
-          <Link href="/dashboard">Открыть демо-отчёт →</Link>
+          <Link href="/parent-report">Открыть отчёт →</Link>
         </article>
         <article>
           <span>ПЕДАГОГУ</span>

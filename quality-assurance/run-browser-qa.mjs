@@ -77,8 +77,10 @@ try {
   assert(/1/.test(await page.locator(".exam-mode-tabs button").nth(2).innerText()), "ошибка попала в тетрадь");
   await page.screenshot({ path: path.join(outputDir, "oge-error-remediation.png"), fullPage: false });
 
-  await page.getByRole("button", { name: /Открыть похожее|Отработать похожее/ }).click();
+  await page.getByRole("button", { name: /Отработать задание|Отработать похожее/ }).click();
   assert(await page.getByRole("button", { name: "Проверить решение" }).isVisible(), "похожее задание открывается без перезагрузки");
+  assert(await page.locator(".game-status").isVisible(), "после ошибки открыт игровой режим одного номера");
+  assert(/3/.test(await page.locator(".mastery-goal").innerText()), "игровая цель требует три верных ответа подряд");
 
   await page.locator(".exam-mode-tabs button").nth(2).click();
   assert(await page.locator(".exam-map nav button").count() === 1, "тетрадь показывает только неверное задание");
@@ -104,6 +106,28 @@ try {
   assert(await page.locator(".exam-static-options li").count() > 0, "в ЕГЭ варианты видны перед полем бланка");
   assert(await page.getByLabel("Ответ для бланка").isVisible(), "в ЕГЭ ответ вводится вручную");
   await page.screenshot({ path: path.join(outputDir, "ege-desktop.png"), fullPage: false });
+
+  await page.goto(`${baseUrl}/practice`, { waitUntil: "networkidle" });
+  assert(await page.getByText("Не весь вариант. Одно слабое задание — до уверенного решения.").isVisible(), "отдельная библиотека объясняет практику по номеру");
+  assert(await page.locator(".practice-line-grid a").count() === 27, "для русского ЕГЭ показаны 27 номеров");
+  const lineFiveHref = await page.locator(".practice-line-grid a").nth(4).getAttribute("href");
+  assert(lineFiveHref?.includes("mode=training") && lineFiveHref.includes("task=5"), "номер 5 ведёт в точечную отработку задания 5");
+
+  await page.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
+  await page.locator(".exam-map nav button").nth(12).click();
+  const essay = page.getByLabel("Ваш текст");
+  await essay.fill("Это сохранённый черновик сочинения. Он нужен, чтобы проверить паузу, восстановление текста и безопасное продолжение работы после возвращения ученика на сайт.");
+  await page.getByRole("button", { name: "Поставить на паузу" }).click();
+  assert(await essay.isDisabled(), "сочинение останавливается по кнопке паузы");
+  await page.reload({ waitUntil: "networkidle" });
+  assert((await page.getByLabel("Ваш текст").inputValue()).includes("сохранённый черновик"), "черновик сочинения восстановлен после перезагрузки");
+  assert(await page.getByText(/Черновик восстановлен/).isVisible(), "ученик видит подтверждение восстановления черновика");
+  await page.getByRole("button", { name: "Продолжить работу" }).click();
+  assert(!(await page.getByLabel("Ваш текст").isDisabled()), "после паузы сочинение можно продолжить");
+
+  await page.goto(`${baseUrl}/parent-report`, { waitUntil: "networkidle" });
+  assert(await page.getByText("Что ребёнок уже умеет и что делать дальше").isVisible(), "отчёт родителю открывается отдельной страницей");
+  assert(await page.getByRole("button", { name: "Скопировать для родителя" }).isVisible(), "отчёт можно скопировать родителю");
 
   await page.goto(`${baseUrl}/exam`, { waitUntil: "networkidle" });
   assert(await page.locator(".exam-gate-panel button").count() === 2, "прямой вход в тренажёр не пропускает выбор экзамена");
@@ -149,6 +173,17 @@ try {
   assert(telegramOverflow.scroll <= telegramOverflow.client, "Telegram Mini App 390 px не имеет горизонтального переполнения");
   await mobilePage.screenshot({ path: path.join(outputDir, "telegram-mobile.png"), fullPage: false });
 
+  await mobilePage.goto(`${baseUrl}/practice`, { waitUntil: "networkidle" });
+  const practiceOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(practiceOverflow.scroll <= practiceOverflow.client, "библиотека заданий 390 px не имеет горизонтального переполнения");
+  await mobilePage.screenshot({ path: path.join(outputDir, "practice-mobile.png"), fullPage: false });
+
+  await mobilePage.goto(`${baseUrl}/client-search.html`, { waitUntil: "networkidle" });
+  assert(await mobilePage.locator(".lead-card.category-found").count() >= 300, "доска содержит не менее 300 публичных точек входа");
+  const boardOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(boardOverflow.scroll <= boardOverflow.client, "клиентская доска 390 px не имеет горизонтального переполнения");
+  await mobilePage.screenshot({ path: path.join(outputDir, "client-search-mobile.png"), fullPage: false });
+
   await mobile.close();
   await desktop.close();
   assert(runtimeErrors.length === 0, "нет ошибок JavaScript в браузере");
@@ -164,6 +199,8 @@ try {
       "home-mobile.png",
       "oge-mobile.png",
       "telegram-mobile.png",
+      "practice-mobile.png",
+      "client-search-mobile.png",
     ],
   };
   await writeFile(path.join(outputDir, "browser-results.json"), JSON.stringify(result, null, 2));

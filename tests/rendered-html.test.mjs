@@ -282,9 +282,9 @@ test("teacher academy contains 15 methods, FIPI evidence and market limitations"
   assert.match(academy, /Цены репетиторов Москвы/);
   assert.match(curriculum, /Прямая выдача Avito недоступна/);
   assert.match(curriculum, /Индексированная копия объявления/);
-  assert.match(simulator, /subjectFocus/);
-  assert.match(simulator, /Задания сгруппированы по умениям/);
-  assert.match(simulator, /Расширенный авторский банк проходит предметную редактуру/);
+  assert.match(simulator, /practiceLine/);
+  assert.match(simulator, /Отработка одного номера/);
+  assert.match(simulator, /Расширенный банк:.*упражнений по правилам/);
 });
 
 test("exam-only landing and simulator have mobile-responsive QA hooks", async () => {

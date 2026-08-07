@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 type Exam = "oge" | "ege";
-type Tab = "today" | "variant" | "mistakes" | "profile";
+type Tab = "today" | "practice" | "variant" | "mistakes" | "profile";
 type Subject = { slug: string; name: string; shortName: string; ogeAvailable: boolean };
 type Student = {
   firstName: string;
@@ -40,6 +40,7 @@ declare global {
 
 const tabLabels: Record<Tab, string> = {
   today: "Сегодня",
+  practice: "Практика",
   variant: "Вариант",
   mistakes: "Ошибки",
   profile: "Профиль",
@@ -253,6 +254,7 @@ export function TelegramMiniAppClient() {
   if (!student) return null;
 
   const examUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, variant: "1", source: "telegram" }).toString()}`;
+  const practiceUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "training", task: "1", source: "telegram" }).toString()}`;
   const mistakesUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "mistakes", source: "telegram" }).toString()}`;
 
   return <main className="telegram-app">
@@ -287,6 +289,16 @@ export function TelegramMiniAppClient() {
       {result && <button className="button button-dark button-full" disabled={busy} onClick={nextTask}>{access.status === "paid" ? "Следующее задание" : "Следующее — в персональном плане"}</button>}
     </>}
 
+    {tab === "practice" && <section className="telegram-section-card">
+      <span className="telegram-kicker">ОДНА ЛИНИЯ ДО УВЕРЕННОСТИ</span>
+      <h1>Три верных подряд</h1>
+      <p>Выберите конкретный номер задания. После ошибки откроются правило, причина и новое условие того же экзаменационного типа.</p>
+      <div className="telegram-variant-facts"><div><b>1</b><span>номер за раз</span></div><div><b>3×</b><span>верных подряд</span></div><div><b>XP</b><span>за каждую попытку</span></div></div>
+      <a className="button button-primary button-full" href={practiceUrl}>Начать с задания № 1</a>
+      <a className="button button-dark button-full telegram-secondary-action" href="/practice">Выбрать другой номер</a>
+      <div className="telegram-practice-links"><a href="/resume">Продолжить сочинение</a><a href="/parent-report">Отчёт родителю</a></div>
+    </section>}
+
     {tab === "variant" && <section className="telegram-section-card">
       <span className="telegram-kicker">ЭКЗАМЕНАЦИОННЫЙ РЕЖИМ</span>
       <h1>{student.exam.toUpperCase()} · {selectedSubject?.name ?? student.subject}</h1>
@@ -303,6 +315,7 @@ export function TelegramMiniAppClient() {
         ? <ol className="telegram-mistake-list">{student.weakTopics.map((topic) => <li key={topic}><span>↗</span><div><b>{topic}</b><small>Правило → похожее задание → повторение</small></div></li>)}</ol>
         : <p>Решите вариант или задание дня. Ошибочные темы появятся здесь автоматически.</p>}
       <a className="button button-dark button-full" href={mistakesUrl}>Открыть отработку на платформе</a>
+      <a className="telegram-report-link" href="/parent-report">Показать понятный отчёт родителю →</a>
     </section>}
 
     {tab === "profile" && <section className="telegram-section-card">

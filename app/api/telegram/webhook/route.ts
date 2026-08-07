@@ -144,6 +144,30 @@ async function handleMessage(message: Message, requestUrl: string) {
     });
     return;
   }
+  if (command === "/practice") {
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: `${studentTrackLabel(student)}. Выберите номер и решайте разные условия того же типа до трёх верных ответов подряд:`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть практику по номеру", web_app: { url: appLink(appUrl, "practice") } }]] },
+    });
+    return;
+  }
+  if (command === "/resume") {
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: "Продолжите сохранённое изложение или сочинение. Черновик и время восстанавливаются на том же устройстве.",
+      reply_markup: { inline_keyboard: [[{ text: "Открыть черновики", web_app: { url: new URL("/resume", requestUrl).toString() } }]] },
+    });
+    return;
+  }
+  if (command === "/report") {
+    await telegramApi("sendMessage", {
+      chat_id: student.chatId,
+      text: "Отчёт показывает выполненные попытки, подтверждённые сильные темы, слабые места и следующий шаг. Это учебная аналитика, не официальный прогноз балла.",
+      reply_markup: { inline_keyboard: [[{ text: "Открыть отчёт родителю", web_app: { url: new URL("/parent-report", requestUrl).toString() } }]] },
+    });
+    return;
+  }
   if (command === "/today") {
     await sendTaskMessage(student);
     return;
@@ -220,6 +244,9 @@ async function handleMessage(message: Message, requestUrl: string) {
     text: [
       "Команды:",
       "/exam — полный ОГЭ/ЕГЭ-вариант",
+      "/practice — отработка одного номера",
+      "/resume — продолжить сочинение или изложение",
+      "/report — отчёт родителю",
       "/today — короткое задание по маршруту",
       "/mistakes — темы для повторения",
       "/track — сменить экзамен и предмет",

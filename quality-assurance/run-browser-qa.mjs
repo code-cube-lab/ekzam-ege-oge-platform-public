@@ -78,6 +78,17 @@ try {
   assert(await page.locator(".teacher-skill-stack article").count() === 8, "педагог видит восемь методических навыков");
   assert(await page.getByText("Бесплатная практика приводит к вашей платной экспертизе.").isVisible(), "репетитор видит путь от демо к своей услуге");
 
+  await page.goto(`${baseUrl}/reels`, { waitUntil: "networkidle" });
+  assert(await page.locator(".reels-idea-grid > article").count() === 12, "видеолаборатория показывает двенадцать идей");
+  assert(await page.locator(".reels-script-list > article").count() === 3, "видеолаборатория содержит три полных сценария");
+  assert(await page.locator(".shot-table > div").count() === 18, "три сценария содержат восемнадцать кадров");
+  assert(await page.locator(".reference-grid > a").count() === 7, "семь публичных видеореференсов ведут к оригиналам");
+  await page.getByRole("button", { name: "Репетитору" }).click();
+  assert(await page.locator(".reels-idea-grid > article").count() === 3, "фильтр оставляет идеи для репетитора без перезагрузки");
+  await page.locator(".reels-script-list > article").first().getByRole("button", { name: "Скопировать сценарий" }).click();
+  assert(await page.getByRole("button", { name: "Скопировано ✓" }).isVisible(), "сценарий копируется одной кнопкой");
+  await page.screenshot({ path: path.join(outputDir, "reels-desktop.png"), fullPage: true });
+
   await page.goto(baseUrl, { waitUntil: "networkidle" });
 
   await page.locator(".exam-level-cards button").nth(0).click();
@@ -228,6 +239,12 @@ try {
     assert(audienceOverflow.scroll <= audienceOverflow.client, `${route} на 390 px не имеет горизонтального переполнения`);
   }
 
+  await mobilePage.goto(`${baseUrl}/reels`, { waitUntil: "networkidle" });
+  const reelsOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(reelsOverflow.scroll <= reelsOverflow.client, "/reels на 390 px не имеет горизонтального переполнения");
+  assert(await mobilePage.getByRole("link", { name: "Взять готовый сценарий →" }).isVisible(), "мобильная видеолаборатория показывает основной CTA");
+  await mobilePage.screenshot({ path: path.join(outputDir, "reels-mobile.png"), fullPage: false });
+
   await mobilePage.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
   const examOverflow = await mobilePage.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
@@ -277,10 +294,12 @@ try {
     runtimeErrors,
     artifacts: [
       "home-desktop.png",
+      "reels-desktop.png",
       "oge-error-remediation.png",
       "oge-single-task-audio.png",
       "ege-desktop.png",
       "home-mobile.png",
+      "reels-mobile.png",
       "oge-mobile.png",
       "telegram-mobile.png",
       "practice-mobile.png",

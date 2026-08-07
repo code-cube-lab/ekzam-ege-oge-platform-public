@@ -22,8 +22,35 @@ test("landing starts with an explicit OGE or EGE choice and explains prices", as
 });
 
 test("required support, audience and consent pages exist", async () => {
-  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx", "../app/offer/page.tsx", "../app/privacy/page.tsx", "../app/consent/page.tsx", "../app/for-parents/page.tsx", "../app/for-schools/page.tsx"]) {
+  for (const path of ["../app/terms/page.tsx", "../app/support/page.tsx", "../app/paysupport/page.tsx", "../app/offer/page.tsx", "../app/privacy/page.tsx", "../app/consent/page.tsx", "../app/for-parents/page.tsx", "../app/for-schools/page.tsx", "../app/reels/page.tsx"]) {
     await access(new URL(path, import.meta.url));
+  }
+});
+
+test("reels lab contains referenced ideas, production scripts and private-outreach boundary", async () => {
+  const [data, component, home, teachers] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/reels-lab.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ReelsLabClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TeacherProductClient.tsx", import.meta.url), "utf8"),
+  ]);
+  const references = data.split("export const reelReferences")[1].split("export const reelIdeas")[0];
+  const ideas = data.split("export const reelIdeas")[1].split("export const reelScripts")[0];
+  const scripts = data.split("export const reelScripts")[1].split("export const reelPublishingPlan")[0];
+  assert.equal((references.match(/url: "https:\/\/www\.youtube\.com\/shorts\//g) ?? []).length, 7);
+  assert.equal((ideas.match(/audience: "(?:student|parent|teacher|school)"/g) ?? []).length, 12);
+  assert.equal((scripts.match(/logline:/g) ?? []).length, 3);
+  assert.equal((scripts.match(/id: "S0[1-6]"/g) ?? []).length, 18);
+  assert.match(data, /7 августа 2026 года/);
+  assert.match(data, /не копирует чужой текст или монтаж/);
+  assert.match(component, /Скопировать сценарий/);
+  assert.match(component, /aria-pressed/);
+  assert.match(component, /Реклама должна быть маркирована/);
+  assert.match(home, /href="\/reels"/);
+  assert.match(teachers, /href="\/reels"/);
+  assert.doesNotMatch(`${data}\n${component}`, /гарантир(?:уем|ую)|точно сдаст|100 баллов гарант/i);
+  for (const publicPath of ["../public/client-search.html", "../public/reels-outreach-playbook-2026-08-07.md"]) {
+    await assert.rejects(access(new URL(publicPath, import.meta.url)));
   }
 });
 

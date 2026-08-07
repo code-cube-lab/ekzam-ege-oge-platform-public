@@ -51,7 +51,7 @@ export function TeacherProductClient() {
   return <main className="teacher-product">
     <nav className="teacher-product-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
-      <div><a href="#methodology">Навыки репетитора</a><Link href="/teacher-academy">Методики 15 предметов</Link><Link href="/reels">Reels и Shorts</Link><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
+      <div><a href="#methodology">Навыки репетитора</a><Link href="/teacher-academy">Методики 15 предметов</Link><Link href="/reels">Reels и Shorts</Link><Link href="/growth">Поиск учеников</Link><a href="#builder">Собрать работу</a><a href="#teacher-plans">Тарифы</a></div>
       <Link className="button button-small button-red" href="#builder">Попробовать бесплатно</Link>
     </nav>
 
@@ -89,7 +89,7 @@ export function TeacherProductClient() {
         <p>Каждый предметный модуль проходит один и тот же учебный цикл. Преподаватель может менять формулировки и порядок, но не теряет доказательства попытки и следующий шаг.</p>
       </header>
       <div>{tutorSkills.map(([title, text], index) => <article key={title}><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
-      <footer><Link href="/teacher-academy">Открыть методики по 15 предметам →</Link><Link href="/teachers">Посмотреть предметные профили →</Link><Link href="/reels">Сценарии Reels для преподавателя →</Link></footer>
+      <footer><Link href="/teacher-academy">Открыть методики по 15 предметам →</Link><Link href="/teachers">Посмотреть предметные профили →</Link><Link href="/reels">Сценарии Reels для преподавателя →</Link><Link href="/growth">План поиска учеников →</Link></footer>
     </section>
 
     <section className="assignment-builder" id="builder">

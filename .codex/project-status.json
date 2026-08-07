@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T08:29:16.4712655Z",
+    "updated_at":  "2026-08-07T09:27:22.588Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -39,7 +39,8 @@
                        "evidence":  [
                                         "Adaptive single-task practice, pause/resume writing, versioned local learning progress, game mastery loop and parent report implemented; Next.js static export completed for 23 routes.",
                                         "Added sales homepage, parent and school pages, eight tutor teaching skills, three generated campaign visuals and a private priority board of 96 public business contacts.",
-                                        "Added a Reels lab route, 12 ideas, three timed scripts with 18 shots, seven public references, a 14-day calendar and a local-only outreach playbook."
+                                        "Added a Reels lab route, 12 ideas, three timed scripts with 18 shots, seven public references, a 14-day calendar and a local-only outreach playbook.",
+                                        "Added /growth with per-task teacher filming briefs across 15 EGE and 14 OGE subject routes, six verified popularity references, twelve public partners, six message flows, paid-media gates and high-ticket offer boundaries."
                                     ],
                        "note":  "Reels lab implementation and static export passed local checks."
                    },
@@ -66,9 +67,10 @@
                                         "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed.",
                                         "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export.",
                                         "56/56 automated tests passed; Next static export passed type checking; local GitHub-subpath browser QA passed 70/70 with no runtime errors and no 390px horizontal overflow."
-                                        ,"57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected."
+                                        ,"57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
+                                        "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected."
                                     ],
-                       "note":  "Public GitHub Pages regression remains the final release gate."
+                       "note":  "The current /growth release still requires commit, push and public GitHub Pages regression."
                    },
                    {
                        "name":  "handoff",

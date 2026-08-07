@@ -58,7 +58,7 @@ export function ReelsLabClient() {
     <header className="reels-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>видеолаборатория</small></Link>
       <nav aria-label="Навигация видеолаборатории"><a href="#ideas">Идеи</a><a href="#scripts">Сценарии</a><a href="#references">Примеры</a><a href="#plan">План 14 дней</a></nav>
-      <Link className="button button-dark button-small" href="/for-teachers">Инструменты педагога</Link>
+      <Link className="button button-dark button-small" href="/growth">Найти учеников</Link>
     </header>
 
     <section className="reels-hero">
@@ -159,6 +159,6 @@ export function ReelsLabClient() {
       <article><span className="exam-kicker">Перед платным размещением</span><h2>Реклама должна быть маркирована.</h2><p>Для размещений, подпадающих под российские требования к интернет-рекламе, нужны пометка «реклама», сведения о рекламодателе и идентификатор через ОРД. Конкретную схему подтверждают до публикации.</p><div><a href="https://www.consultant.ru/document/cons_doc_LAW_58968/2c4537e4796f6ff8b2736ed1b0d4fef08e14458e/" target="_blank" rel="noreferrer">Статья 18.1 ↗</a><a href="https://www.facebook.com/business/ads/facebook-instagram-reels-ads" target="_blank" rel="noreferrer">Рекомендации Meta 9:16 ↗</a><a href="https://support.google.com/youtube/answer/15424877" target="_blank" rel="noreferrer">Правила YouTube Shorts ↗</a></div></article>
     </section>
 
-    <section className="reels-final"><div><span className="exam-kicker light">Первый тест</span><h2>Снимите три хука.<br />Поменяйте только начало.</h2><p>Оставьте одинаковыми условие, доказательство и CTA. Сравнивайте досмотр до 3 секунд, переход в практику и завершение первого задания.</p></div><div><Link className="button button-yellow" href="/practice">Открыть практику для CTA</Link><Link className="button button-ghost light" href="/for-teachers#builder">Собрать ссылку</Link></div></section>
+    <section className="reels-final"><div><span className="exam-kicker light">Первый тест</span><h2>Снимите три хука.<br />Поменяйте только начало.</h2><p>Оставьте одинаковыми условие, доказательство и CTA. Сравнивайте досмотр до 3 секунд, переход в практику и завершение первого задания.</p></div><div><Link className="button button-yellow" href="/growth#constructor">Задание для любого предмета</Link><Link className="button button-ghost light" href="/growth#partners">Кому предложить бартер</Link></div></section>
   </main>;
 }

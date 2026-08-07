@@ -86,8 +86,28 @@ try {
   await page.getByRole("button", { name: "Репетитору" }).click();
   assert(await page.locator(".reels-idea-grid > article").count() === 3, "фильтр оставляет идеи для репетитора без перезагрузки");
   await page.locator(".reels-script-list > article").first().getByRole("button", { name: "Скопировать сценарий" }).click();
+  await page.getByRole("button", { name: "Скопировано ✓" }).waitFor({ state: "visible" });
   assert(await page.getByRole("button", { name: "Скопировано ✓" }).isVisible(), "сценарий копируется одной кнопкой");
   await page.screenshot({ path: path.join(outputDir, "reels-desktop.png"), fullPage: true });
+
+  await page.goto(`${baseUrl}/growth`, { waitUntil: "networkidle" });
+  assert(await page.locator(".growth-subject-matrix button").count() === 15, "центр роста покрывает пятнадцать предметов ЕГЭ");
+  assert(await page.locator(".growth-reference-grid article").count() === 6, "центр роста показывает шесть популярных образовательных референсов");
+  assert(await page.locator(".partner-grid article").count() === 12, "центр роста показывает двенадцать публичных партнёров");
+  await page.locator(".growth-controls fieldset button").nth(1).click();
+  await page.locator(".growth-controls label select").nth(0).selectOption("english");
+  assert(await page.locator(".growth-controls label select").nth(1).locator("option").count() === 42, "для английского ЕГЭ доступны все 42 номера");
+  await page.locator(".growth-controls label select").nth(1).selectOption("42");
+  assert((await page.getByTestId("teacher-campaign").innerText()).includes("№ 42"), "бриф перестраивается под выбранный номер");
+  await page.getByRole("button", { name: "Скопировать задание преподавателю" }).click();
+  await page.getByRole("button", { name: "Задание скопировано ✓" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "Задание скопировано ✓" }).isVisible(), "полный съёмочный бриф копируется одной кнопкой");
+  await page.getByRole("button", { name: "Родители" }).click();
+  assert(await page.locator(".partner-grid article").count() === 2, "фильтр показывает только родительских партнёров");
+  await page.locator(".message-grid article").first().getByRole("button", { name: "Скопировать текст" }).click();
+  await page.getByRole("button", { name: "Скопировано ✓" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "Скопировано ✓" }).isVisible(), "сообщение партнёру копируется одной кнопкой");
+  await page.screenshot({ path: path.join(outputDir, "growth-desktop.png"), fullPage: true });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
 
@@ -245,6 +265,12 @@ try {
   assert(await mobilePage.getByRole("link", { name: "Взять готовый сценарий →" }).isVisible(), "мобильная видеолаборатория показывает основной CTA");
   await mobilePage.screenshot({ path: path.join(outputDir, "reels-mobile.png"), fullPage: false });
 
+  await mobilePage.goto(`${baseUrl}/growth`, { waitUntil: "networkidle" });
+  const growthOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(growthOverflow.scroll <= growthOverflow.client, "/growth на 390 px не имеет горизонтального переполнения");
+  assert(await mobilePage.getByRole("button", { name: "Скопировать задание преподавателю" }).isVisible(), "мобильный центр роста показывает главный инструмент преподавателя");
+  await mobilePage.screenshot({ path: path.join(outputDir, "growth-mobile.png"), fullPage: false });
+
   await mobilePage.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
   const examOverflow = await mobilePage.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
@@ -295,11 +321,13 @@ try {
     artifacts: [
       "home-desktop.png",
       "reels-desktop.png",
+      "growth-desktop.png",
       "oge-error-remediation.png",
       "oge-single-task-audio.png",
       "ege-desktop.png",
       "home-mobile.png",
       "reels-mobile.png",
+      "growth-mobile.png",
       "oge-mobile.png",
       "telegram-mobile.png",
       "practice-mobile.png",

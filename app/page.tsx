@@ -69,6 +69,7 @@ export default function Home() {
           <Link href="/for-teachers">Репетиторам</Link>
           <Link href="/for-schools">Школам</Link>
           <Link href="/reels">Что снимать</Link>
+          <Link href="/growth">Как найти учеников</Link>
           <Link href="/practice">По номеру</Link>
           <a href="#plans">Стоимость</a>
         </nav>
@@ -154,7 +155,7 @@ export default function Home() {
             </article>
           ))}
         </div>
-        <div className="sales-method-links"><Link href="/teacher-academy">Открыть методики по предметам →</Link><Link href="/teachers">Посмотреть предметные профили →</Link><Link href="/reels">Взять сценарий Reels →</Link></div>
+        <div className="sales-method-links"><Link href="/teacher-academy">Открыть методики по предметам →</Link><Link href="/teachers">Посмотреть предметные профили →</Link><Link href="/reels">Взять сценарий Reels →</Link><Link href="/growth">Открыть центр поиска учеников →</Link></div>
       </section>
 
       <section className="exam-subject-showcase" id="subjects" aria-labelledby="subjects-title">

@@ -78,3 +78,42 @@ test("private outreach board remains outside the public tree", async () => {
     "../docs/education-lead-board-input.json",
   ]) await assert.rejects(access(new URL(publicPath, import.meta.url)));
 });
+
+test("every public teacher has a separate consent-gated growth brief", async () => {
+  const [data, component] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/teacher-growth.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/GrowthCenterClient.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(data, /russianTeachers\.map/);
+  assert.match(data, /subjectLeads[\s\S]*\.filter/);
+  assert.match(data, /Участие в платформе не подтверждено/);
+  assert.match(data, /право использовать своё имя/);
+  assert.match(data, /targetAudiences/);
+  assert.match(data, /outreachMessage/);
+  assert.match(component, /teacherGrowthProfiles\.map/);
+  assert.match(component, /Преподаватель для рекламного плана/);
+  assert.match(component, /Скопировать весь план/);
+  assert.match(component, /Скопировать сообщение/);
+  assert.match(component, /teacherGrowthProfiles\.length} уникальных персональных брифов/);
+});
+
+test("channel launch series has five original image-backed posts", async () => {
+  const [posts, component] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/telegram-channel-posts.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/GrowthCenterClient.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.equal((posts.match(/id: "/g) ?? []).length, 5);
+  assert.equal((posts.match(/image: "\/marketing\/channel\//g) ?? []).length, 5);
+  assert.equal((posts.match(/buttonUrl: (?:`|")/g) ?? []).length, 5);
+  assert.match(posts, /защищённый личный прогресс/i);
+  assert.match(component, /telegramChannelPosts\.map/);
+  assert.match(component, /Скопировать пост/);
+  for (const file of [
+    "post-01-weak-skill.jpg",
+    "post-02-thinking-path.jpg",
+    "post-03-focused-practice.jpg",
+    "post-04-parent-report.jpg",
+    "post-05-miniapp.jpg",
+  ]) await access(new URL(`../public/marketing/channel/${file}`, import.meta.url));
+});

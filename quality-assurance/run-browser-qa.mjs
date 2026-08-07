@@ -97,6 +97,12 @@ try {
   assert(await page.locator(".growth-sprint-grid article").count() === 10, "центр роста содержит десять шагов маршрута на 14 дней");
   assert(await page.locator(".media-compliance article").count() === 3, "центр роста объясняет три обязательных правила безопасного продвижения");
   assert(await page.locator(".partner-grid article").count() === 12, "центр роста показывает двенадцать публичных партнёров");
+  assert(await page.getByLabel("Преподаватель для рекламного плана").locator("option").count() === 27, "для двадцати семи преподавателей доступны отдельные рекламные брифы");
+  await page.getByLabel("Преподаватель для рекламного плана").selectOption("subject-math");
+  const mathTeacherPlan = await page.getByTestId("teacher-growth-profile").innerText();
+  assert(/Сергей Геннадьевич Дедов/.test(mathTeacherPlan) && /Где потерян знак/.test(mathTeacherPlan), "выбор преподавателя меняет персональное позиционирование и серию Reels");
+  assert(await page.locator(".channel-post-grid article").count() === 5, "на сайте опубликован комплект из пяти постов канала");
+  assert(await page.locator(".channel-post-grid img").count() === 5, "каждый пост канала имеет отдельное изображение");
   await page.locator(".growth-controls fieldset button").nth(1).click();
   await page.locator(".growth-controls label select").nth(0).selectOption("english");
   assert(await page.locator(".growth-controls label select").nth(1).locator("option").count() === 42, "для английского ЕГЭ доступны все 42 номера");
@@ -274,6 +280,7 @@ try {
   await mobilePage.goto(`${baseUrl}/growth`, { waitUntil: "networkidle" });
   const growthOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   assert(growthOverflow.scroll <= growthOverflow.client, "/growth на 390 px не имеет горизонтального переполнения");
+  assert(await mobilePage.getByLabel("Преподаватель для рекламного плана").locator("option").count() === 27, "мобильный центр роста сохраняет все персональные брифы");
   assert(await mobilePage.getByRole("button", { name: "Скопировать задание преподавателю" }).isVisible(), "мобильный центр роста показывает главный инструмент преподавателя");
   await mobilePage.screenshot({ path: path.join(outputDir, "growth-mobile.png"), fullPage: false });
 

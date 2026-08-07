@@ -2148,11 +2148,36 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .growth-funnel li b { color: var(--exam-yellow); font: 900 12px/1 ui-monospace,monospace; }
 .growth-funnel li span { font-size: 22px; line-height: 1.25; }
 
-.growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 108px 0; }
+.growth-teachers,.growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 108px 0; }
 .growth-section-head { display: grid; grid-template-columns: minmax(0,1.18fr) minmax(320px,.62fr); gap: 48px; align-items: end; }
 .growth-section-head .exam-kicker { grid-column: 1 / -1; }
 .growth-section-head h2 { max-width: 900px; margin: 0; font-size: clamp(48px,6vw,82px); line-height: .91; letter-spacing: -.055em; }
 .growth-section-head > p { margin: 0; color: #5b687e; font-size: 18px; line-height: 1.62; }
+.growth-teachers { padding-bottom: 0; }
+.teacher-growth-picker { margin-top: 48px; display: grid; grid-template-columns: 330px minmax(0,1fr); border: 1px solid var(--exam-ink); background: white; }
+.teacher-growth-picker > label { padding: 28px; display: flex; flex-direction: column; gap: 12px; color: white; background: var(--exam-blue); }
+.teacher-growth-picker > label > span { color: var(--exam-yellow); font: 900 11px/1 ui-monospace,monospace; letter-spacing: .09em; text-transform: uppercase; }
+.teacher-growth-picker > label select { width: 100%; min-height: 62px; padding: 8px 12px; color: var(--exam-ink); border: 0; background: white; font: 800 15px/1.25 inherit; }
+.teacher-growth-picker > label small { margin-top: auto; padding-top: 20px; color: #cdd7ff; border-top: 1px solid #7895ef; line-height: 1.5; }
+.teacher-growth-profile { min-width: 0; padding: 36px; display: grid; grid-template-columns: 1fr auto; gap: 24px 34px; }
+.teacher-growth-identity { display: flex; align-items: center; gap: 20px; }
+.teacher-growth-identity > span { width: 82px; height: 82px; flex: 0 0 auto; display: grid; place-items: center; color: var(--exam-ink); background: var(--exam-yellow); font-size: 28px; font-weight: 950; box-shadow: 6px 6px 0 #d6b329; }
+.teacher-growth-identity small,.teacher-growth-columns small,.teacher-growth-film small { color: var(--exam-blue); font: 900 10px/1 ui-monospace,monospace; letter-spacing: .09em; text-transform: uppercase; }
+.teacher-growth-identity h3 { margin: 7px 0 5px; font-size: 34px; line-height: 1.02; letter-spacing: -.04em; }
+.teacher-growth-identity p { margin: 0; color: #65738a; }
+.teacher-growth-status { max-width: 310px; padding: 16px; display: grid; gap: 7px; align-self: start; color: #681314; background: #ffe0df; border-left: 5px solid var(--exam-red); }
+.teacher-growth-status span { font-size: 12px; line-height: 1.45; }
+.teacher-growth-position { grid-column: 1 / -1; margin: 0; padding: 22px; color: white; background: var(--exam-ink); font-size: 20px; font-weight: 800; line-height: 1.5; }
+.teacher-growth-columns { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #c5cedc; }
+.teacher-growth-columns > div { min-width: 0; padding: 23px; }
+.teacher-growth-columns > div:first-child { border-right: 1px solid #c5cedc; }
+.teacher-growth-columns ol,.teacher-growth-columns ul { margin: 15px 0 0; padding-left: 22px; }
+.teacher-growth-columns li { margin: 9px 0; line-height: 1.45; }
+.teacher-growth-film { grid-column: 1 / -1; padding: 22px; background: #edf1f7; }
+.teacher-growth-film p { margin: 10px 0 0; line-height: 1.5; }
+.teacher-growth-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.teacher-growth-actions a { color: var(--exam-blue); font-size: 13px; font-weight: 900; }
+.teacher-growth-proof { grid-column: 1 / -1; margin: 0; color: #65738a; font-size: 12px; line-height: 1.5; }
 .growth-builder { margin-top: 48px; display: grid; grid-template-columns: 340px minmax(0,1fr); border: 1px solid var(--exam-ink); }
 .growth-controls { padding: 28px; display: flex; flex-direction: column; gap: 24px; background: var(--exam-ink); }
 .growth-controls fieldset { margin: 0; padding: 0; border: 0; }
@@ -2227,6 +2252,19 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .growth-boundary { margin: 20px 0 0; padding: 18px 22px; color: #48566c; border-left: 5px solid var(--exam-red); background: white; line-height: 1.55; }
 
 .growth-messages { border-top: 1px solid #c4cedb; }
+.growth-channel { padding: 108px max(24px,calc((100% - 1320px)/2)); color: white; background: var(--exam-ink); }
+.growth-channel .growth-section-head > p { color: #bcc7d7; }
+.channel-post-grid { margin-top: 48px; display: grid; gap: 18px; }
+.channel-post-grid article { min-height: 450px; display: grid; grid-template-columns: minmax(320px,.72fr) minmax(0,1.28fr); border: 1px solid #526178; background: #17243a; }
+.channel-post-grid img { width: 100%; height: 100%; max-height: 580px; display: block; object-fit: cover; }
+.channel-post-grid article > div { padding: 32px; display: flex; flex-direction: column; align-items: flex-start; }
+.channel-post-grid article span { color: var(--exam-yellow); font: 900 11px/1.2 ui-monospace,monospace; text-transform: uppercase; letter-spacing: .07em; }
+.channel-post-grid h3 { margin: 16px 0; font-size: 38px; line-height: 1; letter-spacing: -.04em; }
+.channel-post-grid p { margin: 0; color: #c4cede; white-space: pre-line; line-height: 1.55; }
+.channel-post-grid small { margin-top: auto; padding-top: 22px; color: #91a3bf; font: 900 10px/1.3 ui-monospace,monospace; }
+.channel-post-grid button { margin-top: 12px; min-height: 48px; padding: 0 18px; color: var(--exam-ink); border: 0; background: var(--exam-yellow); font: inherit; font-weight: 900; cursor: pointer; }
+.channel-post-footer { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+.channel-post-footer p { margin: 0; color: #9eacc0; font-size: 13px; }
 .message-grid { margin-top: 46px; display: grid; grid-template-columns: repeat(2,1fr); border: 1px solid var(--exam-ink); }
 .message-grid article { min-height: 440px; padding: 30px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 18px; border-right: 1px solid var(--exam-ink); border-bottom: 1px solid var(--exam-ink); background: white; }
 .message-grid article:nth-child(2n) { border-right: 0; }
@@ -2308,6 +2346,9 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .growth-funnel li:nth-child(2) { border-right: 0; }
   .growth-funnel li:nth-child(-n+2) { border-bottom: 1px solid #8da8ff; }
   .growth-builder { grid-template-columns: 300px 1fr; }
+  .teacher-growth-picker { grid-template-columns: 280px minmax(0,1fr); }
+  .teacher-growth-profile { grid-template-columns: 1fr; }
+  .teacher-growth-identity,.teacher-growth-status,.teacher-growth-position,.teacher-growth-columns,.teacher-growth-film,.teacher-growth-actions,.teacher-growth-proof { grid-column: auto; }
   .teacher-campaign-card { grid-template-columns: 1fr; }
   .campaign-title,.campaign-shots,.teacher-campaign-card > .button { grid-column: auto; }
   .campaign-shots ol { grid-template-columns: 1fr 1fr; }
@@ -2337,10 +2378,11 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .growth-sprint-grid article,.growth-sprint-grid article:nth-child(5n) { border-right: 1px solid var(--exam-ink); border-bottom: 1px solid var(--exam-ink); }
   .growth-sprint-grid article:nth-child(2n) { border-right: 0; }
   .growth-sprint-grid article:nth-last-child(-n+2) { border-bottom: 0; }
+  .channel-post-grid article { grid-template-columns: minmax(280px,.8fr) minmax(0,1.2fr); }
 }
 
 @media (max-width: 700px) {
-  .growth-nav,.growth-hero,.growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media,.growth-final { width: calc(100% - 24px); }
+  .growth-nav,.growth-hero,.growth-teachers,.growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media,.growth-final { width: calc(100% - 24px); }
   .growth-nav { min-height: 72px; }
   .growth-nav > .button { display: none; }
   .growth-nav .exam-brand small { display: none; }
@@ -2355,13 +2397,33 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .growth-hero-facts div:last-child { border-bottom: 0; }
   .growth-hero-facts strong { font-size: 56px; }
   .growth-funnel,.growth-references,.growth-forums,.growth-offers { padding-left: 12px; padding-right: 12px; }
+  .growth-channel { padding: 72px 12px; }
   .growth-funnel { margin-top: 64px; padding-top: 58px; padding-bottom: 58px; }
   .growth-funnel h2,.growth-section-head h2,.growth-offers h2 { font-size: 43px; }
   .growth-funnel ol { grid-template-columns: 1fr; }
   .growth-funnel li { min-height: 180px; border-right: 0; border-bottom: 1px solid #8da8ff; }
   .growth-funnel li:nth-child(-n+2) { border-bottom: 1px solid #8da8ff; }
   .growth-funnel li:last-child { border-bottom: 0; }
-  .growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media { padding: 72px 0; }
+  .growth-teachers,.growth-constructor,.growth-partners,.growth-messages,.growth-sprint,.growth-media { padding: 72px 0; }
+  .growth-teachers { padding-bottom: 0; }
+  .teacher-growth-picker { grid-template-columns: 1fr; }
+  .teacher-growth-picker > label { min-height: 210px; }
+  .teacher-growth-profile { padding: 22px; }
+  .teacher-growth-identity { align-items: flex-start; }
+  .teacher-growth-identity > span { width: 62px; height: 62px; font-size: 21px; }
+  .teacher-growth-identity h3 { font-size: 27px; }
+  .teacher-growth-status { max-width: none; }
+  .teacher-growth-columns { grid-template-columns: 1fr; }
+  .teacher-growth-columns > div:first-child { border-right: 0; border-bottom: 1px solid #c5cedc; }
+  .teacher-growth-actions .button { width: 100%; white-space: normal; }
+  .channel-post-grid article { min-height: 0; grid-template-columns: 1fr; }
+  .channel-post-grid img { height: auto; max-height: none; }
+  .channel-post-grid article > div { padding: 22px; }
+  .channel-post-grid h3 { font-size: 30px; }
+  .channel-post-grid small { margin-top: 24px; }
+  .channel-post-grid button { width: 100%; }
+  .channel-post-footer { align-items: stretch; flex-direction: column; }
+  .channel-post-footer .button { width: 100%; }
   .growth-builder { grid-template-columns: 1fr; }
   .growth-controls { min-height: 500px; }
   .teacher-campaign-card { padding: 22px; }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { examSubjects, type ExamSubjectSlug } from "../../knowledge-base/exams/exam-subjects";
 import {
@@ -17,6 +18,12 @@ import {
   viralEducationReferences,
   type GrowthExam,
 } from "../../knowledge-base/marketing/growth-center";
+import {
+  getTeacherGrowthProfile,
+  teacherGrowthProfiles,
+  type TeacherGrowthProfile,
+} from "../../knowledge-base/marketing/teacher-growth";
+import { telegramChannelPosts } from "../../knowledge-base/marketing/telegram-channel-posts";
 
 type PartnerFilter = "all" | "teacher" | "exam" | "parent" | "school";
 
@@ -27,6 +34,8 @@ const partnerFilterLabels: Array<[PartnerFilter, string]> = [
   ["teacher", "Педагоги"],
   ["school", "EdTech / школы"],
 ];
+
+const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 function fullCampaignText(campaign: ReturnType<typeof buildTeacherCampaign>, fullUrl: string) {
   return [
@@ -44,6 +53,31 @@ function fullCampaignText(campaign: ReturnType<typeof buildTeacherCampaign>, ful
     `CTA: ${campaign.cta}`,
     `ССЫЛКА: ${fullUrl}`,
     `ПРОВЕРКА: ${campaign.reviewGate}`,
+  ].join("\n");
+}
+
+function fullTeacherPlanText(profile: TeacherGrowthProfile, campaign: ReturnType<typeof buildTeacherCampaign>, fullUrl: string) {
+  return [
+    `ПЕРСОНАЛЬНЫЙ ПИЛОТ · ${profile.name}`,
+    `Предмет: ${profile.subjectName}`,
+    `Статус: ${profile.participationLabel}`,
+    "",
+    `ПОЗИЦИОНИРОВАНИЕ: ${profile.positioning}`,
+    "",
+    "СЕРИЯ ИЗ ТРЁХ REELS:",
+    ...profile.reelSeries.map((item) => `— ${item}`),
+    "",
+    `СЪЁМКА: ${profile.filmingBrief}`,
+    "",
+    "КОМУ ПРЕДЛОЖИТЬ:",
+    ...profile.targetAudiences.map((item) => `— ${item}`),
+    "",
+    "ПЕРВОЕ СООБЩЕНИЕ:",
+    profile.outreachMessage,
+    "",
+    `ПРАКТИКА: ${campaign.exam.toUpperCase()} · ${campaign.subjectName} · № ${campaign.taskNumber}`,
+    `ССЫЛКА: ${fullUrl}`,
+    `СТОП-ГЕЙТ: ${profile.proofRule}`,
   ].join("\n");
 }
 
@@ -73,6 +107,7 @@ export function GrowthCenterClient() {
   const [exam, setExam] = useState<GrowthExam>("ege");
   const [subjectSlug, setSubjectSlug] = useState<ExamSubjectSlug>("russian");
   const [taskNumber, setTaskNumber] = useState(1);
+  const [teacherId, setTeacherId] = useState(teacherGrowthProfiles[0].id);
   const [partnerFilter, setPartnerFilter] = useState<PartnerFilter>("all");
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -84,6 +119,7 @@ export function GrowthCenterClient() {
     () => buildTeacherCampaign(exam, subjectSlug, safeTaskNumber),
     [exam, safeTaskNumber, subjectSlug],
   );
+  const teacherProfile = useMemo(() => getTeacherGrowthProfile(teacherId), [teacherId]);
   const visiblePartners = publicPartners.filter((item) => partnerFilter === "all" || item.category === partnerFilter);
   const egeCoverage = growthSubjectCoverage.reduce((total, item) => total + item.ege, 0);
   const ogeCoverage = growthSubjectCoverage.reduce((total, item) => total + item.oge, 0);
@@ -101,13 +137,22 @@ export function GrowthCenterClient() {
     window.setTimeout(() => setCopied(null), 1800);
   }
 
+  function selectTeacher(id: string) {
+    const profile = getTeacherGrowthProfile(id);
+    setTeacherId(id);
+    setSubjectSlug(profile.subjectSlug);
+    setExam("ege");
+    setTaskNumber(1);
+  }
+
   const practiceUrl = currentAppUrl(campaign.practicePath);
   const teacherBrief = fullCampaignText(campaign, practiceUrl);
+  const teacherPlan = fullTeacherPlanText(teacherProfile, campaign, practiceUrl);
 
   return <main className="growth-center" id="top">
     <header className="growth-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>центр роста</small></Link>
-      <nav aria-label="Навигация центра роста"><a href="#constructor">Конструктор</a><a href="#references">Примеры</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
+      <nav aria-label="Навигация центра роста"><a href="#teachers">Преподаватели</a><a href="#constructor">Конструктор</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#channel">Канал</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
       <Link className="button button-dark button-small" href="/reels">Видеолаборатория</Link>
     </header>
 
@@ -122,7 +167,7 @@ export function GrowthCenterClient() {
         <div className="growth-radar-head"><span>МАРШРУТ</span><b>01 → 05</b></div>
         {["Reel с попыткой", "Переход на один номер", "Причина ошибки", "Три похожих задания", "Запрос родителя / учителя"].map((item, index) => <div key={item}><span>{String(index + 1).padStart(2, "0")}</span><b>{item}</b></div>)}
       </aside>
-      <div className="growth-hero-facts"><div><strong>15</strong><span>предметов ЕГЭ</span></div><div><strong>{egeCoverage + ogeCoverage}</strong><span>съёмочных комбинаций</span></div><div><strong>{publicPartners.length}</strong><span>публичных партнёров</span></div></div>
+      <div className="growth-hero-facts"><div><strong>27</strong><span>отдельных брифов преподавателей</span></div><div><strong>{egeCoverage + ogeCoverage}</strong><span>съёмочных комбинаций</span></div><div><strong>{publicPartners.length}</strong><span>публичных партнёров</span></div></div>
     </section>
 
     <section className="growth-funnel" aria-labelledby="growth-funnel-title">
@@ -133,6 +178,22 @@ export function GrowthCenterClient() {
         <li><b>03 · ПЕРЕНЕСТИ</b><span>Ученик решает другое условие того же типа.</span></li>
         <li><b>04 · ПРОДАТЬ</b><span>Предлагается проверка, маршрут или сопровождение человека.</span></li>
       </ol>
+    </section>
+
+    <section className="growth-teachers" id="teachers">
+      <header className="growth-section-head"><span className="exam-kicker">Не один общий шаблон</span><h2>Отдельная рекламная линия под каждого преподавателя.</h2><p>Выберите человека: сайт соберёт его позиционирование, три темы Reels, съёмочный бриф, подходящие аудитории и первое сообщение партнёру. Это черновик для согласования — публичный профиль не означает согласие работать на платформе.</p></header>
+      <div className="teacher-growth-picker">
+        <label><span>Преподаватель</span><select aria-label="Преподаватель для рекламного плана" value={teacherId} onChange={(event) => selectTeacher(event.target.value)}>{teacherGrowthProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name} — {profile.subjectName}</option>)}</select><small>{teacherGrowthProfiles.length} уникальных персональных брифов</small></label>
+        <article className="teacher-growth-profile" data-testid="teacher-growth-profile">
+          <div className="teacher-growth-identity"><span>{teacherProfile.initials}</span><div><small>{teacherProfile.subjectName}</small><h3>{teacherProfile.name}</h3><p>{teacherProfile.department}</p></div></div>
+          <div className="teacher-growth-status"><b>Сначала согласовать</b><span>{teacherProfile.participationLabel}</span></div>
+          <p className="teacher-growth-position">{teacherProfile.positioning}</p>
+          <div className="teacher-growth-columns"><div><small>СЕРИЯ REELS</small><ol>{teacherProfile.reelSeries.map((item) => <li key={item}>{item}</li>)}</ol></div><div><small>КОМУ ПИСАТЬ</small><ul>{teacherProfile.targetAudiences.map((item) => <li key={item}>{item}</li>)}</ul></div></div>
+          <div className="teacher-growth-film"><small>СЪЁМОЧНОЕ ЗАДАНИЕ</small><p>{teacherProfile.filmingBrief}</p></div>
+          <div className="teacher-growth-actions"><button type="button" className="button button-red" onClick={() => handleCopy("teacher-plan", teacherPlan)}>{copied === "teacher-plan" ? "План скопирован ✓" : "Скопировать весь план"}</button><button type="button" className="button button-ghost" onClick={() => handleCopy("teacher-message", teacherProfile.outreachMessage)}>{copied === "teacher-message" ? "Сообщение скопировано ✓" : "Скопировать сообщение"}</button><a href={teacherProfile.evidenceUrl} target="_blank" rel="noreferrer">Проверить публичный источник ↗</a></div>
+          <p className="teacher-growth-proof">{teacherProfile.proofRule}</p>
+        </article>
+      </div>
     </section>
 
     <section className="growth-constructor" id="constructor">
@@ -186,6 +247,15 @@ export function GrowthCenterClient() {
       <div className="message-grid">{outreachTemplates.map((item, index) => <article key={item.id}>
         <div><span>{String(index + 1).padStart(2, "0")}</span><small>{item.label}</small></div><h3>{item.title}</h3><p>{item.text}</p><button type="button" onClick={() => handleCopy(item.id, item.text)}>{copied === item.id ? "Скопировано ✓" : "Скопировать текст"}</button>
       </article>)}</div>
+    </section>
+
+    <section className="growth-channel" id="channel">
+      <header className="growth-section-head inverted"><span className="exam-kicker light">Пять публикаций для нового читателя</span><h2>Канал сначала помогает.<br />Потом приглашает в продукт.</h2><p>Каждый пост решает одну задачу: объясняет метод, даёт полезный инструмент или ведёт к одному действию. Изображения созданы специально для ЭКЗАМ; обещаний баллов и вымышленных отзывов нет.</p></header>
+      <div className="channel-post-grid">{telegramChannelPosts.map((post, index) => <article key={post.id}>
+        <Image unoptimized src={`${publicBasePath}${post.image}`} alt={`Иллюстрация к публикации «${post.title}»`} width={1200} height={1200} loading="lazy" />
+        <div><span>{String(index + 1).padStart(2, "0")} · {post.purpose}</span><h3>{post.title}</h3><p>{post.text}</p><small>КНОПКА · {post.buttonLabel}</small><button type="button" onClick={() => handleCopy(`channel-${post.id}`, `${post.text}\n\n${post.buttonLabel}: ${post.buttonUrl}`)}>{copied === `channel-${post.id}` ? "Пост скопирован ✓" : "Скопировать пост"}</button></div>
+      </article>)}</div>
+      <div className="channel-post-footer"><a className="button button-yellow" href="https://t.me/ekzam_oge_ege" target="_blank" rel="noreferrer">Открыть канал ЭКЗАМ ↗</a><p>Публикация в Telegram проверяется отдельно от наличия карточек на сайте.</p></div>
     </section>
 
     <section className="growth-forums">

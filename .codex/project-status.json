@@ -72,7 +72,7 @@
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "Static GitHub Pages package generated in docs and ready for commit/push.",
                                         "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors.",
@@ -80,8 +80,9 @@
                                         "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1.",
                                         "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification.",
                                         "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors."
+                                        ,"Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors."
                                     ],
-                       "note":  "Publishing the Reels lab release and running public HTTP/browser verification."
+                       "note":  "GitHub Pages Reels release is public. No messages, subscriptions or posts were sent automatically."
                    }
                ]
 }

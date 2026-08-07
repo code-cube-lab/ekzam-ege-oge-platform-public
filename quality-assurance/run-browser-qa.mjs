@@ -92,7 +92,10 @@ try {
 
   await page.goto(`${baseUrl}/growth`, { waitUntil: "networkidle" });
   assert(await page.locator(".growth-subject-matrix button").count() === 15, "центр роста покрывает пятнадцать предметов ЕГЭ");
-  assert(await page.locator(".growth-reference-grid article").count() === 6, "центр роста показывает шесть популярных образовательных референсов");
+  assert(await page.locator(".growth-reference-grid article").count() === 11, "центр роста показывает одиннадцать популярных образовательных референсов");
+  assert(await page.getByText("Alvernia University", { exact: true }).isVisible(), "центр роста показывает свежий вирусный референс Alvernia University");
+  assert(await page.locator(".growth-sprint-grid article").count() === 10, "центр роста содержит десять шагов маршрута на 14 дней");
+  assert(await page.locator(".media-compliance article").count() === 3, "центр роста объясняет три обязательных правила безопасного продвижения");
   assert(await page.locator(".partner-grid article").count() === 12, "центр роста показывает двенадцать публичных партнёров");
   await page.locator(".growth-controls fieldset button").nth(1).click();
   await page.locator(".growth-controls label select").nth(0).selectOption("english");
@@ -107,6 +110,9 @@ try {
   await page.locator(".message-grid article").first().getByRole("button", { name: "Скопировать текст" }).click();
   await page.getByRole("button", { name: "Скопировано ✓" }).waitFor({ state: "visible" });
   assert(await page.getByRole("button", { name: "Скопировано ✓" }).isVisible(), "сообщение партнёру копируется одной кнопкой");
+  await page.getByRole("button", { name: "Скопировать план на 14 дней" }).click();
+  await page.getByRole("button", { name: "План скопирован ✓" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "План скопирован ✓" }).isVisible(), "маршрут поиска учеников на 14 дней копируется одной кнопкой");
   await page.screenshot({ path: path.join(outputDir, "growth-desktop.png"), fullPage: true });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });

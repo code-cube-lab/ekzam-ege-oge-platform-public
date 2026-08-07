@@ -47,14 +47,22 @@ test("growth center includes verified references, public partners and ethical me
   const references = data.split("export const viralEducationReferences")[1].split("export const publicPartners")[0];
   const partners = data.split("export const publicPartners")[1].split("export const outreachTemplates")[0];
   const messages = data.split("export const outreachTemplates")[1].split("export const forumRoutes")[0];
-  assert.ok((references.match(/evidenceUrl:/g) ?? []).length >= 6);
-  assert.ok((references.match(/(?:tiktok\.com|instagram\.com)/g) ?? []).length >= 5);
+  assert.ok((references.match(/evidenceUrl:/g) ?? []).length >= 11);
+  assert.ok((references.match(/(?:tiktok\.com|instagram\.com)/g) ?? []).length >= 10);
+  assert.match(references, /3,6 млн просмотров/);
+  assert.match(references, /4,4 млн просмотров/);
+  assert.match(references, /июнь 2026 года/);
   assert.equal((partners.match(/category: "(?:teacher|exam|parent|school)"/g) ?? []).length, 12);
   assert.equal((messages.match(/id: "/g) ?? []).length, 6);
   assert.match(component, /Никогда не писать участникам в личку без приглашения/);
   assert.match(component, /без массовой рассылки/);
   assert.match(component, /не гарантируют повтор результата/);
   assert.match(component, /коммерческие гипотезы/);
+  assert.match(component, /Скопировать план на 14 дней/);
+  assert.match(data, /studentAcquisitionSprint/);
+  assert.match(data, /promotionCompliance/);
+  assert.match(data, /Федеральный закон № 72-ФЗ/);
+  assert.match(data, /Приказ Роскомнадзора № 68/);
   assert.match(home, /href="\/growth"/);
   assert.match(teachers, /href="\/growth"/);
   assert.match(reels, /href="\/growth/);
@@ -70,4 +78,3 @@ test("private outreach board remains outside the public tree", async () => {
     "../docs/education-lead-board-input.json",
   ]) await assert.rejects(access(new URL(publicPath, import.meta.url)));
 });
-

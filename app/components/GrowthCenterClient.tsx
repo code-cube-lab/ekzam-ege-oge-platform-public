@@ -11,7 +11,9 @@ import {
   offerHypotheses,
   outreachTemplates,
   paidGrowthLadder,
+  promotionCompliance,
   publicPartners,
+  studentAcquisitionSprint,
   viralEducationReferences,
   type GrowthExam,
 } from "../../knowledge-base/marketing/growth-center";
@@ -105,7 +107,7 @@ export function GrowthCenterClient() {
   return <main className="growth-center" id="top">
     <header className="growth-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>центр роста</small></Link>
-      <nav aria-label="Навигация центра роста"><a href="#constructor">Конструктор</a><a href="#references">Примеры</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#media">Реклама</a></nav>
+      <nav aria-label="Навигация центра роста"><a href="#constructor">Конструктор</a><a href="#references">Примеры</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
       <Link className="button button-dark button-small" href="/reels">Видеолаборатория</Link>
     </header>
 
@@ -191,8 +193,19 @@ export function GrowthCenterClient() {
       <div className="forum-routes">{forumRoutes.map((item) => <a key={item.url} href={item.url} target="_blank" rel="noreferrer"><b>{item.title}</b><span>{item.angle}</span><em>Открыть обсуждение ↗</em></a>)}</div>
     </section>
 
+    <section className="growth-sprint" id="sprint">
+      <header className="growth-section-head"><span className="exam-kicker">Рабочий путь до первых учеников</span><h2>14 дней: от одного номера до платного продолжения.</h2><p>Это не массовая рассылка и не обещание вирусности. Каждый шаг оставляет проверяемый результат: ролик, завершённое задание, ответ партнёра или заявка.</p></header>
+      <div className="growth-sprint-grid">{studentAcquisitionSprint.map((item, index) => <article key={item.period}>
+        <span>{String(index + 1).padStart(2, "0")}</span><small>{item.period}</small><h3>{item.title}</h3><p>{item.action}</p>
+      </article>)}</div>
+      <button type="button" className="button button-dark" onClick={() => handleCopy("sprint", studentAcquisitionSprint.map((item) => `${item.period} · ${item.title}\n${item.action}`).join("\n\n"))}>{copied === "sprint" ? "План скопирован ✓" : "Скопировать план на 14 дней"}</button>
+    </section>
+
     <section className="growth-media" id="media">
       <header className="growth-section-head"><span className="exam-kicker">Когда включать платную рекламу</span><h2>Не покупать охват, пока не работает переход в задание.</h2><p>Бюджеты ниже — рабочие гипотезы теста, а не обещание результата и не прайс площадок. На каждом этапе решение принимается по завершённой диагностике и заявке.</p></header>
+      <div className="media-compliance">{promotionCompliance.map((item, index) => <article key={item.title}>
+        <span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3><p>{item.text}</p><a href={item.url} target="_blank" rel="noreferrer">{item.label} ↗</a>
+      </article>)}</div>
       <div className="media-ladder">{paidGrowthLadder.map((item) => <article key={item.step}><span>{item.step}</span><h3>{item.title}</h3><strong>{item.budget}</strong><p>{item.action}</p><small>ПЕРЕХОД ДАЛЬШЕ, ЕСЛИ</small><b>{item.gate}</b></article>)}</div>
       <div className="media-sources"><span>Проверить перед запуском:</span><a href="https://yandex.ru/support/direct/ru/quick-start/quick-start" target="_blank" rel="noreferrer">Яндекс Директ ↗</a><a href="https://yandex.ru/support/direct/en/moderation/ad-rules" target="_blank" rel="noreferrer">Правила модерации ↗</a><a href="https://telega.in/" target="_blank" rel="noreferrer">Каталог Telega.in ↗</a><a href="https://vk.company.ru/ru/press/releases/12231/" target="_blank" rel="noreferrer">VK Визитки ↗</a></div>
     </section>
@@ -209,4 +222,3 @@ export function GrowthCenterClient() {
     </section>
   </main>;
 }
-

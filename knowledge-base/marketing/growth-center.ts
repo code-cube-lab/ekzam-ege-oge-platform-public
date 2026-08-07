@@ -23,6 +23,56 @@ export const growthEvidenceDate = "7 августа 2026 года";
 
 export const viralEducationReferences = [
   {
+    platform: "Instagram / TikTok",
+    author: "Alvernia University",
+    title: "Студенты откладывают подготовку и бесконечно листают ленту",
+    result: "Почти 3 млн просмотров в Instagram и более 964 тыс. в TikTok; университет подтвердил показатели в мае 2025 года",
+    pattern: "8 секунд → узнаваемая боль перед экзаменом → POV зрителя → повод написать комментарий",
+    url: "https://www.instagram.com/reel/DJE9SaYuy-V/",
+    evidenceUrl: "https://www.alvernia.edu/news/2025/05/alvernia-video-goes-viral-viewed-millions-instagram-tiktok",
+    evidenceLabel: "Публикация Alvernia University",
+  },
+  {
+    platform: "TikTok",
+    author: "Taryn Gontjes",
+    title: "Учебная распевка на сленге подростков",
+    result: "Более 3,6 млн просмотров и почти 4 тыс. комментариев по данным ABC News за октябрь 2025 года",
+    pattern: "Язык аудитории → совместное действие учеников → учебный навык внутри развлекательной формы",
+    url: "https://www.tiktok.com/@thatweirdchoirteacher/video/7551527550044900639",
+    evidenceUrl: "https://abcnews.com/amp/GMA/Living/choir-teacher-viral-gen-alpha-slang-engage-students/story?id=126190843",
+    evidenceLabel: "Публикация ABC News",
+  },
+  {
+    platform: "Instagram / TikTok",
+    author: "Matthew Pittman и студенты UT",
+    title: "Преподаватель не может продолжить занятие из-за новости поп-культуры",
+    result: "3,7 млн просмотров, 352,5 тыс. лайков и 12,2 тыс. сохранений в TikTok по данным The Daily Beacon",
+    pattern: "Актуальный инфоповод → неожиданная реакция преподавателя → короткая сценка → обсуждение",
+    url: "https://www.instagram.com/p/DN1BmVdXN9I/",
+    evidenceUrl: "https://utdailybeacon.com/83738/campus-news/lecture-gone-viral-how-one-professors-success-teaches-students-social-media-skills/",
+    evidenceLabel: "Публикация The Daily Beacon",
+  },
+  {
+    platform: "TikTok",
+    author: "Leah Barlow / HillmanTok University",
+    title: "Один мини-урок стал началом образовательного сообщества",
+    result: "Первый ролик получил 4,4 млн просмотров; вокруг формата появилось более 17 тыс. публикаций HillmanTok",
+    pattern: "Один преподавательский курс → понятный номер урока → участие других экспертов → сериал",
+    url: "https://www.tiktok.com/@afamstudies/video/7462142943680302382",
+    evidenceUrl: "https://www.axios.com/2025/02/15/hillmantok-university-how-black-educators-created-a-tiktok-hbcu",
+    evidenceLabel: "Публикация Axios",
+  },
+  {
+    platform: "Instagram",
+    author: "@amelin_teacher",
+    title: "Чем занимаются организаторы ОГЭ и ЕГЭ во время экзамена",
+    result: "Сотни тысяч просмотров и сотни комментариев педагогов по данным «Мела» за июнь 2026 года",
+    pattern: "Профессиональная боль → самоирония → список узнаваемых ситуаций → комментарии коллег",
+    url: "https://www.instagram.com/reel/DZaP1AUCYWi/",
+    evidenceUrl: "https://mel.fm/novosti/7625980-v-sotssetyakh-zavirusilsya-shutochny-rolik-uchitelya-o-nishevykh-zanyatiyakh-dlya-organizatorovyege-",
+    evidenceLabel: "Публикация «Мела»",
+  },
+  {
     platform: "TikTok",
     author: "Алекс Люфт",
     title: "Ударение в слове «свёкла» через короткий мнемонический приём",
@@ -153,6 +203,40 @@ export const paidGrowthLadder = [
   { step: "05", title: "Школы и центры", budget: "ручные пилоты", action: "Продавать ограниченный методический пилот, а не обещание готовой цифровой школы.", gate: "Есть предметный редактор, договорённость по данным и критерии успеха." },
 ] as const;
 
+export const studentAcquisitionSprint = [
+  { period: "День 1", title: "Один сегмент", action: "Выбрать экзамен, предмет и один номер, который часто вызывает повторяющуюся ошибку." },
+  { period: "Дни 2–3", title: "Один преподаватель", action: "Согласовать авторство, предметную проверку, лицо в кадре и платную услугу после диагностики." },
+  { period: "День 4", title: "Три начала ролика", action: "Снять одинаковую задачу с тремя разными хуками; остальную часть и CTA не менять." },
+  { period: "День 5", title: "Органическая проверка", action: "Опубликовать в собственных VK Клипах, Shorts и Telegram; измерить удержание, переходы и завершения задания." },
+  { period: "День 6", title: "Три адресных предложения", action: "Выбрать три подходящих публичных контакта, добавить по одной настоящей детали и отправить не более одного сообщения каждому." },
+  { period: "Дни 7–10", title: "Семидневный пилот", action: "Дать партнёру отдельную UTM-ссылку и один бесплатный номер; не просить публикацию до проверки пользы." },
+  { period: "Дни 8–11", title: "Ответы родителям", action: "Ответить по существу в 3–5 подходящих обсуждениях без ссылки; связь с сервисом обозначать честно." },
+  { period: "День 12", title: "Доказательство", action: "Собрать обезличенные причины ошибок, завершения и вопросы родителей; просмотры сами по себе не считать результатом." },
+  { period: "День 13", title: "Платное продолжение", action: "Предложить диагностику с преподавателем, маршрут на 4 недели или предметный модуль — по обнаруженной проблеме." },
+  { period: "День 14", title: "Решение", action: "Масштабировать только связку, где есть завершённые задания и заявки; остальные хуки и площадки остановить." },
+] as const;
+
+export const promotionCompliance = [
+  {
+    title: "Instagram и TikTok — только референсы",
+    text: "Для аудитории в России не планировать там платные интеграции. С 1 сентября 2025 года реклама на ресурсах с ограниченным доступом запрещена; ответственность может нести и рекламодатель.",
+    url: "https://publication.pravo.gov.ru/document/0001202504070018",
+    label: "Федеральный закон № 72-ФЗ",
+  },
+  {
+    title: "Платное размещение маркировать",
+    text: "До выхода получить идентификатор рекламы через ОРД, разместить пометку «Реклама» и данные рекламодателя, затем передать сведения по правилам площадки и закона.",
+    url: "https://publication.pravo.gov.ru/document/0001202504140029",
+    label: "Приказ Роскомнадзора № 68",
+  },
+  {
+    title: "Сначала измеримый пилот",
+    text: "Не покупать охват, пока не настроены UTM-метки и цель: завершение задания, запрос диагностики или запись преподавателю. Правовую схему конкретной интеграции подтвердить у ОРД или юриста.",
+    url: "https://yandex.ru/support/direct/ru/quick-start/quick-start",
+    label: "Справка Яндекс Директа",
+  },
+] as const;
+
 export const offerHypotheses = [
   { name: "Запуск преподавателя", price: "14 900–29 900 ₽", includes: "1 предметная линия, страница, 6 съёмочных заданий и ручной запуск.", ready: "Можно продавать как ограниченный пилот после согласования содержания." },
   { name: "Авторский модуль", price: "79 000–149 000 ₽", includes: "Редактура линии, тренировочный маршрут, упаковка эксперта и рекламный комплект.", ready: "Только с предметной проверкой преподавателя и зафиксированным объёмом." },
@@ -231,4 +315,3 @@ export const growthSubjectCoverage = examSubjects.map((subject) => ({
   oge: subject.ogeTaskCount ?? 0,
   focus: subject.focus,
 }));
-

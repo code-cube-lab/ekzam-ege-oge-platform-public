@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T09:27:22.588Z",
+    "updated_at":  "2026-08-07T09:30:42.753Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -70,7 +70,7 @@
                                         ,"57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
                                         "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected."
                                     ],
-                       "note":  "The current /growth release still requires commit, push and public GitHub Pages regression."
+                       "note":  "Public GitHub Pages /growth release passed HTTP checks and 88/88 browser regression scenarios."
                    },
                    {
                        "name":  "handoff",
@@ -82,7 +82,8 @@
                                         "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1.",
                                         "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification.",
                                         "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors."
-                                        ,"Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors."
+                                        ,"Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors.",
+                                        "Commit 6d137fd was pushed to the release branch and main; repository, home and /growth returned HTTP 200; public GitHub Pages browser QA passed 88/88 with no runtime errors."
                                     ],
                        "note":  "GitHub Pages Reels release is public. No messages, subscriptions or posts were sent automatically."
                    }

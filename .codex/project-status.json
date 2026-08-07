@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T03:57:18.8054843Z",
+    "updated_at":  "2026-08-07T04:01:21.9532960Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -68,15 +68,16 @@
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "Static GitHub Pages package generated in docs and ready for commit/push.",
                                         "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors.",
                                         "Updated static export copied to docs; local GitHub-subpath QA passed 48/48.",
                                         "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1.",
-                                        "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification."
+                                        "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification.",
+                                        "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors."
                                     ],
-                       "note":  "Do not call the release public until the GitHub Pages URL passes."
+                       "note":  "GitHub Pages sales release is public. Server-side payments, Telegram initData, AI feedback and cross-device sync remain separate unverified gates."
                    }
                ]
 }

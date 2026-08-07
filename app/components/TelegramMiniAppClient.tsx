@@ -46,6 +46,14 @@ const tabLabels: Record<Tab, string> = {
   profile: "Профиль",
 };
 
+function miniAppHref(path: string) {
+  if (typeof window === "undefined") return path;
+  const marker = "/telegram";
+  const markerIndex = window.location.pathname.indexOf(marker);
+  const basePath = markerIndex >= 0 ? window.location.pathname.slice(0, markerIndex) : "";
+  return `${basePath}${path}`;
+}
+
 export function TelegramMiniAppClient() {
   const [status, setStatus] = useState<"loading" | "preview" | "ready" | "error">("loading");
   const [tab, setTab] = useState<Tab>("today");
@@ -112,10 +120,10 @@ export function TelegramMiniAppClient() {
         await readAuth(webApp.initData);
         await loadTask(webApp.initData);
         if (active) setStatus("ready");
-      } catch (error) {
+      } catch {
         if (!active) return;
-        setMessage(error instanceof Error ? error.message : "Ошибка Telegram");
-        setStatus("error");
+        setMessage("Открыт бесплатный режим Mini App. Персональный серверный профиль, напоминания и оплата пока не подключены.");
+        setStatus("preview");
       }
     };
     let script = document.querySelector<HTMLScriptElement>('script[data-ekzam-telegram="true"]');
@@ -247,15 +255,15 @@ export function TelegramMiniAppClient() {
   if (status === "loading") {
     return <main className="telegram-app"><div className="telegram-loader"><span>Э</span><p>Проверяем Telegram…</p></div></main>;
   }
-  if (status === "preview") return <PreviewMiniApp />;
+  if (status === "preview") return <PreviewMiniApp notice={message} />;
   if (status === "error") {
     return <main className="telegram-app"><div className="telegram-preview"><span className="telegram-logo error">!</span><h1>Не удалось войти</h1><p>{message}</p><button className="button button-dark" onClick={() => window.location.reload()}>Повторить</button></div></main>;
   }
   if (!student) return null;
 
-  const examUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, variant: "1", source: "telegram" }).toString()}`;
-  const practiceUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "training", task: "1", source: "telegram" }).toString()}`;
-  const mistakesUrl = `/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "mistakes", source: "telegram" }).toString()}`;
+  const examUrl = miniAppHref(`/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, variant: "1", source: "telegram" }).toString()}`);
+  const practiceUrl = miniAppHref(`/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "training", task: "1", source: "telegram" }).toString()}`);
+  const mistakesUrl = miniAppHref(`/exam?${new URLSearchParams({ level: student.exam, subject: student.subject, mode: "mistakes", source: "telegram" }).toString()}`);
 
   return <main className="telegram-app">
     <header className="telegram-header">
@@ -295,8 +303,8 @@ export function TelegramMiniAppClient() {
       <p>Выберите конкретный номер задания. После ошибки откроются правило, причина и новое условие того же экзаменационного типа.</p>
       <div className="telegram-variant-facts"><div><b>1</b><span>номер за раз</span></div><div><b>3×</b><span>верных подряд</span></div><div><b>XP</b><span>за каждую попытку</span></div></div>
       <a className="button button-primary button-full" href={practiceUrl}>Начать с задания № 1</a>
-      <a className="button button-dark button-full telegram-secondary-action" href="/practice">Выбрать другой номер</a>
-      <div className="telegram-practice-links"><a href="/resume">Продолжить сочинение</a><a href="/parent-report">Отчёт родителю</a></div>
+      <a className="button button-dark button-full telegram-secondary-action" href={miniAppHref("/practice")}>Выбрать другой номер</a>
+      <div className="telegram-practice-links"><a href={miniAppHref("/resume")}>Продолжить сочинение</a><a href={miniAppHref("/parent-report")}>Отчёт родителю</a></div>
     </section>}
 
     {tab === "variant" && <section className="telegram-section-card">
@@ -315,7 +323,7 @@ export function TelegramMiniAppClient() {
         ? <ol className="telegram-mistake-list">{student.weakTopics.map((topic) => <li key={topic}><span>↗</span><div><b>{topic}</b><small>Правило → похожее задание → повторение</small></div></li>)}</ol>
         : <p>Решите вариант или задание дня. Ошибочные темы появятся здесь автоматически.</p>}
       <a className="button button-dark button-full" href={mistakesUrl}>Открыть отработку на платформе</a>
-      <a className="telegram-report-link" href="/parent-report">Показать понятный отчёт родителю →</a>
+      <a className="telegram-report-link" href={miniAppHref("/parent-report")}>Показать понятный отчёт родителю →</a>
     </section>}
 
     {tab === "profile" && <section className="telegram-section-card">
@@ -333,25 +341,26 @@ export function TelegramMiniAppClient() {
     </section>}
 
     {message && <p className="telegram-message" role="status">{message}</p>}
-    <footer className="telegram-foot"><span>Доступ открывается только после подтверждения сервера.</span><a href="/paysupport">Поддержка оплаты</a></footer>
+    <footer className="telegram-foot"><span>Доступ открывается только после подтверждения сервера.</span><a href={miniAppHref("/paysupport")}>Поддержка оплаты</a></footer>
   </main>;
 }
 
-function PreviewMiniApp() {
+function PreviewMiniApp({ notice = "" }: { notice?: string }) {
   const [exam, setExam] = useState<Exam>("ege");
   const [subject, setSubject] = useState("russian");
   return <main className="telegram-app">
     <div className="telegram-preview telegram-preview-demo">
       <span className="telegram-logo">Э</span>
-      <p className="telegram-kicker">ПРЕДПРОСМОТР MINI APP</p>
+      <p className="telegram-kicker">{notice ? "БЕСПЛАТНЫЙ РЕЖИМ MINI APP" : "ПРЕДПРОСМОТР MINI APP"}</p>
       <h1>ОГЭ или ЕГЭ — сначала выбор, потом вариант</h1>
-      <p>Поклацать разбор ошибки можно на сайте. Живой прогресс, бот и Stars работают только после запуска из реального бота.</p>
+      <p>{notice || "Поклацать разбор ошибки можно на сайте. Живой прогресс, бот и Stars работают только после запуска из реального бота."}</p>
       <div className="telegram-exam-switch">
         {(["oge", "ege"] as const).map((item) => <button key={item} className={exam === item ? "active" : ""} onClick={() => setExam(item)}>{item.toUpperCase()}</button>)}
       </div>
       <label className="telegram-subject-select"><span>Предмет</span><select value={subject} onChange={(event) => setSubject(event.target.value)}><option value="russian">Русский язык</option><option value="math">Математика</option><option value="social">Обществознание</option><option value="informatics">Информатика</option></select></label>
-      <a className="button button-primary button-full" href={`/exam?level=${exam}&subject=${subject}&variant=1&source=telegram-preview`}>Открыть вариант № 1</a>
-      <a className="button button-dark button-full" href="/how-it-works">Поклацать разбор ошибки</a>
+      <a className="button button-primary button-full" href={miniAppHref(`/exam?level=${exam}&subject=${subject}&variant=1&source=telegram-preview`)}>Открыть вариант № 1</a>
+      <a className="button button-dark button-full" href={miniAppHref("/how-it-works")}>Поклацать разбор ошибки</a>
+      <div className="telegram-public-links"><a href="https://t.me/EkzamOgeEgeBot" target="_blank" rel="noreferrer">Открыть бота</a><a href="https://t.me/ekzam_oge_ege" target="_blank" rel="noreferrer">Канал ЭКЗАМ</a></div>
       <small>Это безопасный предпросмотр без Telegram ID и без имитации оплаты.</small>
     </div>
   </main>;

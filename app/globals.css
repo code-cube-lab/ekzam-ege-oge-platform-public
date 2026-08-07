@@ -497,6 +497,8 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .telegram-preview-demo h1 { margin: 10px 0 5px; }
 .telegram-preview-demo .telegram-kicker { margin: 0; }
 .telegram-preview-demo small { margin-top: 8px; }
+.telegram-public-links { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.telegram-public-links a { min-height: 44px; display: grid; place-items: center; border: 1px solid rgba(23,34,26,.15); border-radius: 13px; background: white; color: var(--ink); font-size: 12px; font-weight: 850; text-decoration: none; }
 .access-badge.invoice_pending { background: #fff0c6; color: #705300; }
 
 /* Knowledge-driven lesson */
@@ -2010,6 +2012,10 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .exam-audio-task small { color: var(--muted); }
 .exam-audio-task button { min-height: 46px; padding: 0 16px; border: 0; color: white; background: var(--violet); font-weight: 850; cursor: pointer; }
 .exam-audio-task button:disabled { opacity: .45; cursor: default; }
+.exam-audio-task.playing { border-color: #245bd8; box-shadow: inset 5px 0 0 #245bd8; }
+.exam-audio-task.paused { border-color: #9a6b00; background: #fff8df; box-shadow: inset 5px 0 0 #f0bd35; }
+.exam-audio-actions { min-width: 220px; display: grid; gap: 7px; }
+.exam-audio-task .audio-next { color: var(--exam-ink); border: 1px solid #9aa7ba; background: white; }
 .exam-audit-gate { width: min(1180px,calc(100% - 40px)); margin: 34px auto 80px; display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 18px; }
 .exam-audit-levels { display: grid; align-content: start; gap: 10px; }
 .exam-audit-levels button { min-height: 92px; padding: 18px; display: grid; gap: 4px; text-align: left; border: 1px solid #c9d1dd; background: white; color: var(--exam-ink); cursor: pointer; }
@@ -2138,6 +2144,16 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .writing-session textarea { min-height: 340px; }
 .writing-controls { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 9px; }
 .draft-status { margin: 12px 0 0; color: #6d5300; font-size: 13px; font-weight: 700; }
+.review-next-card { margin: 22px 0; padding: 22px; display: grid; gap: 9px; border: 2px solid #4d7359; background: #eef9f0; box-shadow: 6px 6px 0 #d6e8da; }
+.review-next-card > span { color: #397247; font: 900 9px/1 ui-monospace,monospace; letter-spacing: .11em; }
+.review-next-card > b { font-size: 22px; }
+.review-next-card > p { max-width: 760px; margin: 0 0 5px; color: var(--muted); line-height: 1.55; }
+.review-next-card .button { justify-self: start; }
+.private-area-page { min-height: 100vh; padding: 34px max(20px,calc((100vw - 1180px)/2)); background: #eef2f7; }
+.private-area-page > section { max-width: 920px; margin: 72px auto 0; padding: clamp(28px,6vw,72px); border: 1px solid #c6cfdd; background: white; box-shadow: 12px 12px 0 #dbe2ec; }
+.private-area-page h1 { max-width: 800px; margin: 16px 0; font-size: clamp(38px,6vw,72px); line-height: .98; letter-spacing: -.055em; }
+.private-area-page p { max-width: 760px; color: var(--muted); font-size: 18px; line-height: 1.65; }
+.private-area-page section > div { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
 .verdict-actions { display: grid; align-content: center; gap: 9px; }
 
 .report-topbar { width: min(1240px,calc(100% - 40px)); min-height: 84px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #cbd3df; }

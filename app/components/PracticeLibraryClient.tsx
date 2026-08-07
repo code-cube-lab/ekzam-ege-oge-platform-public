@@ -36,7 +36,10 @@ export function PracticeLibraryClient() {
     })}</div></section>
 
     <section className="practice-step practice-lines"><div><span>03</span><h2>Номер задания</h2></div>{validation.status === "preview-ready" ? <>
-      <div className="practice-line-grid">{Array.from({ length: count }, (_, index) => index + 1).map((line) => <Link key={line} href={`/exam?${new URLSearchParams({ level, subject: subjectSlug, mode: "training", task: String(line) }).toString()}`}><b>{line}</b><span>12 попыток</span><small>открыть →</small></Link>)}</div>
+      <div className="practice-line-grid">{Array.from({ length: count }, (_, index) => index + 1).map((line) => {
+        const isExposition = level === "oge" && subjectSlug === "russian" && line === 1;
+        return <Link key={line} href={`/exam?${new URLSearchParams({ level, subject: subjectSlug, mode: "training", task: String(line) }).toString()}`}><b>{line}</b><span>{isExposition ? "12 разных текстов" : "12 попыток"}</span><small>{isExposition ? "слушать и писать →" : "открыть →"}</small></Link>;
+      })}</div>
       <div className="practice-route-actions"><Link className="button button-dark" href={`/exam?${new URLSearchParams({ level, subject: subjectSlug, mode: "route", variant: "1" }).toString()}`}>Решить полный вариант</Link><Link className="button button-ghost" href={`/exam?${new URLSearchParams({ level, subject: subjectSlug, mode: "mistakes" }).toString()}`}>Открыть мои ошибки</Link></div>
     </> : <div className="practice-editor-gate"><span>Банк не выдаётся за готовый</span><h3>{subject.name} проходит предметную проверку</h3><p>{validation.reason}</p><ul>{validation.requirements.map((item) => <li key={item}>{item}</li>)}</ul><a href={validation.sourceUrl} target="_blank" rel="noreferrer">Документы ФИПИ ↗</a></div>}</section>
   </main>;

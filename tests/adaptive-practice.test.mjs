@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 test("practice mode selects one exam line across authored variants", async () => {
@@ -9,6 +9,8 @@ test("practice mode selects one exam line across authored variants", async () =>
   assert.match(simulator, /3 верных подряд/);
   assert.match(simulator, /Отработать задание №/);
   assert.match(simulator, /appendAttempt/);
+  assert.match(simulator, /useMemo/);
+  assert.match(simulator, /Следующий новый текст/);
 });
 
 test("extended answers can pause, persist and resume", async () => {
@@ -17,7 +19,10 @@ test("extended answers can pause, persist and resume", async () => {
     readFile(new URL("../app/lib/learning-progress.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/ResumeDraftsClient.tsx", import.meta.url), "utf8"),
   ]);
-  assert.match(simulator, /Поставить на паузу/);
+  assert.match(simulator, /Поставить работу и аудио на паузу/);
+  assert.match(simulator, /speechSynthesis\.pause\(\)/);
+  assert.match(simulator, /speechSynthesis\.resume\(\)/);
+  assert.match(simulator, /650/);
   assert.match(simulator, /Сохранить и выйти/);
   assert.match(simulator, /appHref\("\/resume\/"\)/);
   assert.doesNotMatch(simulator, /window\.location\.assign\("\/practice"\)/);
@@ -40,18 +45,17 @@ test("parent report derives weaknesses from real attempts and states its limits"
   assert.match(report, /Это учебная аналитика, а не официальный прогноз балла/);
 });
 
-test("outreach board contains 300 verified public entries and excludes bulk sending", async () => {
-  const [rawText, board, plan] = await Promise.all([
-    readFile(new URL("../research/education-public-leads.json", import.meta.url), "utf8"),
-    readFile(new URL("../public/client-search.html", import.meta.url), "utf8"),
-    readFile(new URL("../research/client-acquisition-plan.md", import.meta.url), "utf8"),
+test("internal outreach data is absent from the public website", async () => {
+  await assert.rejects(access(new URL("../public/client-search.html", import.meta.url)));
+  const [notice, director, dashboard, teacher] = await Promise.all([
+    readFile(new URL("../app/components/PrivateAreaNotice.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/director/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/dashboard/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/teacher/page.tsx", import.meta.url), "utf8"),
   ]);
-  const raw = JSON.parse(rawText);
-  assert.equal(raw.selected, 300);
-  assert.equal(raw.leads.length, 300);
-  assert.ok(raw.leads.every((item) => item.source_url.startsWith("https://t.me/")));
-  assert.ok(raw.leads.every((item) => item.verified_at));
-  assert.match(board, /300 проверенных публичных страниц/);
-  assert.match(plan, /Не подписываться автоматически/);
-  assert.match(plan, /Не писать участникам/);
+  assert.match(notice, /нет демонстрационных учеников, финансовых показателей, списков клиентов/i);
+  for (const page of [director, dashboard, teacher]) {
+    assert.match(page, /PrivateAreaNotice/);
+    assert.doesNotMatch(page, /DirectorClient|DashboardClient|TeacherClient/);
+  }
 });

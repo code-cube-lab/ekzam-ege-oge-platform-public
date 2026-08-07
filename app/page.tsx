@@ -163,7 +163,7 @@ export default function Home() {
       <footer className="exam-home-footer">
         <Link className="brand exam-brand brand-light" href="#top"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
         <p>Авторская платформа подготовки к ОГЭ и ЕГЭ. Структура сверяется по документам ФИПИ; формулировки заданий не копируют закрытые КИМ.</p>
-        <nav aria-label="Правовая информация"><Link href="/offer">Оферта</Link><Link href="/privacy">Персональные данные</Link><Link href="/consent">Согласие</Link><Link href="/support">Поддержка</Link></nav>
+        <nav aria-label="Правовая информация"><a href="https://t.me/EkzamOgeEgeBot" target="_blank" rel="noreferrer">Telegram-бот</a><a href="https://t.me/ekzam_oge_ege" target="_blank" rel="noreferrer">Канал</a><Link href="/offer">Оферта</Link><Link href="/privacy">Персональные данные</Link><Link href="/consent">Согласие</Link><Link href="/support">Поддержка</Link></nav>
       </footer>
     </main>
   );

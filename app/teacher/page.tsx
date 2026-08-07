@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TeacherClient } from "../components/TeacherClient";
+import { PrivateAreaNotice } from "../components/PrivateAreaNotice";
 
-export const metadata: Metadata = { title: "Кабинет преподавателя" };
-export default function TeacherPage() { return <TeacherClient />; }
+export const metadata: Metadata = { title: "Закрытый кабинет преподавателя — ЭКЗАМ" };
+export default function TeacherPage() { return <PrivateAreaNotice role="преподавателя" />; }

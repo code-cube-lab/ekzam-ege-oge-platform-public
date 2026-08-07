@@ -40,6 +40,19 @@ try {
   const page = await desktop.newPage();
   page.setDefaultNavigationTimeout(90_000);
   page.on("pageerror", (error) => runtimeErrors.push(String(error)));
+  await page.addInitScript(() => {
+    window.__qaAudio = { play: 0, pause: 0, resume: 0, cancel: 0, text: "", utterance: null };
+    class QaUtterance {
+      constructor(text) { this.text = text; this.lang = ""; this.rate = 1; this.onend = null; this.onerror = null; }
+    }
+    Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: QaUtterance });
+    Object.defineProperty(window, "speechSynthesis", { configurable: true, value: {
+      speak(utterance) { window.__qaAudio.play += 1; window.__qaAudio.text = utterance.text; window.__qaAudio.utterance = utterance; },
+      pause() { window.__qaAudio.pause += 1; },
+      resume() { window.__qaAudio.resume += 1; },
+      cancel() { window.__qaAudio.cancel += 1; },
+    }});
+  });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   assert(await page.locator(".exam-level-cards button").count() === 2, "главная требует выбор ОГЭ или ЕГЭ");
@@ -60,9 +73,17 @@ try {
   assert(await page.locator(".exam-map nav button").count() === 13, "карта ОГЭ содержит 13 отдельных заданий");
   assert(await page.locator(".exam-audio-task").isVisible(), "задание 1 ОГЭ содержит прослушивание");
 
-  const audioButton = page.locator(".exam-audio-task button");
+  const audioButton = page.locator(".exam-audio-actions button").first();
   await audioButton.click();
+  assert(await audioButton.innerText() === "Пауза аудио", "после запуска аудио появляется отдельная кнопка паузы");
   await audioButton.click();
+  assert(await audioButton.innerText() === "Продолжить аудио", "аудио действительно переходит в состояние паузы");
+  assert(await page.evaluate(() => window.__qaAudio.pause) === 1, "пауза вызывает speechSynthesis.pause");
+  await audioButton.click();
+  assert(await page.evaluate(() => window.__qaAudio.resume) === 1, "продолжение вызывает speechSynthesis.resume без нового прослушивания");
+  await page.evaluate(() => window.__qaAudio.utterance?.onend?.());
+  await audioButton.click();
+  await page.evaluate(() => window.__qaAudio.utterance?.onend?.());
   assert(await audioButton.isDisabled(), "третье прослушивание изложения заблокировано");
 
   await page.locator(".exam-map nav button").nth(1).click();
@@ -115,13 +136,19 @@ try {
 
   await page.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1&task=1`, { waitUntil: "networkidle" });
   const essay = page.getByLabel("Ваш текст");
-  await essay.fill("Это сохранённый черновик изложения. Он нужен, чтобы проверить паузу, восстановление текста и безопасное продолжение работы после возвращения ученика на сайт.");
-  await page.getByRole("button", { name: "Поставить на паузу" }).click();
+  const draftText = "Это сохранённый черновик изложения. Он нужен, чтобы проверить паузу, восстановление текста и безопасное продолжение работы после возвращения ученика на сайт.";
+  const inputStarted = Date.now();
+  await essay.fill(draftText);
+  assert(Date.now() - inputStarted < 1500, "ввод большого фрагмента изложения не тормозит интерфейс");
+  await page.locator(".exam-audio-actions button").first().click();
+  const pausesBeforeWorkPause = await page.evaluate(() => window.__qaAudio.pause);
+  await page.getByRole("button", { name: "Поставить работу и аудио на паузу" }).click();
   assert(await essay.isDisabled(), "сочинение останавливается по кнопке паузы");
+  assert(await page.evaluate(() => window.__qaAudio.pause) === pausesBeforeWorkPause + 1, "общая пауза одновременно останавливает аудио");
   await page.reload({ waitUntil: "networkidle" });
   assert((await page.getByLabel("Ваш текст").inputValue()).includes("сохранённый черновик"), "черновик сочинения восстановлен после перезагрузки");
   assert(await page.getByText(/Черновик восстановлен/).isVisible(), "ученик видит подтверждение восстановления черновика");
-  await page.getByRole("button", { name: "Продолжить работу" }).click();
+  await page.getByRole("button", { name: "Продолжить работу и аудио" }).click();
   assert(!(await page.getByLabel("Ваш текст").isDisabled()), "после паузы сочинение можно продолжить");
   await page.getByRole("button", { name: "Сохранить и выйти" }).click();
   await page.waitForURL(/\/resume\/?$/);
@@ -135,6 +162,20 @@ try {
   await page.waitForURL(/mode=training.*task=1|task=1.*mode=training/);
   await page.getByText("Отработка одного номера").waitFor({ state: "visible" });
   assert(await page.getByText("Отработка одного номера").isVisible(), "после сохранения открывается серия только выбранного номера");
+  if (await page.getByRole("button", { name: "Продолжить работу и аудио" }).isVisible().catch(() => false)) {
+    await page.getByRole("button", { name: "Продолжить работу и аудио" }).click();
+  }
+  await page.locator(".exam-audio-actions button").first().click();
+  const firstTrainingAudio = await page.evaluate(() => window.__qaAudio.text);
+  const exposition = Array.from({ length: 85 }, (_, word) => `слово${word + 1}`).join(" ");
+  await page.getByLabel("Ваш текст").fill(exposition);
+  await page.getByRole("button", { name: "Проверить решение" }).click();
+  assert(await page.getByTestId("review-next-card").isVisible(), "после изложения появляется понятный переход к следующему тексту");
+  await page.getByTestId("next-reviewed-task").click();
+  await page.locator(".exam-audio-actions button").first().click();
+  const secondTrainingAudio = await page.evaluate(() => window.__qaAudio.text);
+  assert(Boolean(firstTrainingAudio) && firstTrainingAudio !== secondTrainingAudio, "следующая попытка задания № 1 содержит другой текст изложения");
+  await page.screenshot({ path: path.join(outputDir, "oge-single-task-audio.png"), fullPage: false });
 
   await page.goto(`${baseUrl}/parent-report`, { waitUntil: "networkidle" });
   assert(await page.getByText("Что ребёнок уже умеет и что делать дальше").isVisible(), "отчёт родителю открывается отдельной страницей");
@@ -177,6 +218,9 @@ try {
   await mobilePage.locator(".telegram-subject-select select").selectOption("math");
   const previewHref = await mobilePage.getByRole("link", { name: "Открыть вариант № 1" }).getAttribute("href");
   assert(previewHref?.includes("level=oge") && previewHref.includes("subject=math"), "предпросмотр собирает ссылку на выбранные экзамен и предмет");
+  if (baseUrl.includes("/ekzam-ege-oge-platform-public")) {
+    assert(previewHref?.startsWith("/ekzam-ege-oge-platform-public/exam"), "Mini App сохраняет базовый путь GitHub Pages во внутренних ссылках");
+  }
   const telegramOverflow = await mobilePage.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
     client: document.documentElement.clientWidth,
@@ -189,11 +233,13 @@ try {
   assert(practiceOverflow.scroll <= practiceOverflow.client, "библиотека заданий 390 px не имеет горизонтального переполнения");
   await mobilePage.screenshot({ path: path.join(outputDir, "practice-mobile.png"), fullPage: false });
 
-  await mobilePage.goto(`${baseUrl}/client-search.html`, { waitUntil: "networkidle" });
-  assert(await mobilePage.locator(".lead-card.category-found").count() >= 300, "доска содержит не менее 300 публичных точек входа");
-  const boardOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
-  assert(boardOverflow.scroll <= boardOverflow.client, "клиентская доска 390 px не имеет горизонтального переполнения");
-  await mobilePage.screenshot({ path: path.join(outputDir, "client-search-mobile.png"), fullPage: false });
+  await mobilePage.goto(`${baseUrl}/director`, { waitUntil: "networkidle" });
+  assert(await mobilePage.getByText(/Кабинет администратора не публикуется/).isVisible(), "публичный административный адрес не показывает внутренние данные");
+  const privateText = await mobilePage.locator("body").innerText();
+  assert(!/Выручка месяца|Активные ученики|списки клиентов/i.test(privateText), "на публичной странице нет служебных показателей и клиентских списков");
+  const privateOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(privateOverflow.scroll <= privateOverflow.client, "закрытый кабинет 390 px не имеет горизонтального переполнения");
+  await mobilePage.screenshot({ path: path.join(outputDir, "private-area-mobile.png"), fullPage: false });
 
   await mobile.close();
   await desktop.close();
@@ -206,12 +252,13 @@ try {
     artifacts: [
       "home-desktop.png",
       "oge-error-remediation.png",
+      "oge-single-task-audio.png",
       "ege-desktop.png",
       "home-mobile.png",
       "oge-mobile.png",
       "telegram-mobile.png",
       "practice-mobile.png",
-      "client-search-mobile.png",
+      "private-area-mobile.png",
     ],
   };
   await writeFile(path.join(outputDir, "browser-results.json"), JSON.stringify(result, null, 2));

@@ -43,4 +43,5 @@ next-env.d.ts
 /work/
 /tmp/
 /.local-secrets/
+/local-private/
 /.codex/project-status.pre-*.json

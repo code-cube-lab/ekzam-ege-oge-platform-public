@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { examSubjects, getExamSubject } from "../../knowledge-base/exams/exam-subjects";
 import { getExamRouteValidation } from "../../knowledge-base/exams/exam-validation";
@@ -29,6 +29,7 @@ import {
 type ResultState = "correct" | "incorrect" | "review";
 type ExamMode = "training" | "route" | "mistakes";
 type ExamLevel = "oge" | "ege";
+type AudioState = "idle" | "playing" | "paused" | "finished" | "unavailable";
 const EXAM_VARIANT_COUNT = 12;
 const MISTAKE_STORAGE_KEY = "ekzam-mistakes-v1";
 
@@ -113,6 +114,7 @@ export function ExamSimulatorClient({
   const [selected, setSelected] = useState<string[]>([]);
   const [written, setWritten] = useState("");
   const [audioPlays, setAudioPlays] = useState(0);
+  const [audioState, setAudioState] = useState<AudioState>("idle");
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<Record<string, ResultState>>({});
   const [mistakeIds, setMistakeIds] = useState<string[]>([]);
@@ -120,6 +122,10 @@ export function ExamSimulatorClient({
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [draftStatus, setDraftStatus] = useState("");
+  const activeUtterance = useRef<SpeechSynthesisUtterance | null>(null);
+  const draftReadyTask = useRef<string | null>(null);
+  const elapsedSecondsRef = useRef(0);
+  const lastPersistedText = useRef("");
   const subject = getExamSubject(subjectSlug);
   const schoolProfile = getSubjectSchoolProfile(subjectSlug);
   const family = getRussianTaskFamily(familyId);
@@ -181,21 +187,26 @@ export function ExamSimulatorClient({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const tasks = (() => {
+  const mistakeIdsKey = mistakeIds.join("|");
+  const tasks = useMemo(() => {
     if (!routeReady) return [];
+    const currentSubject = getExamSubject(subjectSlug);
+    const currentSchoolProfile = getSubjectSchoolProfile(subjectSlug);
+    const currentPlannedTaskCount = level === "oge" ? currentSubject.ogeTaskCount ?? 0 : currentSubject.fullTaskCount;
+    const currentMistakeIds = mistakeIdsKey ? mistakeIdsKey.split("|") : [];
     const routeForVariant = (variant: number) => level === "oge"
-      ? getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9), variant)
-      : getTrainingVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus, variant);
+      ? getOgeRouteTasks(subjectSlug, getSchoolTopics(currentSchoolProfile, 9), variant)
+      : getTrainingVariantTasks(subjectSlug, currentSubject.fullTaskCount, currentSubject.focus, variant);
     if (mode === "mistakes") {
       const bank = level === "oge"
         ? Array.from({ length: EXAM_VARIANT_COUNT }, (_, variant) =>
-            getOgeRouteTasks(subjectSlug, getSchoolTopics(schoolProfile, 9), variant + 1),
+            getOgeRouteTasks(subjectSlug, getSchoolTopics(currentSchoolProfile, 9), variant + 1),
           ).flat()
         : Array.from({ length: EXAM_VARIANT_COUNT }, (_, variant) =>
-            getTrainingVariantTasks(subjectSlug, subject.fullTaskCount, subject.focus, variant + 1),
+            getTrainingVariantTasks(subjectSlug, currentSubject.fullTaskCount, currentSubject.focus, variant + 1),
           ).flat();
       const mistakes = bank.filter((item, itemIndex) =>
-        mistakeIds.includes(item.id) && bank.findIndex((candidate) => candidate.id === item.id) === itemIndex,
+        currentMistakeIds.includes(item.id) && bank.findIndex((candidate) => candidate.id === item.id) === itemIndex,
       );
       return assignmentCount ? mistakes.slice(0, assignmentCount) : mistakes;
     }
@@ -207,11 +218,11 @@ export function ExamSimulatorClient({
       const extendedBank = getRussianFamilyTasks(familyId, assignmentCount || undefined) as ExamTask[];
       return extendedBank;
     }
-    const safeLine = Math.min(Math.max(1, practiceLine), Math.max(1, plannedTaskCount));
+    const safeLine = Math.min(Math.max(1, practiceLine), Math.max(1, currentPlannedTaskCount));
     const lineBank = Array.from({ length: EXAM_VARIANT_COUNT }, (_, variant) => routeForVariant(variant + 1)[safeLine - 1]).filter(Boolean);
     if (assignmentCount) return lineBank.slice(0, assignmentCount);
     return lineBank;
-  })();
+  }, [assignmentCount, familyId, level, mistakeIdsKey, mode, practiceLine, routeReady, subjectSlug, trainingSource, variantId]);
   const task: ExamTask = tasks[index] ?? tasks[0];
   const taskId = task?.id;
   const taskKind = task?.kind;
@@ -219,6 +230,7 @@ export function ExamSimulatorClient({
   const done = subjectResults.length;
   const correct = subjectResults.filter((item) => item === "correct").length;
   const review = subjectResults.filter((item) => item === "review").length;
+  const isExtendedLine = tasks.length > 0 && tasks.every((item) => item.kind === "extended");
   const progress = Math.round((done / Math.max(1, tasks.length)) * 100);
   const autoChecked = Math.max(1, done - review);
   const accuracy = Math.round((correct / autoChecked) * 100);
@@ -243,22 +255,56 @@ export function ExamSimulatorClient({
 
   useEffect(() => {
     if (!taskId) return;
+    draftReadyTask.current = null;
     const progressState = loadLearningProgress(window.localStorage);
     const draft = progressState.drafts[taskId];
     const frame = window.requestAnimationFrame(() => {
       setWritten(draft?.text ?? "");
+      lastPersistedText.current = draft?.text ?? "";
       setElapsedSeconds(draft?.elapsedSeconds ?? 0);
+      elapsedSecondsRef.current = draft?.elapsedSeconds ?? 0;
       setIsPaused(Boolean(draft));
       setDraftStatus(draft ? `Черновик восстановлен: ${new Date(draft.savedAt).toLocaleString("ru-RU")}` : "");
+      draftReadyTask.current = taskId;
     });
     return () => window.cancelAnimationFrame(frame);
   }, [taskId]);
 
   useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      activeUtterance.current = null;
+    };
+  }, [taskId]);
+
+  useEffect(() => {
     if (taskKind !== "extended" || isPaused || submitted) return;
-    const timer = window.setInterval(() => setElapsedSeconds((value) => value + 1), 1000);
+    const timer = window.setInterval(() => setElapsedSeconds((value) => {
+      const next = value + 1;
+      elapsedSecondsRef.current = next;
+      return next;
+    }), 1000);
     return () => window.clearInterval(timer);
   }, [isPaused, submitted, taskId, taskKind]);
+
+  useEffect(() => {
+    if (!taskId || taskKind !== "extended" || submitted || draftReadyTask.current !== taskId || written === lastPersistedText.current) return;
+    const timer = window.setTimeout(() => {
+      const progressState = loadLearningProgress(window.localStorage);
+      const next = upsertDraft(progressState, {
+        taskId,
+        text: written,
+        elapsedSeconds: elapsedSecondsRef.current,
+        label: `${levelLabel} · ${subject.name} · ${task.number}`,
+        href: `/exam?${new URLSearchParams({ level, subject: subjectSlug, mode, variant: String(variantId), task: String(mode === "route" ? index + 1 : currentLine) }).toString()}`,
+      });
+      setLearningProgress(next);
+      saveLearningProgress(window.localStorage, next);
+      lastPersistedText.current = written;
+      setDraftStatus("Черновик сохранён на этом устройстве");
+    }, 650);
+    return () => window.clearTimeout(timer);
+  }, [currentLine, index, level, levelLabel, mode, subject.name, subjectSlug, submitted, task, taskId, taskKind, variantId, written]);
 
   function persistProgress(next: LearningProgress) {
     setLearningProgress(next);
@@ -267,21 +313,27 @@ export function ExamSimulatorClient({
 
   function updateWritten(value: string) {
     setWritten(value);
-    if (!task || task.kind !== "extended") return;
-    const next = upsertDraft(learningProgress, {
-      taskId: task.id,
-      text: value,
-      elapsedSeconds,
-      label: `${levelLabel} · ${subject.name} · ${task.number}`,
-      href: `/exam?${new URLSearchParams({ level, subject: subjectSlug, mode, variant: String(variantId), task: String(mode === "route" ? index + 1 : currentLine) }).toString()}`,
-    });
-    persistProgress(next);
-    setDraftStatus("Черновик сохранён на этом устройстве");
+    if (task?.kind === "extended") setDraftStatus("Сохраняем черновик…");
+  }
+
+  function pauseAudio() {
+    if (!("speechSynthesis" in window) || audioState !== "playing") return;
+    window.speechSynthesis.pause();
+    setAudioState("paused");
+  }
+
+  function continueWork() {
+    setIsPaused(false);
+    if (audioState === "paused" && "speechSynthesis" in window) {
+      window.speechSynthesis.resume();
+      setAudioState("playing");
+    }
+    setDraftStatus("Работа продолжена. Черновик сохраняется автоматически.");
   }
 
   function saveAndPause() {
     if (!task || task.kind !== "extended") return;
-    const next = upsertDraft(learningProgress, {
+    const next = upsertDraft(loadLearningProgress(window.localStorage), {
       taskId: task.id,
       text: written,
       elapsedSeconds,
@@ -289,6 +341,8 @@ export function ExamSimulatorClient({
       href: `/exam?${new URLSearchParams({ level, subject: subjectSlug, mode, variant: String(variantId), task: String(mode === "route" ? index + 1 : currentLine) }).toString()}`,
     });
     persistProgress(next);
+    lastPersistedText.current = written;
+    pauseAudio();
     setIsPaused(true);
     setDraftStatus("Пауза включена. Можно закрыть страницу и продолжить позже.");
   }
@@ -299,10 +353,18 @@ export function ExamSimulatorClient({
   }
 
   function resetAnswer() {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    activeUtterance.current = null;
     setSelected([]);
     setWritten("");
+    lastPersistedText.current = "";
+    setElapsedSeconds(0);
+    elapsedSecondsRef.current = 0;
+    setIsPaused(false);
+    setDraftStatus("");
     setSubmitted(false);
     setAudioPlays(0);
+    setAudioState("idle");
   }
 
   function selectSubject(slug: string) {
@@ -364,13 +426,36 @@ export function ExamSimulatorClient({
     }
   }
 
-  function playAudio() {
-    if (!task.audioText || audioPlays >= (task.maxPlays ?? 2) || !("speechSynthesis" in window)) return;
+  function toggleAudio() {
+    if (!task.audioText || !("speechSynthesis" in window) || typeof window.SpeechSynthesisUtterance === "undefined") {
+      setAudioState("unavailable");
+      return;
+    }
+    if (audioState === "playing") {
+      pauseAudio();
+      return;
+    }
+    if (audioState === "paused") {
+      window.speechSynthesis.resume();
+      setAudioState("playing");
+      return;
+    }
+    if (audioPlays >= (task.maxPlays ?? 2)) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(task.audioText);
+    const utterance = new window.SpeechSynthesisUtterance(task.audioText);
     utterance.lang = "ru-RU";
     utterance.rate = 0.86;
+    utterance.onend = () => {
+      activeUtterance.current = null;
+      setAudioState("finished");
+    };
+    utterance.onerror = () => {
+      activeUtterance.current = null;
+      setAudioState("unavailable");
+    };
+    activeUtterance.current = utterance;
     window.speechSynthesis.speak(utterance);
+    setAudioState("playing");
     setAudioPlays((count) => count + 1);
   }
 
@@ -388,7 +473,7 @@ export function ExamSimulatorClient({
         : mistakeIds;
     setMistakeIds(nextMistakes);
     window.localStorage.setItem(MISTAKE_STORAGE_KEY, JSON.stringify(nextMistakes));
-    const attemptProgress = appendAttempt(learningProgress, {
+    const attemptProgress = appendAttempt(loadLearningProgress(window.localStorage), {
       taskId: task.id,
       subject: subjectSlug,
       level,
@@ -430,8 +515,20 @@ export function ExamSimulatorClient({
     resetAnswer();
   }
 
+  function skipToNextMaterial() {
+    if (tasks.length < 2) return;
+    practiceSimilar();
+  }
+
   const hasAnswer = task && (task.interaction !== "exam-blank" && (task.kind === "single" || task.kind === "multiple") ? selected.length > 0 : written.trim().length > 0);
   const result = task ? results[task.id] : undefined;
+  const audioStatusLabel: Record<AudioState, string> = {
+    idle: "Аудио готово",
+    playing: "Текст звучит — можно поставить на паузу",
+    paused: "Аудио на паузе",
+    finished: "Прослушивание завершено",
+    unavailable: "Голос браузера недоступен. Откройте страницу в Chrome, Edge или Safari.",
+  };
 
   if (!examChosen) {
     return <main className="exam-gate">
@@ -593,7 +690,7 @@ export function ExamSimulatorClient({
             : `Серия из ${tasks.length} вариантов задания № ${currentLine} в форме ${levelLabel}.`}</p>
         <div className="exam-progress"><span style={{ width: `${progress}%` }} /></div>
         <p>Выполнено {done} из {tasks.length} · верно {correct}</p>
-        {mode === "training" && <div className="mastery-goal"><span>Игровая цель</span><b>{correctStreak >= 3 ? "Линия закреплена!" : `${correctStreak} из 3 верных подряд`}</b><small>Освоение {masteryPercent}% · {learningProgress.xp} XP · всего попыток {parentReport.attempts}</small></div>}
+        {mode === "training" && <div className="mastery-goal"><span>Игровая цель</span><b>{isExtendedLine ? `${done} из ${tasks.length} работ выполнено` : correctStreak >= 3 ? "Линия закреплена!" : `${correctStreak} из 3 верных подряд`}</b><small>{isExtendedLine ? "Каждая попытка — новый материал; итог ставит преподаватель" : `Освоение ${masteryPercent}%`} · {learningProgress.xp} XP · всего попыток {parentReport.attempts}</small></div>}
         <nav aria-label={`Задания: ${subject.name}`}>
           {tasks.map((item, itemIndex) => <button className={`${itemIndex === index ? "active" : ""} ${results[item.id] ?? ""}`} onClick={() => jump(itemIndex)} key={item.id}>
             <span>{itemIndex + 1}</span><div><b>{mode === "route" ? `Задание ${itemIndex + 1}` : `Попытка ${itemIndex + 1}`}</b><small>{item.topic ?? item.format}</small></div>
@@ -610,7 +707,7 @@ export function ExamSimulatorClient({
           <small>{task.sourceLabel ?? "Авторская тренировка по проверяемому умению экзамена"}</small>
         </div>
         {mode === "training" && <div className="game-status" aria-label="Игровой прогресс">
-          <div><span>СЕРИЯ</span><b>{correctStreak} / 3</b></div><div><span>ОСВОЕНИЕ</span><b>{masteryPercent}%</b></div><div><span>ОПЫТ</span><b>{learningProgress.xp} XP</b></div>
+          <div><span>СЕРИЯ</span><b>{isExtendedLine ? `${done} / ${tasks.length}` : `${correctStreak} / 3`}</b></div><div><span>{isExtendedLine ? "ПРОВЕРКА" : "ОСВОЕНИЕ"}</span><b>{isExtendedLine ? `${review} работ` : `${masteryPercent}%`}</b></div><div><span>ОПЫТ</span><b>{learningProgress.xp} XP</b></div>
         </div>}
         <div className="exam-format-references" aria-label="Источники формата задания">
           <span>Сверить тип вопроса</span>
@@ -618,9 +715,12 @@ export function ExamSimulatorClient({
           {subjectSlug === "russian" && <a href={formatExampleUrl} target="_blank" rel="noreferrer">Образец полного варианта ↗</a>}
           <small>Вопрос ниже — авторский аналог: структура сохранена, чужой текст не копируется.</small>
         </div>
-        {task.audioText && <div className="exam-audio-task">
-          <div><span>Текст для изложения</span><b>Прослушивание {audioPlays} из {task.maxPlays ?? 2}</b><small>Используется голосовое воспроизведение авторского текста в браузере.</small></div>
-          <button type="button" disabled={audioPlays >= (task.maxPlays ?? 2)} onClick={playAudio}>{audioPlays ? "Прослушать ещё раз" : "Включить текст"} →</button>
+        {task.audioText && <div className={`exam-audio-task ${audioState}`}>
+          <div><span>Текст для изложения</span><b>Прослушивание {audioPlays} из {task.maxPlays ?? 2}</b><small role="status">{audioStatusLabel[audioState]}</small></div>
+          <div className="exam-audio-actions">
+            <button type="button" disabled={(audioState === "idle" || audioState === "finished") && audioPlays >= (task.maxPlays ?? 2)} onClick={toggleAudio}>{audioState === "playing" ? "Пауза аудио" : audioState === "paused" ? "Продолжить аудио" : audioPlays ? "Прослушать ещё раз" : "Включить текст"}</button>
+            {mode === "training" && tasks.length > 1 && <button className="audio-next" type="button" onClick={skipToNextMaterial}>Другой текст →</button>}
+          </div>
         </div>}
         {task.stimulus && <article className="exam-stimulus"><span>Текст к заданиям</span><p>{renderStimulus(task.stimulus, task.stimulusHighlights)}</p></article>}
         <h2>{task.prompt}</h2>
@@ -631,7 +731,7 @@ export function ExamSimulatorClient({
         {task.kind === "extended" && <section className={`writing-session ${isPaused ? "paused" : ""}`}>
           <div className="writing-session-head"><div><span>РАЗВЁРНУТАЯ РАБОТА</span><b>{isPaused ? "Работа на паузе" : "Время работы идёт"}</b></div><time>{formatClock(elapsedSeconds)}</time></div>
           <label className="exam-input"><span>Ваш текст</span><textarea disabled={submitted || isPaused} value={written} onChange={(event) => updateWritten(event.target.value)} placeholder={level === "oge" && currentLine === 1 ? "Сжатое изложение: микротемы → главное → связный текст" : "Тезис → примеры → объяснение → вывод"} /><small>{task.minWords ? `${wordCount} слов · минимум ${task.minWords} слов` : `${written.trim().length} знаков · минимум ${minimumLength} для отправки на проверку`}</small></label>
-          {!submitted && <div className="writing-controls"><button className="button button-ghost" type="button" onClick={() => isPaused ? setIsPaused(false) : saveAndPause()}>{isPaused ? "Продолжить работу" : "Поставить на паузу"}</button><button className="button button-dark" type="button" onClick={saveAndExit}>{isPaused ? "Выйти к сохранённым работам" : "Сохранить и выйти"}</button></div>}
+          {!submitted && <div className="writing-controls"><button className="button button-ghost" type="button" onClick={() => isPaused ? continueWork() : saveAndPause()}>{isPaused ? "Продолжить работу и аудио" : "Поставить работу и аудио на паузу"}</button><button className="button button-dark" type="button" onClick={saveAndExit}>{isPaused ? "Выйти к сохранённым работам" : "Сохранить и выйти"}</button></div>}
           {draftStatus && <p className="draft-status" role="status">{draftStatus}</p>}
         </section>}
         {!submitted ? <button className="button button-red" disabled={!hasAnswer || isPaused} onClick={submit}>Проверить решение</button> : <>
@@ -651,10 +751,11 @@ export function ExamSimulatorClient({
                 : "Ошибка сохранена в «Мои ошибки». Следующая попытка проверяет это же умение на другом материале."}</p><button className="button button-dark" onClick={practiceSimilar}>{mode === "route" ? `Отработать задание № ${index + 1} →` : "Отработать похожее →"}</button></div></article>
             </div>
           </section>}
+          {result === "review" && <section className="review-next-card" data-testid="review-next-card"><span>ПОПЫТКА СОХРАНЕНА</span><b>{task.audioText ? "Изложение готово к проверке" : "Развёрнутый ответ готов к проверке"}</b><p>Платформа сохранила текст и время. Итог по критериям выставит преподаватель; сейчас можно продолжить эту же линию на новом материале.</p><button className="button button-dark" data-testid="next-reviewed-task" onClick={practiceSimilar}>{mode === "route" ? `Отрабатывать только задание № ${index + 1} →` : task.audioText ? "Следующий новый текст →" : "Следующее задание этого типа →"}</button></section>}
           {result === "correct" && <button className="button button-ghost next-similar" onClick={practiceSimilar}>{mode === "route" ? `Закрепить задание № ${index + 1} в серии →` : correctStreak >= 3 ? "Линия закреплена — контрольная попытка →" : "Закрепить ещё одним похожим →"}</button>}
         </>}
         <div className="exam-nav"><button disabled={index === 0} onClick={() => jump(index - 1)}>← Предыдущее</button><span>{index + 1} / {tasks.length}</span><button disabled={index === tasks.length - 1} onClick={() => jump(index + 1)}>Следующее →</button></div>
-        {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">{mode === "route" ? `Итог маршрута ${levelLabel}` : "Освоение типа"}</span><b>{accuracy >= 80 ? "Можно переходить дальше" : "Нужна отработка слабых тем"}</b><strong>{accuracy}% автоматически проверяемых ответов верны</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это учебная аналитика, а не официальный балл {levelLabel}.</span><p><b>Сильные темы:</b> {strongTopics.length ? strongTopics.slice(0, 3).join(", ") : "пока не выявлены"}.</p><p><b>Слабые темы:</b> {weakTopics.length ? weakTopics.slice(0, 3).join(", ") : "ошибок не выявлено"}.</p></div><div className="verdict-actions"><Link className="button button-dark" href={lessonHref(subjectSlug, nextTopic)}>Открыть занятие →</Link><Link className="button button-ghost" href="/parent-report">Отчёт для родителя →</Link></div></div>}
+        {done === tasks.length && <div className="exam-complete exam-verdict" data-testid="exam-verdict"><div><span className="exam-label">{mode === "route" ? `Итог маршрута ${levelLabel}` : "Освоение типа"}</span><b>{isExtendedLine ? "Серия письменных работ завершена" : accuracy >= 80 ? "Можно переходить дальше" : "Нужна отработка слабых тем"}</b><strong>{isExtendedLine ? `${review} работ передано преподавателю` : `${accuracy}% автоматически проверяемых ответов верны`}</strong><span>{review ? `${review} развёрнутых ответов ожидают проверки преподавателя. ` : ""}Это учебная аналитика, а не официальный балл {levelLabel}.</span>{!isExtendedLine && <><p><b>Сильные темы:</b> {strongTopics.length ? strongTopics.slice(0, 3).join(", ") : "пока не выявлены"}.</p><p><b>Слабые темы:</b> {weakTopics.length ? weakTopics.slice(0, 3).join(", ") : "ошибок не выявлено"}.</p></>}</div><div className="verdict-actions"><Link className="button button-dark" href={lessonHref(subjectSlug, nextTopic)}>Открыть занятие →</Link><Link className="button button-ghost" href="/parent-report">Отчёт для родителя →</Link></div></div>}
       </section>
     </section>
   </main>;

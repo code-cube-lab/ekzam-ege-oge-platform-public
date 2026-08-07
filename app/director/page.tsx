@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DirectorClient } from "../components/DirectorClient";
+import { PrivateAreaNotice } from "../components/PrivateAreaNotice";
 
-export const metadata: Metadata = { title: "Управление школой" };
-export default function DirectorPage() { return <DirectorClient />; }
+export const metadata: Metadata = { title: "Закрытый кабинет администратора — ЭКЗАМ" };
+export default function DirectorPage() { return <PrivateAreaNotice role="администратора" />; }

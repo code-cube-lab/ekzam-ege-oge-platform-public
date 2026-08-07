@@ -23,7 +23,7 @@ export function LessonClient({ lesson }: { lesson: LessonUnit }) {
       <header className="lesson-top">
         <Link className="brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span></Link>
         <div><span>Первый модуль</span><b>{lesson.subject}</b></div>
-        <Link className="button button-ghost button-small" href="/dashboard">В кабинет</Link>
+        <Link className="button button-ghost button-small" href="/practice">К заданиям</Link>
       </header>
 
       <section className="lesson-hero">

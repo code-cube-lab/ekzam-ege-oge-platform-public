@@ -53,6 +53,9 @@ test("Mini App changes the verified server track and exposes adaptive mobile sec
   assert.match(miniApp, /\/api\/telegram\/track/);
   assert.match(miniApp, /level: student\.exam/);
   assert.match(miniApp, /source: "telegram"/);
+  assert.match(miniApp, /miniAppHref/);
+  assert.match(miniApp, /БЕСПЛАТНЫЙ РЕЖИМ MINI APP/);
+  assert.match(miniApp, /Персональный серверный профиль, напоминания и оплата пока не подключены/);
   assert.match(trackApi, /verifyTelegramInitData/);
   assert.match(trackApi, /isTrackAvailable/);
   assert.match(css, /env\(safe-area-inset-top\)/);

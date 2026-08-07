@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T00:34:14.5715012Z",
+    "updated_at":  "2026-08-07T00:38:22.3310663Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -62,11 +62,12 @@
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
-                                        "Static GitHub Pages package generated in docs and ready for commit/push."
+                                        "Static GitHub Pages package generated in docs and ready for commit/push.",
+                                        "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors."
                                     ],
-                       "note":  "Waiting for public URL HTTP and rendered-flow verification."
+                       "note":  "Static release is public. Live Telegram webhook and real Stars payment remain a separate server deployment."
                    }
                ]
 }

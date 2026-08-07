@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T00:56:02.4532152Z",
+    "updated_at":  "2026-08-07T00:58:01.2059544Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -63,13 +63,14 @@
                    },
                    {
                        "name":  "handoff",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "Static GitHub Pages package generated in docs and ready for commit/push.",
                                         "GitHub Pages public URL and all key pages returned HTTP 200; full public browser QA passed 44/44 with zero runtime errors.",
-                                        "Updated static export copied to docs; local GitHub-subpath QA passed 48/48."
+                                        "Updated static export copied to docs; local GitHub-subpath QA passed 48/48.",
+                                        "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1."
                                     ],
-                       "note":  "Publishing regression fix and waiting for public CDN."
+                       "note":  "Release 82fff31 is public; report-only follow-up commit will not change runtime assets."
                    }
                ]
 }

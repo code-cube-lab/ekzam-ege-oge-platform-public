@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "qa",
-    "updated_at":  "2026-08-08T10:05:57.9137157Z",
+    "current_stage":  "handoff",
+    "updated_at":  "2026-08-08T10:15:21.2904757Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -66,14 +66,15 @@
                    },
                    {
                        "name":  "qa",
-                       "state":  "doing",
+                       "state":  "passed",
                        "evidence":  [
                                         "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed.",
                                         "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export.",
                                         "56/56 automated tests passed; Next static export passed type checking; local GitHub-subpath browser QA passed 70/70 with no runtime errors and no 390px horizontal overflow.",
                                         "57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
                                         "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected.",
-                                        "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair."
+                                        "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair.",
+                                        "67/67 automated tests, 123/123 local browser scenarios and 124/124 public GitHub Pages scenarios passed with zero JavaScript runtime errors; desktop and 390 px screenshots inspected."
                                     ],
                        "note":  "Public GitHub Pages /growth release passed HTTP checks and 88/88 browser regression scenarios."
                    },
@@ -88,7 +89,8 @@
                                         "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification.",
                                         "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors.",
                                         "Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors.",
-                                        "Commit 6d137fd was pushed to the release branch and main; repository, home and /growth returned HTTP 200; public GitHub Pages browser QA passed 88/88 with no runtime errors."
+                                        "Commit 6d137fd was pushed to the release branch and main; repository, home and /growth returned HTTP 200; public GitHub Pages browser QA passed 88/88 with no runtime errors.",
+                                        "Commit 2cf812f was pushed to github-public release branch and main; directory plus Russian and mathematics teacher pages returned HTTP 200 and the complete public browser regression passed."
                                     ],
                        "note":  "GitHub Pages Reels release is public. No messages, subscriptions or posts were sent automatically."
                    }

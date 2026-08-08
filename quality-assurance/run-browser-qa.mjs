@@ -137,7 +137,7 @@ try {
   assert(await page.locator(".teacher-ecosystem-grid > article").count() === 1, "фильтр предмета оставляет персональный маршрут химии");
 
   await page.goto(`${baseUrl}/growth/teachers/philology-elena-mikhaylichenko`, { waitUntil: "networkidle" });
-  assert(await page.getByRole("heading", { name: "Елена Николаевна Михайличенко" }).isVisible(), "русский маршрут открывается отдельным адресом");
+  assert(await page.getByRole("heading", { name: "Елена Николаевна Михайличенко", exact: true }).isVisible(), "русский маршрут открывается отдельным адресом");
   assert(await page.locator(".teacher-pain-grid article").count() === 3, "персональная страница разделяет боли ученика, родителя и классного руководителя");
   assert(await page.locator(".teacher-referral-links article").count() === 4, "персональная страница содержит четыре размеченных входа");
   assert(await page.locator(".teacher-source-grid article").count() >= 8, "русский маршрут показывает проверяемые публичные точки входа");
@@ -332,7 +332,7 @@ try {
   await mobilePage.goto(`${baseUrl}/growth/teachers/philology-elena-mikhaylichenko`, { waitUntil: "networkidle" });
   const teacherProfileOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   assert(teacherProfileOverflow.scroll <= teacherProfileOverflow.client, "персональный маршрут преподавателя на 390 px не имеет горизонтального переполнения");
-  assert(await mobilePage.getByRole("heading", { name: "Елена Николаевна Михайличенко" }).isVisible(), "мобильная персональная страница сохраняет имя преподавателя");
+  assert(await mobilePage.getByRole("heading", { name: "Елена Николаевна Михайличенко", exact: true }).isVisible(), "мобильная персональная страница сохраняет имя преподавателя");
   assert(await mobilePage.locator(".teacher-reel-tabs button").count() === 3, "мобильная страница сохраняет три подробных сценария");
   await mobilePage.screenshot({ path: path.join(outputDir, "teacher-acquisition-mobile.png"), fullPage: false });
 

@@ -3080,3 +3080,250 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .teacher-skill-stack { padding: 64px 0; }
   .teacher-service-steps article { min-height: 260px; }
 }
+
+/* Teacher acquisition ecosystem */
+.teacher-ecosystem-directory,.teacher-acquisition-page {
+  --exam-ink: #101827;
+  --exam-blue: #2355d7;
+  --exam-yellow: #ffdf48;
+  min-height: 100vh;
+  color: var(--exam-ink);
+  background: #f3f5f8;
+}
+.teacher-ecosystem-top,.teacher-acquisition-top { width: min(1320px,calc(100% - 48px)); min-height: 88px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 28px; border-bottom: 1px solid #bec7d3; }
+.teacher-ecosystem-top nav,.teacher-acquisition-top nav { display: flex; align-items: center; gap: 22px; font-weight: 850; }
+.teacher-directory-hero { padding: 76px max(24px,calc((100vw - 1320px)/2)) 58px; display: grid; grid-template-columns: 1.25fr .75fr; gap: 70px; color: white; background: var(--exam-ink); }
+.teacher-directory-hero h1 { margin: 18px 0 24px; font-size: clamp(58px,7.7vw,108px); line-height: .87; letter-spacing: -.065em; }
+.teacher-directory-hero h1 em { color: var(--exam-yellow); font-style: normal; }
+.teacher-directory-hero p { max-width: 800px; margin: 0; color: #c4cfdd; font-size: 20px; line-height: 1.55; }
+.teacher-directory-stats { align-self: end; display: grid; border: 1px solid #58667b; }
+.teacher-directory-stats article { min-height: 115px; padding: 22px 26px; display: flex; align-items: end; justify-content: space-between; gap: 20px; border-bottom: 1px solid #58667b; }
+.teacher-directory-stats article:last-child { border-bottom: 0; }
+.teacher-directory-stats strong { color: var(--exam-yellow); font-size: 58px; line-height: .8; }
+.teacher-directory-stats span { max-width: 155px; color: #d7deea; font-weight: 800; }
+.teacher-directory-explainer { width: min(1320px,calc(100% - 48px)); margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); border-top: 0; background: white; }
+.teacher-directory-explainer article { min-height: 210px; padding: 28px; display: grid; grid-template-columns: 54px 1fr; gap: 16px; border-right: 1px solid var(--exam-ink); }
+.teacher-directory-explainer article:last-child { border-right: 0; background: var(--exam-yellow); }
+.teacher-directory-explainer article > span { color: var(--exam-blue); font: 900 13px/1 ui-monospace,monospace; }
+.teacher-directory-explainer h2 { margin: 48px 0 9px; font-size: 24px; line-height: 1.05; }
+.teacher-directory-explainer p { margin: 0; color: #5a677b; line-height: 1.5; }
+.teacher-directory-catalog { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 84px 0 100px; }
+.teacher-directory-catalog > header { margin-bottom: 32px; display: grid; grid-template-columns: 1fr minmax(430px,.8fr); gap: 42px; align-items: end; }
+.teacher-directory-catalog h2 { margin: 10px 0 0; font-size: clamp(42px,5vw,72px); letter-spacing: -.055em; }
+.teacher-directory-filters { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; }
+.teacher-directory-filters input,.teacher-directory-filters select { min-width: 0; min-height: 54px; padding: 0 16px; border: 1px solid #b8c3d1; border-radius: 0; color: var(--exam-ink); background: white; font: inherit; font-weight: 750; }
+.teacher-ecosystem-grid { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); background: white; }
+.teacher-ecosystem-grid > article { min-height: 470px; padding: 26px; display: flex; flex-direction: column; border-right: 1px solid var(--exam-ink); border-bottom: 1px solid var(--exam-ink); }
+.teacher-ecosystem-grid > article:nth-child(3n) { border-right: 0; }
+.teacher-ecosystem-grid > article > small { margin-top: 50px; color: var(--exam-blue); font: 900 10px/1 ui-monospace,monospace; text-transform: uppercase; letter-spacing: .08em; }
+.teacher-ecosystem-grid h3 { max-width: 350px; margin: 10px 0 12px; font-size: 29px; line-height: 1.02; }
+.teacher-ecosystem-grid p { margin: 0; color: #5c697d; line-height: 1.5; }
+.teacher-card-index { display: flex; align-items: center; justify-content: space-between; }
+.teacher-card-index span { font: 900 13px/1 ui-monospace,monospace; }
+.teacher-card-index b { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--exam-blue); }
+.teacher-card-focus { margin: 18px 0 24px; display: flex; flex-wrap: wrap; gap: 6px; }
+.teacher-card-focus span { padding: 7px 9px; color: #214394; background: #e7edff; font-size: 11px; font-weight: 850; }
+.teacher-ecosystem-grid footer { margin-top: auto; padding-top: 18px; display: grid; gap: 12px; border-top: 1px solid #ccd4df; }
+.teacher-ecosystem-grid footer em { color: #7b4050; font-size: 11px; line-height: 1.35; }
+.teacher-ecosystem-grid footer a { color: var(--exam-blue); font-weight: 900; }
+.teacher-directory-empty { padding: 40px; border: 1px solid var(--exam-ink); background: white; }
+
+.teacher-acquisition-hero { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 70px 0 32px; display: grid; grid-template-columns: 1.12fr .88fr; gap: 28px; }
+.teacher-acquisition-identity,.teacher-acquisition-hero aside { min-height: 520px; padding: 40px; border: 1px solid var(--exam-ink); }
+.teacher-acquisition-identity { display: flex; flex-direction: column; background: white; }
+.teacher-acquisition-identity > span { width: 82px; height: 82px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--exam-blue); font-size: 25px; font-weight: 900; }
+.teacher-acquisition-identity small { margin-top: 68px; color: var(--exam-blue); font: 900 11px/1 ui-monospace,monospace; text-transform: uppercase; letter-spacing: .08em; }
+.teacher-acquisition-identity h1 { max-width: 780px; margin: 10px 0 18px; font-size: clamp(48px,6vw,82px); line-height: .91; letter-spacing: -.06em; }
+.teacher-acquisition-identity p { max-width: 760px; margin: 0; color: #536177; font-size: 18px; line-height: 1.55; }
+.teacher-acquisition-identity > div { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.teacher-acquisition-identity > div b { padding: 8px 10px; background: #e5ebf8; font-size: 12px; }
+.teacher-acquisition-hero aside { color: white; background: var(--exam-blue); }
+.teacher-acquisition-hero aside > span { font: 900 11px/1 ui-monospace,monospace; letter-spacing: .08em; }
+.teacher-acquisition-hero aside h2 { margin: 70px 0 30px; font-size: clamp(34px,4vw,55px); line-height: .95; letter-spacing: -.045em; }
+.teacher-acquisition-hero aside ol { margin: 0 0 30px; padding-left: 22px; color: #d8e1ff; line-height: 1.85; }
+.teacher-acquisition-hero aside button,.teacher-message-grid button,.teacher-reel-brief footer > button { min-height: 50px; padding: 0 18px; border: 0; color: var(--exam-ink); background: var(--exam-yellow); font-weight: 900; cursor: pointer; }
+.teacher-acquisition-status { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 18px 22px; display: grid; grid-template-columns: 220px 1fr auto; gap: 20px; align-items: center; border: 1px solid #d6a4ad; background: #fff0f2; }
+.teacher-acquisition-status p { margin: 0; color: #664d56; line-height: 1.45; }
+.teacher-acquisition-status a { color: var(--exam-blue); font-size: 12px; font-weight: 900; }
+.teacher-acquisition-nav { width: min(1320px,calc(100% - 48px)); margin: 18px auto 0; padding: 15px 18px; display: flex; flex-wrap: wrap; gap: 22px; border: 1px solid #c4cdd9; background: white; }
+.teacher-acquisition-nav a { color: #4c5a6f; font-size: 12px; font-weight: 900; }
+.teacher-pain-section,.teacher-sources-section,.teacher-messages-section,.teacher-offers-section { width: min(1320px,calc(100% - 48px)); margin: 0 auto; padding: 92px 0; }
+.teacher-pain-section > header,.teacher-messages-section > header,.teacher-offers-section > header { max-width: 920px; }
+.teacher-pain-section h2,.teacher-sources-section h2,.teacher-messages-section h2,.teacher-offers-section h2,.teacher-sprint-section h2 { margin: 10px 0 18px; font-size: clamp(44px,6vw,78px); line-height: .9; letter-spacing: -.055em; }
+.teacher-pain-grid { margin-top: 38px; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); background: white; }
+.teacher-pain-grid article { min-height: 285px; padding: 28px; border-right: 1px solid var(--exam-ink); }
+.teacher-pain-grid article:last-child { border-right: 0; background: var(--exam-yellow); }
+.teacher-pain-grid span { color: var(--exam-blue); font: 900 11px/1 ui-monospace,monospace; }
+.teacher-pain-grid h3 { margin: 80px 0 12px; font-size: 26px; line-height: 1.02; }
+.teacher-pain-grid p { margin: 0; color: #566379; line-height: 1.5; }
+.teacher-evidence-row { margin-top: 14px; display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.teacher-evidence-row a { min-height: 180px; padding: 20px; display: flex; flex-direction: column; color: var(--exam-ink); background: #e5eaf2; }
+.teacher-evidence-row strong { color: var(--exam-blue); font-size: 43px; }
+.teacher-evidence-row span { margin-top: 12px; color: #536177; font-size: 13px; line-height: 1.4; }
+.teacher-evidence-row small { margin-top: auto; padding-top: 14px; font-weight: 900; }
+.teacher-funnel-section { padding: 86px max(24px,calc((100vw - 1320px)/2)); color: white; background: var(--exam-ink); }
+.teacher-funnel-section > header { max-width: 1000px; }
+.teacher-funnel-section h2,.teacher-partnership-safety h2,.teacher-reels-section h2 { margin: 12px 0 18px; font-size: clamp(45px,6vw,82px); line-height: .9; letter-spacing: -.055em; }
+.teacher-funnel-section > header p,.teacher-reels-section > header p { color: #c6d0df; font-size: 18px; line-height: 1.55; }
+.teacher-funnel-steps { margin-top: 40px; display: grid; grid-template-columns: repeat(5,1fr); border: 1px solid #68768a; }
+.teacher-funnel-steps article { min-height: 250px; padding: 22px; border-right: 1px solid #68768a; }
+.teacher-funnel-steps article:last-child { border-right: 0; color: var(--exam-ink); background: var(--exam-yellow); }
+.teacher-funnel-steps span { color: #789cff; font: 900 12px/1 ui-monospace,monospace; }
+.teacher-funnel-steps h3 { margin: 84px 0 10px; font-size: 24px; }
+.teacher-funnel-steps p { margin: 0; color: #c6d0df; line-height: 1.45; }
+.teacher-funnel-steps article:last-child p { color: #5a542a; }
+.teacher-referral-links { margin-top: 18px; display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+.teacher-referral-links article { min-width: 0; padding: 18px; border: 1px solid #68768a; background: #18263b; }
+.teacher-referral-links span { display: block; color: var(--exam-yellow); font-size: 11px; font-weight: 900; }
+.teacher-referral-links code { margin: 11px 0 16px; display: block; overflow: hidden; color: #c9d4e2; text-overflow: ellipsis; white-space: nowrap; }
+.teacher-referral-links article > div { display: flex; gap: 16px; }
+.teacher-referral-links a,.teacher-referral-links button { border: 0; color: white; background: transparent; font-weight: 900; cursor: pointer; }
+.teacher-sources-section > header { display: grid; grid-template-columns: 1fr minmax(440px,.8fr); gap: 42px; align-items: end; }
+.teacher-sources-section > header p,.teacher-messages-section > header p,.teacher-offers-section > header p { color: #59677b; font-size: 18px; line-height: 1.55; }
+.teacher-source-filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+.teacher-source-filters button { padding: 9px 12px; border: 1px solid #b8c2ce; color: #566277; background: white; font-weight: 850; cursor: pointer; }
+.teacher-source-filters button.active { color: white; border-color: var(--exam-blue); background: var(--exam-blue); }
+.teacher-source-grid { margin-top: 34px; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--exam-ink); background: white; }
+.teacher-source-grid article { min-height: 465px; padding: 25px; display: flex; flex-direction: column; border-right: 1px solid var(--exam-ink); border-bottom: 1px solid var(--exam-ink); }
+.teacher-source-grid article:nth-child(3n) { border-right: 0; }
+.teacher-source-grid article > div:first-child { display: flex; justify-content: space-between; gap: 12px; }
+.teacher-source-grid article > div:first-child span { color: var(--exam-blue); font: 900 12px/1 ui-monospace,monospace; }
+.teacher-source-grid article > div:first-child small { padding: 6px; color: #5f6b7b; background: #e8edf3; font-size: 9px; font-weight: 900; }
+.teacher-source-grid h3 { margin: 54px 0 10px; font-size: 28px; line-height: 1.05; }
+.teacher-source-grid p { margin: 0 0 16px; color: #5a677b; line-height: 1.48; }
+.teacher-source-grid strong { margin-top: 8px; color: var(--exam-blue); font-size: 11px; text-transform: uppercase; }
+.teacher-source-grid em { padding: 12px; color: #5d4a1a; background: #fff4c4; font-size: 12px; line-height: 1.4; }
+.teacher-source-grid footer { margin-top: auto; padding-top: 18px; display: grid; gap: 9px; border-top: 1px solid #cbd3de; }
+.teacher-source-grid footer a { color: var(--exam-blue); font-weight: 900; }
+.teacher-source-grid footer span { color: #697588; font-size: 12px; }
+.teacher-partnership-safety { padding: 84px max(24px,calc((100vw - 1320px)/2)); display: grid; grid-template-columns: .86fr 1.14fr; gap: 54px; color: white; background: var(--exam-red); }
+.teacher-partnership-safety > div:first-child p { color: #ffe1e2; font-size: 18px; line-height: 1.55; }
+.teacher-partnership-safety > div:first-child a { color: white; font-weight: 900; }
+.teacher-safety-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.teacher-safety-columns article { padding: 26px; color: var(--exam-ink); background: white; }
+.teacher-safety-columns article:last-child { background: var(--exam-yellow); }
+.teacher-safety-columns b { font: 900 11px/1 ui-monospace,monospace; }
+.teacher-safety-columns ul { margin: 28px 0 0; padding-left: 18px; }
+.teacher-safety-columns li { margin: 0 0 13px; color: #536177; line-height: 1.42; }
+.teacher-message-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.teacher-message-grid article { min-height: 410px; padding: 30px; display: flex; flex-direction: column; border: 1px solid var(--exam-ink); background: white; }
+.teacher-message-grid article:nth-child(2) { background: var(--exam-yellow); }
+.teacher-message-grid article > span { color: var(--exam-blue); font: 900 11px/1 ui-monospace,monospace; }
+.teacher-message-grid h3 { margin: 68px 0 16px; font-size: 30px; }
+.teacher-message-grid p { margin: 0 0 24px; color: #4f5d72; line-height: 1.58; }
+.teacher-message-grid button { margin-top: auto; align-self: flex-start; color: white; background: var(--exam-ink); }
+.teacher-reels-section { padding: 90px max(24px,calc((100vw - 1320px)/2)); color: white; background: var(--exam-blue); }
+.teacher-reels-section > header { display: grid; grid-template-columns: 1fr minmax(370px,.68fr); gap: 40px; align-items: end; }
+.teacher-reel-tabs { display: grid; gap: 8px; }
+.teacher-reel-tabs button { min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; border: 1px solid #89a1ff; color: white; background: transparent; text-align: left; font-weight: 850; cursor: pointer; }
+.teacher-reel-tabs button.active { color: var(--exam-ink); background: var(--exam-yellow); }
+.teacher-reel-tabs span { font: 900 12px/1 ui-monospace,monospace; }
+.teacher-reel-brief { margin-top: 36px; color: var(--exam-ink); background: white; }
+.teacher-reel-summary { padding: 36px; display: grid; grid-template-columns: 1.2fr .8fr; column-gap: 40px; }
+.teacher-reel-summary > span { grid-column: 1 / -1; color: var(--exam-blue); font: 900 11px/1 ui-monospace,monospace; text-transform: uppercase; }
+.teacher-reel-summary h3 { margin: 22px 0 10px; font-size: 42px; line-height: 1; }
+.teacher-reel-summary p { margin: 22px 0 0; color: #586579; line-height: 1.5; }
+.teacher-reel-summary blockquote { margin: 22px 0 0; padding: 22px; color: var(--exam-ink); background: var(--exam-yellow); font-size: 23px; font-weight: 900; line-height: 1.25; }
+.teacher-reel-timeline { border-top: 1px solid var(--exam-ink); }
+.teacher-reel-timeline > article { min-height: 300px; padding: 28px; display: grid; grid-template-columns: 95px 1fr 45px; gap: 24px; border-bottom: 1px solid var(--exam-ink); }
+.teacher-reel-timeline > article > span { color: var(--exam-blue); font: 900 16px/1 ui-monospace,monospace; }
+.teacher-reel-timeline > article > b { color: #dce2eb; font-size: 40px; }
+.teacher-reel-timeline small { display: block; margin-top: 14px; color: var(--exam-blue); font: 900 9px/1 ui-monospace,monospace; letter-spacing: .08em; }
+.teacher-reel-timeline p { margin: 6px 0 0; color: #546176; line-height: 1.45; }
+.teacher-reel-timeline blockquote { margin: 7px 0 0; padding: 14px 16px; border-left: 4px solid var(--exam-red); background: #f2f4f7; font-size: 18px; font-weight: 800; line-height: 1.45; }
+.teacher-reel-timeline em { margin-top: 12px; display: block; color: #6c5b12; font: 900 10px/1.4 ui-monospace,monospace; }
+.teacher-reel-brief > footer { padding: 30px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 24px; align-items: start; background: #e8edf4; }
+.teacher-reel-brief > footer span { color: var(--exam-blue); font: 900 10px/1 ui-monospace,monospace; }
+.teacher-reel-brief > footer p { color: #566378; line-height: 1.45; }
+.teacher-reel-brief > footer code { display: block; overflow-wrap: anywhere; }
+.teacher-reel-brief > footer a { margin-top: 12px; display: block; color: var(--exam-blue); font-weight: 900; }
+.teacher-offers-section > div { margin-top: 36px; display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--exam-ink); background: white; }
+.teacher-offers-section article { min-height: 330px; padding: 25px; display: flex; flex-direction: column; border-right: 1px solid var(--exam-ink); }
+.teacher-offers-section article:last-child { border-right: 0; background: var(--exam-yellow); }
+.teacher-offers-section article > span { color: var(--exam-blue); font: 900 12px/1 ui-monospace,monospace; }
+.teacher-offers-section h3 { margin: 70px 0 10px; font-size: 25px; }
+.teacher-offers-section strong { font-size: 20px; }
+.teacher-offers-section article p { color: #576479; line-height: 1.5; }
+.teacher-offers-section article small { margin-top: auto; padding-top: 16px; border-top: 1px solid #cbd3dd; color: #677386; line-height: 1.4; }
+.teacher-sprint-section { padding: 88px max(24px,calc((100vw - 1320px)/2)); color: white; background: var(--exam-ink); }
+.teacher-sprint-section > header { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
+.teacher-sprint-section > header p { color: #c6d0df; font-size: 18px; }
+.teacher-sprint-section > header > strong { color: var(--exam-yellow); font-size: 72px; }
+.teacher-sprint-section > div { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.teacher-sprint-section label { min-height: 150px; padding: 20px; display: grid; grid-template-columns: 24px 80px 1fr; gap: 14px; align-items: start; border: 1px solid #59677b; cursor: pointer; }
+.teacher-sprint-section label.done { color: var(--exam-ink); background: #bdf3d7; }
+.teacher-sprint-section label > span { color: var(--exam-yellow); font: 900 11px/1.3 ui-monospace,monospace; }
+.teacher-sprint-section label.done > span { color: #146642; }
+.teacher-sprint-section label p { margin: 0; line-height: 1.45; }
+.teacher-sprint-section label small { margin-top: 12px; display: block; color: #b8c5d5; line-height: 1.4; }
+.teacher-sprint-section label.done small { color: #356c57; }
+.teacher-acquisition-final { padding: 70px max(24px,calc((100vw - 1320px)/2)); display: flex; align-items: end; justify-content: space-between; gap: 40px; color: white; background: var(--exam-blue); }
+.teacher-acquisition-final h2 { margin: 12px 0; font-size: clamp(44px,5vw,70px); letter-spacing: -.05em; }
+.teacher-acquisition-final p { max-width: 740px; color: #dbe2ff; font-size: 18px; }
+.teacher-acquisition-final > div:last-child { display: grid; gap: 10px; }
+
+@media (max-width: 1050px) {
+  .teacher-directory-hero,.teacher-acquisition-hero,.teacher-sources-section > header,.teacher-partnership-safety,.teacher-reels-section > header { grid-template-columns: 1fr; }
+  .teacher-directory-stats { grid-template-columns: repeat(3,1fr); }
+  .teacher-directory-stats article { border-right: 1px solid #58667b; border-bottom: 0; }
+  .teacher-directory-stats article:last-child { border-right: 0; }
+  .teacher-directory-explainer,.teacher-pain-grid { grid-template-columns: 1fr; }
+  .teacher-directory-explainer article,.teacher-pain-grid article { border-right: 0; border-bottom: 1px solid var(--exam-ink); }
+  .teacher-directory-explainer article:last-child,.teacher-pain-grid article:last-child { border-bottom: 0; }
+  .teacher-directory-catalog > header { grid-template-columns: 1fr; }
+  .teacher-ecosystem-grid,.teacher-source-grid { grid-template-columns: 1fr 1fr; }
+  .teacher-ecosystem-grid > article:nth-child(3n),.teacher-source-grid article:nth-child(3n) { border-right: 1px solid var(--exam-ink); }
+  .teacher-ecosystem-grid > article:nth-child(2n),.teacher-source-grid article:nth-child(2n) { border-right: 0; }
+  .teacher-funnel-steps { grid-template-columns: 1fr; }
+  .teacher-funnel-steps article { min-height: 170px; border-right: 0; border-bottom: 1px solid #68768a; }
+  .teacher-funnel-steps article:last-child { border-bottom: 0; }
+  .teacher-funnel-steps h3 { margin-top: 38px; }
+  .teacher-evidence-row,.teacher-offers-section > div { grid-template-columns: 1fr 1fr; }
+  .teacher-offers-section article:nth-child(2) { border-right: 0; }
+  .teacher-offers-section article:nth-child(-n+2) { border-bottom: 1px solid var(--exam-ink); }
+  .teacher-reel-summary,.teacher-reel-brief > footer { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .teacher-ecosystem-top,.teacher-acquisition-top,.teacher-directory-explainer,.teacher-directory-catalog,.teacher-acquisition-hero,.teacher-acquisition-status,.teacher-acquisition-nav,.teacher-pain-section,.teacher-sources-section,.teacher-messages-section,.teacher-offers-section { width: calc(100% - 24px); }
+  .teacher-ecosystem-top nav,.teacher-acquisition-top nav { display: none; }
+  .teacher-directory-hero { padding: 50px 12px 36px; }
+  .teacher-directory-hero h1 { font-size: 50px; }
+  .teacher-directory-hero p { font-size: 16px; }
+  .teacher-directory-stats { grid-template-columns: 1fr; }
+  .teacher-directory-stats article { min-height: 92px; border-right: 0; border-bottom: 1px solid #58667b; }
+  .teacher-directory-stats article:last-child { border-bottom: 0; }
+  .teacher-directory-stats strong { font-size: 48px; }
+  .teacher-directory-explainer article { min-height: 175px; padding: 20px; }
+  .teacher-directory-explainer h2 { margin-top: 28px; }
+  .teacher-directory-catalog { padding: 58px 0 70px; }
+  .teacher-directory-filters,.teacher-ecosystem-grid,.teacher-source-grid,.teacher-evidence-row,.teacher-referral-links,.teacher-message-grid,.teacher-offers-section > div,.teacher-sprint-section > div,.teacher-safety-columns { grid-template-columns: 1fr; }
+  .teacher-ecosystem-grid > article,.teacher-source-grid article,.teacher-offers-section article { min-height: 390px; border-right: 0 !important; border-bottom: 1px solid var(--exam-ink); }
+  .teacher-ecosystem-grid > article:last-child,.teacher-source-grid article:last-child,.teacher-offers-section article:last-child { border-bottom: 0; }
+  .teacher-acquisition-hero { padding-top: 42px; }
+  .teacher-acquisition-identity,.teacher-acquisition-hero aside { min-height: 460px; padding: 24px 20px; }
+  .teacher-acquisition-identity h1 { font-size: 46px; }
+  .teacher-acquisition-hero aside h2 { margin-top: 48px; font-size: 39px; }
+  .teacher-acquisition-status { grid-template-columns: 1fr; }
+  .teacher-acquisition-nav { overflow-x: auto; flex-wrap: nowrap; }
+  .teacher-acquisition-nav a { white-space: nowrap; }
+  .teacher-pain-section,.teacher-sources-section,.teacher-messages-section,.teacher-offers-section { padding: 64px 0; }
+  .teacher-pain-section h2,.teacher-sources-section h2,.teacher-messages-section h2,.teacher-offers-section h2,.teacher-sprint-section h2,.teacher-funnel-section h2,.teacher-partnership-safety h2,.teacher-reels-section h2 { font-size: 43px; }
+  .teacher-pain-grid h3 { margin-top: 48px; }
+  .teacher-funnel-section,.teacher-partnership-safety,.teacher-reels-section,.teacher-sprint-section,.teacher-acquisition-final { padding: 64px 12px; }
+  .teacher-source-filters { justify-content: flex-start; }
+  .teacher-safety-columns article { min-height: auto; }
+  .teacher-reel-summary,.teacher-reel-timeline > article,.teacher-reel-brief > footer { padding: 20px; }
+  .teacher-reel-summary { display: block; }
+  .teacher-reel-summary h3 { font-size: 34px; }
+  .teacher-reel-summary blockquote { font-size: 19px; }
+  .teacher-reel-timeline > article { grid-template-columns: 66px 1fr; gap: 12px; }
+  .teacher-reel-timeline > article > b { display: none; }
+  .teacher-reel-timeline blockquote { font-size: 16px; }
+  .teacher-sprint-section > header { grid-template-columns: 1fr; }
+  .teacher-sprint-section > header > strong { font-size: 50px; }
+  .teacher-sprint-section label { grid-template-columns: 24px 1fr; }
+  .teacher-sprint-section label > div { grid-column: 2; }
+  .teacher-acquisition-final { align-items: flex-start; flex-direction: column; }
+  .teacher-acquisition-final > div:last-child { width: 100%; }
+}

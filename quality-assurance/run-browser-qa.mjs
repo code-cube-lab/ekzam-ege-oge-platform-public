@@ -127,6 +127,38 @@ try {
   assert(await page.getByRole("button", { name: "План скопирован ✓" }).isVisible(), "маршрут поиска учеников на 14 дней копируется одной кнопкой");
   await page.screenshot({ path: path.join(outputDir, "growth-desktop.png"), fullPage: true });
 
+  await page.goto(`${baseUrl}/growth/teachers`, { waitUntil: "networkidle" });
+  assert(await page.locator(".teacher-ecosystem-grid > article").count() === 27, "экосистема показывает двадцать семь отдельных страниц преподавателей");
+  await page.getByLabel("Поиск преподавателя").fill("Сергей Геннадьевич");
+  assert(await page.locator(".teacher-ecosystem-grid > article").count() === 1, "поиск находит преподавателя по имени без перезагрузки");
+  assert(await page.getByText("Сергей Геннадьевич Дедов", { exact: true }).isVisible(), "поиск открывает нужного преподавателя математики");
+  await page.getByLabel("Поиск преподавателя").fill("");
+  await page.getByLabel("Фильтр предмета").selectOption("chemistry");
+  assert(await page.locator(".teacher-ecosystem-grid > article").count() === 1, "фильтр предмета оставляет персональный маршрут химии");
+
+  await page.goto(`${baseUrl}/growth/teachers/philology-elena-mikhaylichenko`, { waitUntil: "networkidle" });
+  assert(await page.getByRole("heading", { name: "Елена Николаевна Михайличенко" }).isVisible(), "русский маршрут открывается отдельным адресом");
+  assert(await page.locator(".teacher-pain-grid article").count() === 3, "персональная страница разделяет боли ученика, родителя и классного руководителя");
+  assert(await page.locator(".teacher-referral-links article").count() === 4, "персональная страница содержит четыре размеченных входа");
+  assert(await page.locator(".teacher-source-grid article").count() >= 8, "русский маршрут показывает проверяемые публичные точки входа");
+  assert(await page.locator(".teacher-reel-tabs button").count() === 3, "для преподавателя доступны три подробных сценария роликов");
+  assert(await page.locator(".teacher-reel-timeline > article").count() === 6, "выбранный ролик содержит шесть покадровых сцен");
+  assert(await page.getByText("ЧТО СКАЗАТЬ ДОСЛОВНО").first().isVisible(), "каждый кадр содержит дословную реплику преподавателя");
+  assert(await page.getByText("Процент классному руководителю — только прозрачно").isVisible(), "маршрут показывает стоп-гейт конфликта интересов");
+  await page.getByRole("button", { name: "Классные руководители" }).click();
+  assert(await page.locator(".teacher-source-grid article").count() === 3, "фильтр выделяет отдельный канал классных руководителей");
+  await page.locator(".teacher-reel-tabs button").nth(1).click();
+  assert(await page.getByText(/Родителю: почему ещё один пробник/).isVisible(), "вкладка переключает сценарий на родительскую аудиторию");
+  await page.getByRole("button", { name: "Скопировать полный сценарий" }).click();
+  await page.getByRole("button", { name: "Сценарий скопирован ✓" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "Сценарий скопирован ✓" }).isVisible(), "подробный сценарий копируется одним действием");
+  const firstSprint = page.locator(".teacher-sprint-section label").first();
+  await firstSprint.click();
+  assert(await firstSprint.locator("input").isChecked(), "чек-лист привлечения отмечает выполненный шаг");
+  await page.reload({ waitUntil: "networkidle" });
+  assert(await page.locator(".teacher-sprint-section label").first().locator("input").isChecked(), "чек-лист сохраняется на текущем устройстве");
+  await page.screenshot({ path: path.join(outputDir, "teacher-acquisition-desktop.png"), fullPage: true });
+
   await page.goto(baseUrl, { waitUntil: "networkidle" });
 
   await page.locator(".exam-level-cards button").nth(0).click();
@@ -291,6 +323,19 @@ try {
   assert(await mobilePage.locator(".russian-content-plan article").count() === 7, "мобильный центр роста сохраняет семь роликов русского пилота");
   await mobilePage.screenshot({ path: path.join(outputDir, "growth-mobile.png"), fullPage: false });
 
+  await mobilePage.goto(`${baseUrl}/growth/teachers`, { waitUntil: "networkidle" });
+  const teacherDirectoryOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(teacherDirectoryOverflow.scroll <= teacherDirectoryOverflow.client, "/growth/teachers на 390 px не имеет горизонтального переполнения");
+  assert(await mobilePage.locator(".teacher-ecosystem-grid > article").count() === 27, "мобильный каталог сохраняет все двадцать семь маршрутов");
+  await mobilePage.screenshot({ path: path.join(outputDir, "teacher-directory-mobile.png"), fullPage: false });
+
+  await mobilePage.goto(`${baseUrl}/growth/teachers/philology-elena-mikhaylichenko`, { waitUntil: "networkidle" });
+  const teacherProfileOverflow = await mobilePage.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  assert(teacherProfileOverflow.scroll <= teacherProfileOverflow.client, "персональный маршрут преподавателя на 390 px не имеет горизонтального переполнения");
+  assert(await mobilePage.getByRole("heading", { name: "Елена Николаевна Михайличенко" }).isVisible(), "мобильная персональная страница сохраняет имя преподавателя");
+  assert(await mobilePage.locator(".teacher-reel-tabs button").count() === 3, "мобильная страница сохраняет три подробных сценария");
+  await mobilePage.screenshot({ path: path.join(outputDir, "teacher-acquisition-mobile.png"), fullPage: false });
+
   await mobilePage.goto(`${baseUrl}/exam?level=oge&subject=russian&mode=route&variant=1`, { waitUntil: "networkidle" });
   const examOverflow = await mobilePage.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
@@ -342,12 +387,15 @@ try {
       "home-desktop.png",
       "reels-desktop.png",
       "growth-desktop.png",
+      "teacher-acquisition-desktop.png",
       "oge-error-remediation.png",
       "oge-single-task-audio.png",
       "ege-desktop.png",
       "home-mobile.png",
       "reels-mobile.png",
       "growth-mobile.png",
+      "teacher-directory-mobile.png",
+      "teacher-acquisition-mobile.png",
       "oge-mobile.png",
       "telegram-mobile.png",
       "practice-mobile.png",

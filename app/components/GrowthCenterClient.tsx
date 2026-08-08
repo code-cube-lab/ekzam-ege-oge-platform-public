@@ -156,7 +156,7 @@ export function GrowthCenterClient() {
   return <main className="growth-center" id="top">
     <header className="growth-nav">
       <Link className="brand exam-brand" href="/"><span className="brand-mark">Э</span><span>ЭКЗАМ</span><small>центр роста</small></Link>
-      <nav aria-label="Навигация центра роста"><a href="#teachers">Преподаватели</a><a href="#russian-pilot">Русский: пилот</a><a href="#constructor">Конструктор</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#channel">Канал</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
+      <nav aria-label="Навигация центра роста"><Link href="/growth/teachers">27 маршрутов</Link><a href="#teachers">Быстрый выбор</a><a href="#constructor">Конструктор</a><a href="#partners">Партнёры</a><a href="#messages">Сообщения</a><a href="#sprint">14 дней</a><a href="#media">Реклама</a></nav>
       <Link className="button button-dark button-small" href="/reels">Видеолаборатория</Link>
     </header>
 
@@ -165,7 +165,7 @@ export function GrowthCenterClient() {
         <span className="exam-kicker">Рабочий путь поиска учеников · без массовых рассылок</span>
         <h1>Не рекламировать курс.<br /><em>Дать решить один номер.</em></h1>
         <p>Преподаватель снимает короткий интерактив, зритель делает попытку, платформа показывает причину ошибки и ведёт в точечную отработку. Родитель видит не обещание баллов, а понятный следующий шаг.</p>
-        <div className="growth-actions"><a className="button button-red" href="#constructor">Собрать задание преподавателю →</a><a className="button button-ghost" href="#partners">Найти партнёра</a></div>
+        <div className="growth-actions"><Link className="button button-red" href="/growth/teachers">Открыть 27 персональных маршрутов →</Link><a className="button button-ghost" href="#constructor">Собрать задание</a></div>
       </div>
       <aside className="growth-radar" aria-label="Маршрут от ролика до заявки">
         <div className="growth-radar-head"><span>МАРШРУТ</span><b>01 → 05</b></div>
@@ -194,7 +194,7 @@ export function GrowthCenterClient() {
           <p className="teacher-growth-position">{teacherProfile.positioning}</p>
           <div className="teacher-growth-columns"><div><small>СЕРИЯ REELS</small><ol>{teacherProfile.reelSeries.map((item) => <li key={item}>{item}</li>)}</ol></div><div><small>КОМУ ПИСАТЬ</small><ul>{teacherProfile.targetAudiences.map((item) => <li key={item}>{item}</li>)}</ul></div></div>
           <div className="teacher-growth-film"><small>СЪЁМОЧНОЕ ЗАДАНИЕ</small><p>{teacherProfile.filmingBrief}</p></div>
-          <div className="teacher-growth-actions"><button type="button" className="button button-red" onClick={() => handleCopy("teacher-plan", teacherPlan)}>{copied === "teacher-plan" ? "План скопирован ✓" : "Скопировать весь план"}</button><button type="button" className="button button-ghost" onClick={() => handleCopy("teacher-message", teacherProfile.outreachMessage)}>{copied === "teacher-message" ? "Сообщение скопировано ✓" : "Скопировать сообщение"}</button><a href={teacherProfile.evidenceUrl} target="_blank" rel="noreferrer">Проверить публичный источник ↗</a></div>
+          <div className="teacher-growth-actions"><Link className="button button-red" href={`/growth/teachers/${teacherProfile.id}`}>Открыть личный маршрут →</Link><button type="button" className="button button-dark" onClick={() => handleCopy("teacher-plan", teacherPlan)}>{copied === "teacher-plan" ? "План скопирован ✓" : "Скопировать весь план"}</button><button type="button" className="button button-ghost" onClick={() => handleCopy("teacher-message", teacherProfile.outreachMessage)}>{copied === "teacher-message" ? "Сообщение скопировано ✓" : "Скопировать сообщение"}</button><a href={teacherProfile.evidenceUrl} target="_blank" rel="noreferrer">Проверить публичный источник ↗</a></div>
           <p className="teacher-growth-proof">{teacherProfile.proofRule}</p>
         </article>
       </div>

@@ -22,13 +22,14 @@ export default function TeachersPage() {
       <div className="subject-lead-grid compact-leads">
         {subjectLeads.map((lead) => {
           const subject = examSubjects.find((item) => item.slug === lead.slug);
+          const growthId = lead.slug === "russian" ? "philology-elena-mikhaylichenko" : lead.slug === "literature" ? "philology-roman-gorbunov" : `subject-${lead.slug}`;
           return <article className="subject-lead-card" key={lead.slug}>
           <div className="subject-lead-top"><span>{lead.initials}</span><b>{lead.exam}</b></div>
           <h2>{lead.subject}</h2>
           <div className="lead-person"><TeacherPhoto lead={lead} /><div><b>{lead.teacher}</b><small>{lead.department}</small></div></div>
           <div className="subject-skill-list"><span>Предметные умения</span>{subject?.focus.map((skill) => <b key={skill}>{skill}</b>)}</div>
           <p>{verifiedTeacherPhotos[lead.skillSlug] ? "Фотография взята из официальной публикации училища — источник открывается по нажатию." : generatedTeacherVisuals[lead.skillSlug] ? "Это продающий AI-визуал предметного направления, а не изображение указанного преподавателя." : "Однозначно подписанное официальное фото ещё не найдено."}</p>
-          <div className="lead-foot"><span>Участие уточняется</span><Link href={`/teacher-academy?subject=${lead.slug}`}>Методика →</Link><a href={lead.sourceUrl} target="_blank" rel="noreferrer">Источник ↗</a></div>
+          <div className="lead-foot"><span>Участие уточняется</span><Link href={`/growth/teachers/${growthId}`}>Маршрут учеников →</Link><Link href={`/teacher-academy?subject=${lead.slug}`}>Методика →</Link><a href={lead.sourceUrl} target="_blank" rel="noreferrer">Источник ↗</a></div>
         </article>})}
       </div>
     </section>

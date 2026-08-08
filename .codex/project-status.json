@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "handoff",
-    "updated_at":  "2026-08-07T09:30:42.753Z",
+    "current_stage":  "qa",
+    "updated_at":  "2026-08-08T10:05:57.9137157Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -19,9 +19,11 @@
                                         "Audited ExamSimulatorClient, local mistake storage, extended-answer flow, parent analytics, Telegram Mini App APIs, validation gates and public Pages configuration.",
                                         "Current public product, tutor offer, acquisition board and Telegram image assets are being re-audited for the sales-focused release.",
                                         "Re-audited the public offer, Telegram channel visuals, tutor methodology, private lead board and GitHub Pages release boundaries for the sales-focused version.",
-                                        "Reused the proven free-interactive funnel pattern from the prior Tarot project and audited seven public educational Shorts references plus current Meta and YouTube vertical-video guidance."
+                                        "Reused the proven free-interactive funnel pattern from the prior Tarot project and audited seven public educational Shorts references plus current Meta and YouTube vertical-video guidance.",
+                                        "User clarified the next release must provide a separate acquisition ecosystem for every existing teacher, beginning with Russian and class-teacher partnerships.",
+                                        "Audited the 27-teacher registry, public acquisition sources, parent pain evidence, class-teacher conflict-of-interest boundary and GitHub Pages runtime."
                                     ],
-                       "note":  "Reference analysis uses public titles and metadata only; no video is copied."
+                       "note":  "No outreach or chat joining is authorized; sources and copy remain draft-only."
                    },
                    {
                        "name":  "plan",
@@ -29,7 +31,8 @@
                        "evidence":  [
                                         "Updated product-brief.md and acceptance-criteria.md for single-line mastery, resumable writing, parent report, Telegram entry points and safe outreach.",
                                         "Defined separate parent, tutor and school acquisition paths, a free-first product ladder and a 14-day Telegram content plan.",
-                                        "Defined a reels funnel for four audiences: interactive attempt, reason for error, same-line practice, then parent report or teacher pilot."
+                                        "Defined a reels funnel for four audiences: interactive attempt, reason for error, same-line practice, then parent report or teacher pilot.",
+                                        "Defined a teacher-specific ecosystem with separate routes, four measurable entry links, transparent partnerships, three shoot-ready Reels and a 14-day acquisition sprint per teacher."
                                     ],
                        "note":  ""
                    },
@@ -40,7 +43,8 @@
                                         "Adaptive single-task practice, pause/resume writing, versioned local learning progress, game mastery loop and parent report implemented; Next.js static export completed for 23 routes.",
                                         "Added sales homepage, parent and school pages, eight tutor teaching skills, three generated campaign visuals and a private priority board of 96 public business contacts.",
                                         "Added a Reels lab route, 12 ideas, three timed scripts with 18 shots, seven public references, a 14-day calendar and a local-only outreach playbook.",
-                                        "Added /growth with per-task teacher filming briefs across 15 EGE and 14 OGE subject routes, six verified popularity references, twelve public partners, six message flows, paid-media gates and high-ticket offer boundaries."
+                                        "Added /growth with per-task teacher filming briefs across 15 EGE and 14 OGE subject routes, six verified popularity references, twelve public partners, six message flows, paid-media gates and high-ticket offer boundaries.",
+                                        "Implemented 27 static teacher acquisition pages, 81 detailed Reels with 486 timed scenes, source filters, copy-ready messages, UTM routes and a local progress tracker."
                                     ],
                        "note":  "Reels lab implementation and static export passed local checks."
                    },
@@ -62,13 +66,14 @@
                    },
                    {
                        "name":  "qa",
-                       "state":  "passed",
+                       "state":  "doing",
                        "evidence":  [
                                         "55/55 automated tests and 44/44 browser checks passed; static GitHub-subpath build tested at 390px and desktop with zero runtime errors; 300-lead board validator passed.",
                                         "Regression now covers OGE task 1 save/exit, resume list, exact-task training link and GitHub repository subpath; 55 automated tests and 48 browser checks passed locally and against the static export.",
-                                        "56/56 automated tests passed; Next static export passed type checking; local GitHub-subpath browser QA passed 70/70 with no runtime errors and no 390px horizontal overflow."
-                                        ,"57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
-                                        "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected."
+                                        "56/56 automated tests passed; Next static export passed type checking; local GitHub-subpath browser QA passed 70/70 with no runtime errors and no 390px horizontal overflow.",
+                                        "57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
+                                        "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected.",
+                                        "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair."
                                     ],
                        "note":  "Public GitHub Pages /growth release passed HTTP checks and 88/88 browser regression scenarios."
                    },
@@ -81,8 +86,8 @@
                                         "Updated static export copied to docs; local GitHub-subpath QA passed 48/48.",
                                         "Public GitHub Pages regression QA passed 48/48: OGE task 1 save/exit stays inside repository path, draft is visible, and exact-task training opens 12 attempts for task 1.",
                                         "Updated static export is staged in docs and awaits commit, push and public HTTP/browser verification.",
-                                        "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors."
-                                        ,"Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors.",
+                                        "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors.",
+                                        "Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors.",
                                         "Commit 6d137fd was pushed to the release branch and main; repository, home and /growth returned HTTP 200; public GitHub Pages browser QA passed 88/88 with no runtime errors."
                                     ],
                        "note":  "GitHub Pages Reels release is public. No messages, subscriptions or posts were sent automatically."

@@ -2,4 +2,4 @@
 2:I[28270,["/ekzam-ege-oge-platform-public/_next/static/chunks/16yiy_5krsgl~.js","/ekzam-ege-oge-platform-public/_next/static/chunks/0z2-hgsi1.9c6.js"],"default"]
 3:I[7640,["/ekzam-ege-oge-platform-public/_next/static/chunks/16yiy_5krsgl~.js","/ekzam-ege-oge-platform-public/_next/static/chunks/0z2-hgsi1.9c6.js"],"default"]
 4:[]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"t0n4Rqv9D_PowgPJ_iZxk"}
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"ZXD3EJ_eVxIr-BwwRgsAt"}

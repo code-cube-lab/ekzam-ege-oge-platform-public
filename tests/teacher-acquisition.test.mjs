@@ -76,3 +76,27 @@ test("teacher sprint is a transparent local checklist rather than a fake public 
   assert.match(component, /completed\.length/);
 });
 
+test("forum research maps real topic-level sources into seven ethical routes per teacher", async () => {
+  const [research, acquisition, component] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/teacher-forum-research.ts", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/marketing/teacher-acquisition.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TeacherAcquisitionClient.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.equal((research.match(/^    id: "/gm) ?? []).length, 27);
+  assert.ok((research.match(/actionMode: "expert-reply"/g) ?? []).length >= 20);
+  assert.equal((research.match(/actionMode: "special-listing"/g) ?? []).length, 2);
+  assert.ok((research.match(/actionMode: "research-only"/g) ?? []).length >= 5);
+  assert.match(research, /https:\/\/u-mama\.ru\/forum\/rules/);
+  assert.match(research, /https:\/\/www\.babyblog\.ru\/community\/shkola\/rules-and-faq/);
+  assert.match(research, /обычных темах запрещены реклама сайтов, услуг и маркетинговые исследования/);
+  assert.match(research, /Не писать автору и не предлагать услугу несовершеннолетнему/);
+  assert.match(research, /\.slice\(0, 7\)/);
+  assert.match(research, /specialListings/);
+  assert.match(acquisition, /forumRoutes: buildTeacherForumRoutes\(profile\)/);
+  assert.match(component, /playbook\.forumRoutes\.filter/);
+  assert.match(component, /Не «форумы вообще», а конкретные темы и безопасный ответ/);
+  assert.match(component, /Скопировать ответ/);
+  assert.match(component, /Проверка перед публикацией/);
+  assert.doesNotMatch(`${research}\n${component}`, /выдать себя за родителя|скрыт(?:ая|ую) реклам(?:а|у) разреш/iu);
+});

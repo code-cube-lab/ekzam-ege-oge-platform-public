@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "handoff",
-    "updated_at":  "2026-08-08T10:15:21.2904757Z",
+    "current_stage":  "qa",
+    "updated_at":  "2026-08-08T12:15:50.3863269Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -21,9 +21,11 @@
                                         "Re-audited the public offer, Telegram channel visuals, tutor methodology, private lead board and GitHub Pages release boundaries for the sales-focused version.",
                                         "Reused the proven free-interactive funnel pattern from the prior Tarot project and audited seven public educational Shorts references plus current Meta and YouTube vertical-video guidance.",
                                         "User clarified the next release must provide a separate acquisition ecosystem for every existing teacher, beginning with Russian and class-teacher partnerships.",
-                                        "Audited the 27-teacher registry, public acquisition sources, parent pain evidence, class-teacher conflict-of-interest boundary and GitHub Pages runtime."
+                                        "Audited the 27-teacher registry, public acquisition sources, parent pain evidence, class-teacher conflict-of-interest boundary and GitHub Pages runtime.",
+                                        "Re-opened the verified 27-teacher acquisition release for a forum-topic research layer; existing public sources are too generic and require topic-level source, rule, freshness, pain and ethical reply guidance.",
+                                        "Researched current and evergreen public education discussions plus official u-mama and BabyBlog rules; identified 26 topic-level sources and separated expert reply, special listing and research-only states."
                                     ],
-                       "note":  "No outreach or chat joining is authorized; sources and copy remain draft-only."
+                       "note":  "No outreach occurred; ordinary forum advertising is explicitly blocked."
                    },
                    {
                        "name":  "plan",
@@ -32,7 +34,8 @@
                                         "Updated product-brief.md and acceptance-criteria.md for single-line mastery, resumable writing, parent report, Telegram entry points and safe outreach.",
                                         "Defined separate parent, tutor and school acquisition paths, a free-first product ladder and a 14-day Telegram content plan.",
                                         "Defined a reels funnel for four audiences: interactive attempt, reason for error, same-line practice, then parent report or teacher pilot.",
-                                        "Defined a teacher-specific ecosystem with separate routes, four measurable entry links, transparent partnerships, three shoot-ready Reels and a 14-day acquisition sprint per teacher."
+                                        "Defined a teacher-specific ecosystem with separate routes, four measurable entry links, transparent partnerships, three shoot-ready Reels and a 14-day acquisition sprint per teacher.",
+                                        "Defined seven selected routes per teacher with source pain, subject-specific contribution, disclosure-first draft, rule check, follow-up boundary and action status."
                                     ],
                        "note":  ""
                    },
@@ -44,9 +47,11 @@
                                         "Added sales homepage, parent and school pages, eight tutor teaching skills, three generated campaign visuals and a private priority board of 96 public business contacts.",
                                         "Added a Reels lab route, 12 ideas, three timed scripts with 18 shots, seven public references, a 14-day calendar and a local-only outreach playbook.",
                                         "Added /growth with per-task teacher filming briefs across 15 EGE and 14 OGE subject routes, six verified popularity references, twelve public partners, six message flows, paid-media gates and high-ticket offer boundaries.",
-                                        "Implemented 27 static teacher acquisition pages, 81 detailed Reels with 486 timed scenes, source filters, copy-ready messages, UTM routes and a local progress tracker."
+                                        "Implemented 27 static teacher acquisition pages, 81 detailed Reels with 486 timed scenes, source filters, copy-ready messages, UTM routes and a local progress tracker.",
+                                        "Added topic-level forum research model and interactive teacher-page section; tests and responsive QA are in progress.",
+                                        "Implemented 27 topic-level forum sources and seven personalized ethical forum routes on each of 27 teacher pages; Next static export generated 55/55 pages."
                                     ],
-                       "note":  "Reels lab implementation and static export passed local checks."
+                       "note":  "No outreach or automated posting occurred."
                    },
                    {
                        "name":  "telegram",
@@ -74,9 +79,10 @@
                                         "57/57 automated tests passed; static GitHub-subpath browser QA passed 78/78 with no runtime errors; Reels desktop and 390px mobile views were visually inspected.",
                                         "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected.",
                                         "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair.",
-                                        "67/67 automated tests, 123/123 local browser scenarios and 124/124 public GitHub Pages scenarios passed with zero JavaScript runtime errors; desktop and 390 px screenshots inspected."
+                                        "67/67 automated tests, 123/123 local browser scenarios and 124/124 public GitHub Pages scenarios passed with zero JavaScript runtime errors; desktop and 390 px screenshots inspected.",
+                                        "68/68 automated tests and 133/133 local GitHub-subpath browser scenarios passed with zero JavaScript runtime errors; desktop and 390 px forum screenshots inspected."
                                     ],
-                       "note":  "Public GitHub Pages /growth release passed HTTP checks and 88/88 browser regression scenarios."
+                       "note":  "Public URL still requires post-push verification for this release."
                    },
                    {
                        "name":  "handoff",

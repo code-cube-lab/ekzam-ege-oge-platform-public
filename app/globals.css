@@ -3196,6 +3196,49 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .teacher-source-grid footer { margin-top: auto; padding-top: 18px; display: grid; gap: 9px; border-top: 1px solid #cbd3de; }
 .teacher-source-grid footer a { color: var(--exam-blue); font-weight: 900; }
 .teacher-source-grid footer span { color: #697588; font-size: 12px; }
+.teacher-forum-section { padding: 92px max(24px,calc((100vw - 1320px)/2)); color: white; background: #101d31; }
+.teacher-forum-section > header { display: grid; grid-template-columns: 1fr minmax(430px,.72fr); gap: 48px; align-items: end; }
+.teacher-forum-section > header h2 { max-width: 930px; margin: 12px 0 18px; font-size: clamp(45px,6vw,80px); line-height: .9; letter-spacing: -.055em; }
+.teacher-forum-section > header p { max-width: 900px; margin: 0; color: #c9d2df; font-size: 18px; line-height: 1.55; }
+.teacher-forum-filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.teacher-forum-filters button { min-height: 42px; padding: 0 14px; border: 1px solid #64728a; color: #dce4ef; background: transparent; font-weight: 900; cursor: pointer; }
+.teacher-forum-filters button.active { color: var(--exam-ink); border-color: var(--exam-yellow); background: var(--exam-yellow); }
+.teacher-forum-principle { margin-top: 42px; padding: 25px; display: grid; grid-template-columns: 210px 1fr; gap: 24px; border: 1px solid #ff9ea3; background: #321c2a; }
+.teacher-forum-principle > strong { color: #ffb7ba; font-size: 24px; }
+.teacher-forum-principle > p { margin: 0; color: #f3dfe4; line-height: 1.55; }
+.teacher-forum-principle > div { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.teacher-forum-principle span { padding: 8px 10px; color: #ffc7ca; border: 1px solid #7d4655; font: 900 10px/1 ui-monospace,monospace; text-transform: uppercase; }
+.teacher-forum-grid { margin-top: 18px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.forum-route { min-width: 0; padding: 26px; display: flex; flex-direction: column; color: var(--exam-ink); border: 1px solid #71809a; background: white; }
+.forum-route-special-listing { background: var(--exam-yellow); }
+.forum-route-research-only { background: #e5eaf1; }
+.forum-route-top { display: flex; justify-content: space-between; gap: 22px; }
+.forum-route-top > span { color: var(--exam-blue); font: 900 14px/1 ui-monospace,monospace; }
+.forum-route-top > div { display: grid; justify-items: end; gap: 7px; text-align: right; }
+.forum-route-top small { color: #627086; font-weight: 800; }
+.forum-route-top b { padding: 6px 8px; color: white; background: var(--exam-blue); font: 900 9px/1 ui-monospace,monospace; }
+.forum-route-special-listing .forum-route-top b { color: var(--exam-ink); background: white; }
+.forum-route-research-only .forum-route-top b { background: #657083; }
+.forum-route h3 { margin: 52px 0 24px; font-size: 31px; line-height: 1.02; letter-spacing: -.025em; }
+.forum-route-evidence { display: grid; grid-template-columns: 170px 1fr; gap: 10px 18px; }
+.forum-route-evidence strong { color: var(--exam-blue); font-size: 11px; text-transform: uppercase; }
+.forum-route-evidence p { margin: 0; color: #536176; line-height: 1.48; }
+.forum-route aside { margin: 24px 0 10px; padding: 16px; border-left: 4px solid var(--exam-red); background: #fff0f1; }
+.forum-route aside b { color: #aa252c; font: 900 10px/1 ui-monospace,monospace; }
+.forum-route aside p { margin: 8px 0; color: #674c52; line-height: 1.45; }
+.forum-route aside a { color: var(--exam-blue); font-size: 12px; font-weight: 900; }
+.forum-route details { border-top: 1px solid #c6cfda; }
+.forum-route details:last-of-type { border-bottom: 1px solid #c6cfda; }
+.forum-route summary { padding: 16px 0; color: var(--exam-ink); font-weight: 900; cursor: pointer; }
+.forum-route pre { margin: 0 0 16px; padding: 18px; overflow: auto; white-space: pre-wrap; color: #203047; background: #eef2f7; font-family: inherit; font-size: 14px; font-weight: 500; line-height: 1.58; }
+.forum-route details > p { margin: 0 0 16px; color: #536176; line-height: 1.52; }
+.forum-route .forum-no-reply { padding: 16px; color: #6a3438; background: #ffe2e4; font-weight: 800; }
+.forum-route details button { min-height: 42px; margin: 0 0 18px; padding: 0 14px; border: 0; color: white; background: var(--exam-ink); font-weight: 900; cursor: pointer; }
+.forum-route details ol { margin: 0 0 18px; padding-left: 20px; }
+.forum-route details li { margin: 0 0 10px; color: #536176; line-height: 1.45; }
+.forum-route footer { margin-top: auto; padding-top: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+.forum-route footer a { color: var(--exam-blue); font-weight: 900; }
+.forum-route footer span { color: #6b7686; font-size: 11px; font-weight: 800; }
 .teacher-partnership-safety { padding: 84px max(24px,calc((100vw - 1320px)/2)); display: grid; grid-template-columns: .86fr 1.14fr; gap: 54px; color: white; background: var(--exam-red); }
 .teacher-partnership-safety > div:first-child p { color: #ffe1e2; font-size: 18px; line-height: 1.55; }
 .teacher-partnership-safety > div:first-child a { color: white; font-weight: 900; }
@@ -3263,7 +3306,7 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
 .teacher-acquisition-final > div:last-child { display: grid; gap: 10px; }
 
 @media (max-width: 1050px) {
-  .teacher-directory-hero,.teacher-acquisition-hero,.teacher-sources-section > header,.teacher-partnership-safety,.teacher-reels-section > header { grid-template-columns: 1fr; }
+  .teacher-directory-hero,.teacher-acquisition-hero,.teacher-sources-section > header,.teacher-forum-section > header,.teacher-partnership-safety,.teacher-reels-section > header { grid-template-columns: 1fr; }
   .teacher-directory-stats { grid-template-columns: repeat(3,1fr); }
   .teacher-directory-stats article { border-right: 1px solid #58667b; border-bottom: 0; }
   .teacher-directory-stats article:last-child { border-right: 0; }
@@ -3282,6 +3325,7 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .teacher-offers-section article:nth-child(2) { border-right: 0; }
   .teacher-offers-section article:nth-child(-n+2) { border-bottom: 1px solid var(--exam-ink); }
   .teacher-reel-summary,.teacher-reel-brief > footer { grid-template-columns: 1fr; }
+  .teacher-forum-filters { justify-content: flex-start; }
 }
 
 @media (max-width: 700px) {
@@ -3311,6 +3355,13 @@ footer div { display: flex; justify-content: flex-end; gap: 20px; }
   .teacher-pain-section h2,.teacher-sources-section h2,.teacher-messages-section h2,.teacher-offers-section h2,.teacher-sprint-section h2,.teacher-funnel-section h2,.teacher-partnership-safety h2,.teacher-reels-section h2 { font-size: 43px; }
   .teacher-pain-grid h3 { margin-top: 48px; }
   .teacher-funnel-section,.teacher-partnership-safety,.teacher-reels-section,.teacher-sprint-section,.teacher-acquisition-final { padding: 64px 12px; }
+  .teacher-forum-section { padding: 64px 12px; }
+  .teacher-forum-section > header h2 { font-size: 43px; }
+  .teacher-forum-principle,.teacher-forum-grid { grid-template-columns: 1fr; }
+  .teacher-forum-principle > div { grid-column: auto; }
+  .forum-route { padding: 20px; }
+  .forum-route h3 { margin-top: 38px; font-size: 28px; }
+  .forum-route-evidence { grid-template-columns: 1fr; }
   .teacher-source-filters { justify-content: flex-start; }
   .teacher-safety-columns article { min-height: auto; }
   .teacher-reel-summary,.teacher-reel-timeline > article,.teacher-reel-brief > footer { padding: 20px; }

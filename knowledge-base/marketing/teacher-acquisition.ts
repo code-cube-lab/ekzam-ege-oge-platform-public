@@ -1,5 +1,6 @@
 import type { ExamSubjectSlug } from "../exams/exam-subjects";
 import { teacherGrowthProfiles, type TeacherGrowthProfile } from "./teacher-growth";
+import { buildTeacherForumRoutes, type TeacherForumRoute } from "./teacher-forum-research";
 
 export type AcquisitionSource = {
   id: string;
@@ -50,6 +51,7 @@ export type TeacherAcquisitionPlaybook = TeacherGrowthProfile & {
   practicePath: string;
   referralPaths: Array<{ id: string; label: string; path: string }>;
   sources: AcquisitionSource[];
+  forumRoutes: TeacherForumRoute[];
   messages: Array<{ id: string; label: string; title: string; text: string }>;
   reels: DetailedReel[];
   offers: Array<{ stage: string; name: string; price: string; result: string; gate: string }>;
@@ -603,6 +605,7 @@ export function buildTeacherAcquisitionPlaybook(profile: TeacherGrowthProfile): 
       { id: "referral", label: "Рекомендация родителя", path: buildPracticePath(profile, strategy.taskNumber, "parent_referral") },
     ],
     sources,
+    forumRoutes: buildTeacherForumRoutes(profile),
     messages: buildMessages(profile, strategy),
     reels: buildReels(profile, strategy),
     offers: buildOffers(profile, strategy),

@@ -11,6 +11,7 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
   const [copied, setCopied] = useState("");
   const [activeReel, setActiveReel] = useState(playbook.reels[0].id);
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [forumFilter, setForumFilter] = useState("all");
   const [completed, setCompleted] = useState<string[]>([]);
   const storageKey = `ekzam-acquisition-${playbook.id}`;
 
@@ -42,6 +43,7 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
 
   const selectedReel = playbook.reels.find((item) => item.id === activeReel) ?? playbook.reels[0];
   const sources = useMemo(() => playbook.sources.filter((item) => sourceFilter === "all" || item.segment === sourceFilter), [playbook.sources, sourceFilter]);
+  const forumRoutes = useMemo(() => playbook.forumRoutes.filter((item) => forumFilter === "all" || item.actionMode === forumFilter), [playbook.forumRoutes, forumFilter]);
   const fullBrief = [
     `${playbook.name} — ${playbook.subjectName}`,
     `Позиционирование: ${playbook.positioning}`,
@@ -50,6 +52,8 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
     `Лид-магнит: ${playbook.leadMagnet}`,
     "",
     ...playbook.messages.map((item) => `${item.label}\n${item.text}`),
+    "",
+    ...playbook.forumRoutes.map((route) => `${route.platform}: ${route.title}\n${route.publicReply}\n\nСледующий шаг: ${route.followupReply}`),
     "",
     ...playbook.reels.map((reel) => `${reel.title}\n${reel.shots.map((shot) => `${shot.time}: показать ${shot.show}; сказать: «${shot.say}»`).join("\n")}`),
   ].join("\n\n");
@@ -67,7 +71,7 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
 
     <section className="teacher-acquisition-status"><b>Статус публичного профиля</b><p>{playbook.participationLabel}. До набора учеников преподаватель подтверждает программу, расписание, цену и право использовать имя в рекламе.</p><a href={playbook.evidenceUrl} target="_blank" rel="noreferrer">Проверить публичный источник ↗</a></section>
 
-    <nav className="teacher-acquisition-nav" aria-label="Разделы маршрута"><a href="#pain">Боли</a><a href="#funnel">Путь ученика</a><a href="#sources">Кому писать</a><a href="#messages">Сообщения</a><a href="#reels">Reels подробно</a><a href="#offers">Предложение</a><a href="#sprint">14 дней</a></nav>
+    <nav className="teacher-acquisition-nav" aria-label="Разделы маршрута"><a href="#pain">Боли</a><a href="#funnel">Путь ученика</a><a href="#sources">Кому писать</a><a href="#forums">Форумы по темам</a><a href="#messages">Сообщения</a><a href="#reels">Reels подробно</a><a href="#offers">Предложение</a><a href="#sprint">14 дней</a></nav>
 
     <section className="teacher-pain-section" id="pain">
       <header><span className="exam-kicker">Не абстрактная целевая аудитория</span><h2>Три человека — три разные боли</h2></header>
@@ -84,6 +88,39 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
     <section className="teacher-sources-section" id="sources">
       <header><div><span className="exam-kicker">Публичные точки входа</span><h2>Кому писать и что предлагать</h2><p>Это не список участников для рассылки. Писать можно только в опубликованный контакт, через рекламный каталог или полезным ответом по правилам форума.</p></div><div className="teacher-source-filters">{[["all", "Все"], ["class-teacher", "Классные руководители"], ["parent", "Родители"], ["subject", "Предметные"], ["forum", "Форумы"]].map(([value, label]) => <button key={value} type="button" className={sourceFilter === value ? "active" : ""} onClick={() => setSourceFilter(value)}>{label}</button>)}</div></header>
       <div className="teacher-source-grid">{sources.map((source, index) => <article key={source.id}><div><span>{String(index + 1).padStart(2, "0")}</span><small>{source.access === "public-contact" ? "ПУБЛИЧНЫЙ КОНТАКТ" : source.access === "paid-catalog" ? "ПЛАТНОЕ РАЗМЕЩЕНИЕ" : source.access === "reply-only" ? "ТОЛЬКО ОТВЕТ В ТЕМЕ" : "ТОЛЬКО ИССЛЕДОВАНИЕ"}</small></div><h3>{source.name}</h3><p>{source.audience}</p><strong>Предложить</strong><p>{source.offer}</p><em>{source.rule}</em><footer><a href={source.sourceUrl} target="_blank" rel="noreferrer">Открыть источник ↗</a>{source.contactUrl ? <a href={source.contactUrl} target="_blank" rel="noreferrer">{source.contactLabel} ↗</a> : <span>{source.contactLabel}</span>}</footer></article>)}</div>
+    </section>
+
+    <section className="teacher-forum-section" id="forums">
+      <header>
+        <div><span className="exam-kicker light">Исследовано 8 августа 2026 года</span><h2>Не «форумы вообще», а конкретные темы и безопасный ответ</h2><p>Для {playbook.name} отобраны семь маршрутов: сначала боль участника, затем полезный вклад преподавателя, правило площадки и только допустимое действие. Это черновики — ни один ответ не опубликован автоматически.</p></div>
+        <div className="teacher-forum-filters" aria-label="Фильтр форумных маршрутов">{[["all", "Все 7"], ["expert-reply", "Можно помочь"], ["special-listing", "Спецтема"], ["research-only", "Только изучить"]].map(([value, label]) => <button key={value} type="button" className={forumFilter === value ? "active" : ""} onClick={() => setForumFilter(value)}>{label}</button>)}</div>
+      </header>
+
+      <div className="teacher-forum-principle"><strong>Стоп скрытой рекламе</strong><p>Нельзя выдавать себя за родителя, писать «нам помогло», если это не ваш опыт, или прятать коммерческую связь. В обычной теме ответ самодостаточен и не содержит ссылку. Коммерческий текст — только в специальной категории или после разрешения модератора.</p><div><span>0 личных сообщений детям</span><span>0 массовых комментариев</span><span>0 неподтверждённых обещаний</span></div></div>
+
+      <div className="teacher-forum-grid">{forumRoutes.map((route, index) => {
+        const statusLabel = route.actionMode === "expert-reply" ? "ПОМОЧЬ БЕЗ РЕКЛАМЫ" : route.actionMode === "special-listing" ? "РАЗРЕШЁННАЯ СПЕЦТЕМА" : "ТОЛЬКО ИССЛЕДОВАТЬ";
+        return <article key={route.id} className={`forum-route forum-route-${route.actionMode}`}>
+          <div className="forum-route-top"><span>{String(index + 1).padStart(2, "0")}</span><div><small>{route.platform} · {route.freshness === "evergreen" ? "архивная, но типовая боль" : `тема ${route.freshness}`}</small><b>{statusLabel}</b></div></div>
+          <h3>{route.title}</h3>
+          <div className="forum-route-evidence"><strong>Что спрашивают</strong><p>{route.observedQuestion}</p><strong>Боль</strong><p>{route.painSignal}</p><strong>Почему подходит этому преподавателю</strong><p>{route.fitReason}</p></div>
+          <aside><b>ПРАВИЛО ПЛОЩАДКИ</b><p>{route.ruleSummary}</p><a href={route.ruleUrl} target="_blank" rel="noreferrer">Проверить правило ↗</a></aside>
+          <details open={route.actionMode === "expert-reply"}>
+            <summary>{route.actionMode === "research-only" ? "Почему не отвечать" : "Готовый честный ответ"}</summary>
+            {route.actionMode === "research-only" ? <p className="forum-no-reply">{route.followupReply}</p> : <><pre>{route.publicReply}</pre><button type="button" onClick={() => copy(`forum-${route.id}`, route.publicReply)}>{copied === `forum-${route.id}` ? "Ответ скопирован ✓" : "Скопировать ответ"}</button></>}
+          </details>
+          <details>
+            <summary>Что делать, если продолжили разговор</summary>
+            <p>{route.followupReply}</p>
+            {route.actionMode !== "research-only" && <button type="button" onClick={() => copy(`followup-${route.id}`, route.followupReply)}>{copied === `followup-${route.id}` ? "Продолжение скопировано ✓" : "Скопировать продолжение"}</button>}
+          </details>
+          <details>
+            <summary>Проверка перед публикацией</summary>
+            <ol>{route.beforePosting.map((item) => <li key={item}>{item}</li>)}</ol>
+          </details>
+          <footer><a href={route.url} target="_blank" rel="noreferrer">Открыть исследованную тему ↗</a><span>Сначала перепроверить актуальность</span></footer>
+        </article>;
+      })}</div>
     </section>
 
     <section className="teacher-partnership-safety">

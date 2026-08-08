@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "qa",
-    "updated_at":  "2026-08-08T12:15:50.3863269Z",
+    "current_stage":  "handoff",
+    "updated_at":  "2026-08-08T12:20:17.3069973Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -80,9 +80,10 @@
                                         "60/60 automated tests passed; regular browser QA passed 87/87 and static GitHub-subpath QA passed 88/88 with no runtime errors; /growth desktop and 390px mobile views were visually inspected.",
                                         "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair.",
                                         "67/67 automated tests, 123/123 local browser scenarios and 124/124 public GitHub Pages scenarios passed with zero JavaScript runtime errors; desktop and 390 px screenshots inspected.",
-                                        "68/68 automated tests and 133/133 local GitHub-subpath browser scenarios passed with zero JavaScript runtime errors; desktop and 390 px forum screenshots inspected."
+                                        "68/68 automated tests and 133/133 local GitHub-subpath browser scenarios passed with zero JavaScript runtime errors; desktop and 390 px forum screenshots inspected.",
+                                        "Public GitHub Pages at commit 6542377 passed 133/133 browser scenarios with zero JavaScript runtime errors."
                                     ],
-                       "note":  "Public URL still requires post-push verification for this release."
+                       "note":  "Local and public static release verified."
                    },
                    {
                        "name":  "handoff",
@@ -96,9 +97,10 @@
                                         "Commit 4c2acc2 was pushed to the release branch and main; public home, parent, school, tutor and image URLs returned HTTP 200; public browser QA passed 70/70 with no runtime errors.",
                                         "Commit ccaed6d was pushed to the release branch and main; public home, Reels lab, tutor page and repository returned HTTP 200; public browser QA passed 78/78 with no runtime errors.",
                                         "Commit 6d137fd was pushed to the release branch and main; repository, home and /growth returned HTTP 200; public GitHub Pages browser QA passed 88/88 with no runtime errors.",
-                                        "Commit 2cf812f was pushed to github-public release branch and main; directory plus Russian and mathematics teacher pages returned HTTP 200 and the complete public browser regression passed."
+                                        "Commit 2cf812f was pushed to github-public release branch and main; directory plus Russian and mathematics teacher pages returned HTTP 200 and the complete public browser regression passed.",
+                                        "Commit 6542377 pushed to github-public branch and main; public teacher catalog and Russian teacher forum routes returned HTTP 200 and passed complete production browser QA."
                                     ],
-                       "note":  "GitHub Pages Reels release is public. No messages, subscriptions or posts were sent automatically."
+                       "note":  "Static Pages release is public; no forum messages or external outreach were sent."
                    }
                ]
 }

@@ -4,17 +4,19 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { AcquisitionSource, TeacherAcquisitionPlaybook } from "../../knowledge-base/marketing/teacher-acquisition";
 import { parentPainEvidence, partnershipSafety } from "../../knowledge-base/marketing/teacher-acquisition";
+import { recentDemandScanStats, recentDemandWindow, type RecentDemandSignal } from "../../knowledge-base/marketing/recent-parent-demand";
 
 type Props = { playbook: TeacherAcquisitionPlaybook };
-type CabinetPage = "today" | "channels" | "messages" | "reels" | "strategy" | "money";
+type CabinetPage = "today" | "demand" | "channels" | "messages" | "reels" | "strategy" | "money";
 
 const cabinetPages: Array<{ id: CabinetPage; number: string; label: string; short: string }> = [
   { id: "today", number: "01", label: "Сегодня", short: "Сегодня" },
-  { id: "channels", number: "02", label: "Точные каналы", short: "Каналы" },
-  { id: "messages", number: "03", label: "Что написать", short: "Тексты" },
-  { id: "reels", number: "04", label: "Reels", short: "Reels" },
-  { id: "strategy", number: "05", label: "План 14 дней", short: "План" },
-  { id: "money", number: "06", label: "Предложение", short: "Цена" },
+  { id: "demand", number: "02", label: "Заявки 30 дней", short: "Заявки" },
+  { id: "channels", number: "03", label: "Точные каналы", short: "Каналы" },
+  { id: "messages", number: "04", label: "Что написать", short: "Тексты" },
+  { id: "reels", number: "05", label: "Reels", short: "Reels" },
+  { id: "strategy", number: "06", label: "План 14 дней", short: "План" },
+  { id: "money", number: "07", label: "Предложение", short: "Цена" },
 ];
 
 function sourceStatus(source: AcquisitionSource) {
@@ -22,6 +24,13 @@ function sourceStatus(source: AcquisitionSource) {
   if (source.access === "paid-catalog") return "ОФИЦИАЛЬНОЕ РАЗМЕЩЕНИЕ";
   if (source.access === "reply-only") return "ТОЛЬКО ОТВЕТ В ТЕМЕ";
   return "СНАЧАЛА ИЗУЧИТЬ";
+}
+
+function demandStatus(signal: RecentDemandSignal) {
+  if (signal.actionMode === "reply-if-open") return "ОТВЕТ В ТЕМЕ, ЕСЛИ РАЗРЕШЕНО";
+  if (signal.actionMode === "partner-application") return "ОТКЛИК ПРЕПОДАВАТЕЛЯ";
+  if (signal.actionMode === "observe-only") return "ТОЛЬКО НАБЛЮДАТЬ";
+  return "СНАЧАЛА МЕНЕДЖЕРУ";
 }
 
 export function TeacherAcquisitionClient({ playbook }: Props) {
@@ -73,14 +82,29 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
     return `Здравствуйте! Перед отправкой этого черновика я изучу конкретную публикацию вашей площадки и добавлю здесь настоящую причину обращения. Представляю преподавателя ${playbook.name}, направление — ${playbook.subjectName}. У нас есть бесплатная практика «${playbook.leadMagnet}»: ученик выполняет задание, видит причину ошибки и повторяет навык на новом условии. Предлагаем ${source.offer.replace(`${playbook.name}: `, "").toLowerCase()} Можно сначала прислать демо для проверки без обязательств? Контакты подписчиков и детей нам не нужны; формат, маркировку и условия согласуем заранее.`;
   }
 
+  function managerDraft(signal: RecentDemandSignal) {
+    return `Здравствуйте! В публичной ленте увидел запрос «${signal.title}» от ${signal.observedAt}: ${signal.publicPostUrl}. Не хочу писать участнику в обход правил. Представляю преподавателя ${playbook.name}, предмет — ${playbook.subjectName}. Есть бесплатная диагностика: «${playbook.leadMagnet}». Подскажите, заявка ещё актуальна и какой способ отклика у вас разрешён? Если это рекламное размещение, пришлите, пожалуйста, формат, стоимость и требования к маркировке. Контакты ребёнка нам не нужны — общение и решение об оплате только со взрослым.`;
+  }
+
+  function publicReplyDraft(signal: RecentDemandSignal) {
+    return `Здравствуйте! Вижу запрос: ${signal.requestSummary.toLowerCase()} Сначала полезно проверить один навык, а не покупать большой курс вслепую. ${playbook.name} подготовил(а) бесплатную диагностику по предмету «${playbook.subjectName}»: ${playbook.leadMagnet.toLowerCase()} Я связан(а) с этой платформой и не скрываю этого. Если правила темы разрешают, пришлю ссылку здесь; писать ребёнку в личные сообщения и запрашивать его контакты не буду.`;
+  }
+
   const selectedReel = playbook.reels.find((item) => item.id === activeReel) ?? playbook.reels[0];
   const sources = useMemo(() => playbook.sources.filter((item) => sourceFilter === "all" || item.segment === sourceFilter), [playbook.sources, sourceFilter]);
   const forumRoutes = useMemo(() => playbook.forumRoutes.filter((item) => forumFilter === "all" || item.actionMode === forumFilter), [playbook.forumRoutes, forumFilter]);
   const prioritySources = playbook.sources.filter((source) => source.access !== "research-only").slice(0, 3);
+  const topDemand = playbook.demandLeads[0];
+  const freshReelDraft = topDemand
+    ? `0–3 с — показать карточку «${topDemand.title}» без имени автора. Сказать: «${topDemand.observedAt} родители снова искали преподавателя по предмету ${playbook.subjectName}. Но сначала проверьте, в чём именно пробел».\n3–8 с — показать условие. Сказать: «${playbook.challengePrompt}»\n8–13 с — дать пять секунд тишины и таймер. Текст: «Не угадывайте — назовите признак».\n13–21 с — показать типичную точку ошибки. Сказать: «${playbook.studentPain}»\n21–29 с — открыть на платформе новое условие и разбор. Сказать: «Ошибка объясняется, затем тот же навык проверяется на другом задании».\n29–36 с — преподаватель в кадре. Сказать: «Пройдите бесплатную диагностику. После неё взрослый увидит слабую тему и решит, нужна ли помощь преподавателя ${playbook.name}».\nПодпись: «Публичный запрос подтвердил боль, но личность автора не используется. Один навык, три попытки, понятная причина ошибки».\nСсылка: ${playbook.practicePath}`
+    : `0–4 с — преподаватель в кадре. Сказать: «За последний месяц в исследованной ленте не нашлось точного запроса по предмету ${playbook.subjectName}. Поэтому не будем выдумывать спрос».\n4–11 с — показать один реальный экзаменационный навык: «${playbook.challengePrompt}»\n11–18 с — таймер и самостоятельный ответ.\n18–26 с — показать причину ошибки и новое условие.\n26–34 с — сказать: «Такую бесплатную диагностику можно провести для одного класса без передачи контактов детей».\n34–40 с — CTA: «Классный руководитель или родитель может сначала проверить демо».\nСсылка: ${playbook.practicePath}`;
   const fullBrief = [
     `${playbook.name} — ${playbook.subjectName}`,
     `Позиционирование: ${playbook.positioning}`,
     `Лид-магнит: ${playbook.leadMagnet}`,
+    "",
+    `СВЕЖИЕ ЗАЯВКИ · ${recentDemandWindow}`,
+    ...(playbook.demandLeads.length ? playbook.demandLeads.map((lead) => `${lead.observedAt} · ${lead.title}\n${lead.publicPostUrl}\nДействие: ${lead.actionLabel}\nТекст менеджеру: ${managerDraft(lead)}`) : ["Точного свежего запроса по предмету в исследованной ленте не найдено. Не выдумывать лид; идти через администратора педагогического канала или школьный пилот."]),
     "",
     "КАНАЛЫ",
     ...playbook.sources.map((source) => `${source.name}: ${source.sourceUrl}\n${source.offer}\nПравило: ${source.rule}`),
@@ -115,23 +139,37 @@ export function TeacherAcquisitionClient({ playbook }: Props) {
             <h1>{playbook.name}</h1><strong className="teacher-cabinet-promise">Найти своих учеников.</strong>
             <p>{playbook.positioning}</p>
             <div className="teacher-cabinet-actions"><button type="button" onClick={() => openPage("strategy")}>Начать рабочий день →</button><Link href={playbook.practicePath}>Проверить путь ученика ↗</Link><button type="button" className="secondary" onClick={() => copy("brief", fullBrief)}>{copied === "brief" ? "План скопирован ✓" : "Скопировать весь план"}</button></div>
-            <div className="teacher-cabinet-stats"><article><strong>{playbook.sources.length}</strong><span>точных каналов</span></article><article><strong>{playbook.forumRoutes.length}</strong><span>тем с правилами</span></article><article><strong>0</strong><span>сообщений детям</span></article></div>
+            <div className="teacher-cabinet-stats"><article><strong>{playbook.demandLeads.length}</strong><span>свежих совпадений</span></article><article><strong>{playbook.sources.length}</strong><span>точных каналов</span></article><article><strong>0</strong><span>сообщений детям</span></article></div>
           </div>
 
           <section className="teacher-acquisition-status"><b>Статус профиля</b><p>{playbook.participationLabel}. До набора учеников преподаватель подтверждает программу, расписание, цену и право использовать имя.</p><a href={playbook.evidenceUrl} target="_blank" rel="noreferrer">Публичный источник ↗</a></section>
 
           <section className="teacher-today-section">
             <header><div><span className="exam-kicker">ПЛАН НА СЕГОДНЯ</span><h2>Пять действий до первого проверяемого отклика</h2></div><p>Идите по порядку. Отметки сохраняются только на этом устройстве.</p></header>
-            <div className="teacher-today-actions">{playbook.sprint.slice(0, 5).map((item, index) => <label key={item.day} className={completed.includes(item.day) ? "done" : ""}><input type="checkbox" checked={completed.includes(item.day)} onChange={() => toggleSprint(item.day)} /><span>0{index + 1}</span><div><b>{item.action}</b><small>{item.evidence}</small></div><button type="button" onClick={(event) => { event.preventDefault(); openPage(index < 2 ? "reels" : index === 2 ? "channels" : "messages"); }}>{index < 2 ? "Открыть Reels" : index === 2 ? "Открыть каналы" : "Открыть тексты"}</button></label>)}</div>
+            <div className="teacher-today-actions">{playbook.sprint.slice(0, 5).map((item, index) => <label key={item.day} className={completed.includes(item.day) ? "done" : ""}><input type="checkbox" checked={completed.includes(item.day)} onChange={() => toggleSprint(item.day)} /><span>0{index + 1}</span><div><b>{item.action}</b><small>{item.evidence}</small></div><button type="button" onClick={(event) => { event.preventDefault(); openPage(index < 2 ? "reels" : index === 2 ? "demand" : "messages"); }}>{index < 2 ? "Открыть Reels" : index === 2 ? "Открыть заявки" : "Открыть тексты"}</button></label>)}</div>
           </section>
 
-          <section className="teacher-priority-section"><span className="exam-kicker">ПЕРВЫЕ ТРИ КАНАЛА</span><h2>Начать не со всех, а с наиболее понятных входов</h2><div>{prioritySources.map((source, index) => <article key={source.id}><span>0{index + 1}</span><h3>{source.name}</h3><p>{source.audience}</p><a href={source.sourceUrl} target="_blank" rel="noreferrer">Открыть площадку ↗</a></article>)}</div><button type="button" onClick={() => openPage("channels")}>Посмотреть все точные каналы →</button></section>
+          <section className="teacher-priority-section"><span className="exam-kicker">СНАЧАЛА СВЕЖИЙ СПРОС</span><h2>{playbook.demandLeads.length ? "Есть публичные запросы, совпавшие с предметом" : "Точный свежий запрос не найден — не выдумываем лид"}</h2><div>{playbook.demandLeads.slice(0, 3).map((lead, index) => <article key={lead.id}><span>0{index + 1}</span><h3>{lead.title}</h3><p>{lead.observedAt} · фит {lead.score}/15</p><a href={lead.publicPostUrl} target="_blank" rel="noreferrer">Открыть публичный запрос ↗</a></article>)}{!playbook.demandLeads.length && prioritySources.map((source, index) => <article key={source.id}><span>0{index + 1}</span><h3>{source.name}</h3><p>{source.audience}</p><a href={source.sourceUrl} target="_blank" rel="noreferrer">Открыть площадку ↗</a></article>)}</div><button type="button" onClick={() => openPage("demand")}>Кому и что написать →</button></section>
 
           <section className="teacher-pain-section">
             <header><span className="exam-kicker">Не абстрактная целевая аудитория</span><h2>Три человека — три разные боли</h2></header>
             <div className="teacher-pain-grid"><article><span>УЧЕНИК</span><h3>«Я вроде знаю, но снова ошибся»</h3><p>{playbook.studentPain}</p></article><article><span>РОДИТЕЛЬ</span><h3>«Я не понимаю, за что платить»</h3><p>{playbook.parentPain}</p></article><article><span>КЛАССНЫЙ РУКОВОДИТЕЛЬ</span><h3>«Мне нужна польза без новой нагрузки»</h3><p>{playbook.classTeacherPain}</p></article></div>
             <div className="teacher-evidence-row">{parentPainEvidence.map((item) => <a key={`${item.value}-${item.label}`} href={item.sourceUrl} target="_blank" rel="noreferrer"><strong>{item.value}</strong><span>{item.label}</span><small>{item.sourceLabel} ↗</small></a>)}</div>
           </section>
+        </section>
+
+        <section className="teacher-cabinet-page" data-cabinet-page="demand" hidden={activePage !== "demand"}>
+          <section className="teacher-demand-section">
+            <header><div><span className="exam-kicker">СВЕЖИЙ СПРОС · {recentDemandWindow}</span><h2>Кому писать сейчас — и каким способом</h2><p>Проверено {recentDemandScanStats.inspected} публичных публикаций, найдено {recentDemandScanStats.matched} запросов по школьным предметам. Ниже показаны только совпадения с направлением «{playbook.subjectName}»; личности и контакты авторов не собираются.</p></div><a href={recentDemandScanStats.sourceUrl} target="_blank" rel="noreferrer">Открыть исследованную ленту ↗</a></header>
+            <div className="teacher-demand-proof"><article><strong>{recentDemandScanStats.inspected}</strong><span>публичных постов просмотрено</span></article><article><strong>{recentDemandScanStats.matched}</strong><span>учебных запросов найдено</span></article><article><strong>{playbook.demandLeads.length}</strong><span>совпадений для преподавателя</span></article><article><strong>0</strong><span>личных сообщений детям</span></article></div>
+            <div className="teacher-demand-flow"><article><span>01</span><b>Открыть пост</b><p>Убедиться, что запрос ещё существует и не закрыт.</p></article><article><span>02</span><b>Проверить правила</b><p>Если реклама запрещена — сначала опубликованному менеджеру.</p></article><article><span>03</span><b>Дать пользу</b><p>Одна диагностика по совпавшей боли, без обещания балла.</p></article><article><span>04</span><b>Считать результат</b><p>Завершённые задания и запросы взрослых, а не отправленные сообщения.</p></article></div>
+
+            {playbook.demandLeads.length ? <div className="teacher-demand-grid">{playbook.demandLeads.map((signal, index) => <article key={signal.id} className={`teacher-demand-card demand-${signal.actionMode}`}><div className="teacher-demand-card-top"><span>{String(index + 1).padStart(2, "0")}</span><small>{signal.observedAt}</small><b>{signal.score}/15</b></div><em>{demandStatus(signal)}</em><h3>{signal.title}</h3><p>{signal.requestSummary}</p><dl><div><dt>Почему подходит</dt><dd>{signal.fitReason}</dd></div><div><dt>Что делать</dt><dd>{signal.actionLabel}</dd></div><div><dt>Ограничение</dt><dd>{signal.safetyNote}</dd></div></dl><footer><a href={signal.publicPostUrl} target="_blank" rel="noreferrer">Открыть публичный пост ↗</a>{signal.originalPostUrl ? <a href={signal.originalPostUrl} target="_blank" rel="noreferrer">Открыть исходную тему ↗</a> : null}{signal.managerUrl ? <a href={signal.managerUrl} target="_blank" rel="noreferrer">Менеджер {signal.managerLabel} ↗</a> : null}<button type="button" onClick={() => copy(`lead-manager-${signal.id}`, managerDraft(signal))}>{copied === `lead-manager-${signal.id}` ? "Текст менеджеру скопирован ✓" : "Скопировать текст менеджеру"}</button>{signal.actionMode === "reply-if-open" ? <button type="button" className="secondary" onClick={() => copy(`lead-reply-${signal.id}`, publicReplyDraft(signal))}>{copied === `lead-reply-${signal.id}` ? "Открытый ответ скопирован ✓" : "Скопировать открытый ответ"}</button> : null}</footer></article>)}</div> : <div className="teacher-demand-empty"><span>ЧЕСТНЫЙ НУЛЬ</span><h3>Точного свежего запроса по этому предмету не найдено</h3><p>Мы не подставляем старый пост и не выдаём случайного участника за лида. Рабочий следующий шаг — согласовать предметный пилот с администратором педагогического канала или классным руководителем.</p></div>}
+          </section>
+
+          <section className="teacher-fresh-reel"><div><span className="exam-kicker light">REELS ИЗ РЕАЛЬНОЙ БОЛИ</span><h2>{topDemand ? `Ролик по свежему сигналу «${topDemand.title}»` : "Ролик для проверки спроса без выдуманной заявки"}</h2><p>Публичный запрос используется только как обезличенный сигнал темы. Имя, аватар и переписка автора в ролик не попадают.</p></div><pre>{freshReelDraft}</pre><button type="button" onClick={() => copy("fresh-demand-reel", freshReelDraft)}>{copied === "fresh-demand-reel" ? "Сценарий скопирован ✓" : "Скопировать сценарий Reels"}</button></section>
+
+          <section className="teacher-class-partners"><header><span className="exam-kicker">КЛАССНЫЕ РУКОВОДИТЕЛИ</span><h2>Не искать педагогов по списку — выйти через официальный контакт</h2><p>Для {playbook.name} подготовлены персональные обращения. Предложение: бесплатный добровольный пилот, обезличенная сводка и отсутствие скрытой комиссии за ребёнка.</p></header><div className="teacher-partner-grid">{playbook.classTeacherPartners.map((partner, index) => <article key={partner.id}><div><span>{String(index + 1).padStart(2, "0")}</span><small>{partner.accessLabel}</small></div><h3>{partner.name}</h3><p>{partner.audience}</p><strong>Почему подходит</strong><p>{partner.fitReason}</p><aside>{partner.rule}</aside><footer><a href={partner.sourceUrl} target="_blank" rel="noreferrer">Открыть канал ↗</a><a href={partner.contactUrl} target="_blank" rel="noreferrer">Написать {partner.contactLabel} ↗</a><button type="button" onClick={() => copy(`partner-${partner.id}`, partner.script)}>{copied === `partner-${partner.id}` ? "Обращение скопировано ✓" : "Скопировать обращение"}</button></footer></article>)}</div></section>
         </section>
 
         <section className="teacher-cabinet-page" data-cabinet-page="channels" hidden={activePage !== "channels"}>

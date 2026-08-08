@@ -2,5 +2,5 @@
 2:I[18517,["/ekzam-ege-oge-platform-public/_next/static/chunks/0--6c53smofvh.js","/ekzam-ege-oge-platform-public/_next/static/chunks/176op1ci1oflp.js","/ekzam-ege-oge-platform-public/_next/static/chunks/0m8_raiv6az9d.js"],"LearningPathDemoClient"]
 3:I[6391,["/ekzam-ege-oge-platform-public/_next/static/chunks/0--6c53smofvh.js","/ekzam-ege-oge-platform-public/_next/static/chunks/176op1ci1oflp.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/ekzam-ege-oge-platform-public/_next/static/chunks/0m8_raiv6az9d.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"UncTPBNJt0-8SBlHWwWdJ"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/ekzam-ege-oge-platform-public/_next/static/chunks/0m8_raiv6az9d.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"aCsAyEgNIfDMmC_5gNQTz"}
 5:null

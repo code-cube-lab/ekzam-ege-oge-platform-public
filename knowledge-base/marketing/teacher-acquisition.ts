@@ -1,6 +1,12 @@
 import type { ExamSubjectSlug } from "../exams/exam-subjects";
 import { teacherGrowthProfiles, type TeacherGrowthProfile } from "./teacher-growth";
 import { buildTeacherForumRoutes, type TeacherForumRoute } from "./teacher-forum-research";
+import {
+  buildClassTeacherPartners,
+  buildTeacherDemandLeads,
+  type ClassTeacherPartnerRoute,
+  type RecentDemandSignal,
+} from "./recent-parent-demand";
 
 export type AcquisitionSource = {
   id: string;
@@ -54,6 +60,8 @@ export type TeacherAcquisitionPlaybook = TeacherGrowthProfile & {
   referralPaths: Array<{ id: string; label: string; path: string }>;
   sources: AcquisitionSource[];
   forumRoutes: TeacherForumRoute[];
+  demandLeads: RecentDemandSignal[];
+  classTeacherPartners: ClassTeacherPartnerRoute[];
   messages: Array<{ id: string; label: string; title: string; text: string }>;
   reels: DetailedReel[];
   offers: Array<{ stage: string; name: string; price: string; result: string; gate: string }>;
@@ -810,6 +818,8 @@ export function buildTeacherAcquisitionPlaybook(profile: TeacherGrowthProfile): 
     ],
     sources,
     forumRoutes: buildTeacherForumRoutes(profile),
+    demandLeads: buildTeacherDemandLeads(profile),
+    classTeacherPartners: buildClassTeacherPartners({ ...profile, leadMagnet: strategy.leadMagnet }),
     messages: buildMessages(profile, strategy),
     reels: buildReels(profile, strategy),
     offers: buildOffers(profile, strategy),

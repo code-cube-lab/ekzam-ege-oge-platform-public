@@ -43,10 +43,37 @@ test("every teacher playbook joins acquisition sources, tagged task links and co
   assert.match(component, /playbook\.messages\.map/);
   assert.match(component, /Скопировать сообщение/);
   assert.match(component, /Точные площадки для/);
-  assert.match(component, /type CabinetPage = "today" \| "channels" \| "messages" \| "reels" \| "strategy" \| "money"/);
+  assert.match(component, /type CabinetPage = "today" \| "demand" \| "channels" \| "messages" \| "reels" \| "strategy" \| "money"/);
+  assert.match(component, /data-cabinet-page="demand"/);
   assert.match(component, /data-cabinet-page="channels"/);
   assert.match(data, /buildPersonalSources/);
   assert.match(data, /verifiedAt: "8 августа 2026 года"/);
+});
+
+test("recent public demand is mapped to exact teacher routes without harvesting participants", async () => {
+  const [demand, acquisition, component] = await Promise.all([
+    readFile(new URL("../knowledge-base/marketing/recent-parent-demand.ts", import.meta.url), "utf8"),
+    readFile(new URL("../knowledge-base/marketing/teacher-acquisition.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/TeacherAcquisitionClient.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(demand, /8 июля — 8 августа 2026 года/);
+  assert.match(demand, /inspected: 148/);
+  assert.match(demand, /matched: 75/);
+  assert.ok((demand.match(/publicPostUrl: "https:\/\/t\.me\/poisk_uchenikov\//g) ?? []).length >= 18);
+  for (const manager of ["shevchukvadim", "ADM_MMSK", "school_teachers", "HR_adminka", "polarightt"]) assert.match(demand, new RegExp(manager));
+  assert.match(demand, /actionMode: "manager-first"/);
+  assert.match(demand, /actionMode: "reply-if-open"/);
+  assert.match(demand, /actionMode: "observe-only"/);
+  assert.match(demand, /Не писать автору|Лично не писать/);
+  assert.doesNotMatch(demand, /(?:\+7|8)[\s(\-]*\d{3}[)\s\-]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}/);
+  assert.match(acquisition, /demandLeads: buildTeacherDemandLeads\(profile\)/);
+  assert.match(acquisition, /classTeacherPartners: buildClassTeacherPartners/);
+  assert.match(component, /не хочу писать участнику в обход правил/i);
+  assert.match(component, /Скопировать текст менеджеру/);
+  assert.match(component, /Скопировать открытый ответ/);
+  assert.match(component, /Скопировать сценарий Reels/);
+  assert.match(`${demand}\n${component}`, /Скрытой комиссии педагогу нет/);
 });
 
 test("teacher reels are shoot-ready and class-teacher partnerships have a legal stop gate", async () => {

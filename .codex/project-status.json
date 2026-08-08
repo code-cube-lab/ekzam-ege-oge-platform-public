@@ -2,7 +2,7 @@
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
     "current_stage":  "qa",
-    "updated_at":  "2026-08-08T13:47:00.0000000Z",
+    "updated_at":  "2026-08-08T14:46:22.8360000Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -52,7 +52,8 @@
                                         "Implemented 27 static teacher acquisition pages, 81 detailed Reels with 486 timed scenes, source filters, copy-ready messages, UTM routes and a local progress tracker.",
                                         "Added topic-level forum research model and interactive teacher-page section; tests and responsive QA are in progress.",
                                         "Implemented 27 topic-level forum sources and seven personalized ethical forum routes on each of 27 teacher pages; Next static export generated 55/55 pages.",
-                                        "Rebuilt 27 teacher profiles as six-page acquisition cabinets with personalized channel selections, message drafts, Reels, 14-day plan and offer ladder."
+                                        "Rebuilt 27 teacher profiles as six-page acquisition cabinets with personalized channel selections, message drafts, Reels, 14-day plan and offer ladder.",
+                                        "Expanded all 27 teacher profiles to seven-page acquisition cabinets with a 30-day public-demand layer, manager-first contact modes, class-teacher partnership routes and demand-led Reels scripts."
                                     ],
                        "note":  "No outreach or automated posting occurred."
                    },
@@ -86,7 +87,8 @@
                                         "68/68 automated tests and 133/133 local GitHub-subpath browser scenarios passed with zero JavaScript runtime errors; desktop and 390 px forum screenshots inspected.",
                                         "Public GitHub Pages at commit 6542377 passed 133/133 browser scenarios with zero JavaScript runtime errors.",
                                         "Next static export 55/55; 68/68 unit tests; 137 dev-browser and 138 static-browser scenarios; mobile 390 px no overflow or runtime errors.",
-                                        "Public GitHub Pages at commit 2cb8224 passed 138/138 browser scenarios with zero JavaScript runtime errors; teacher directory, Russian and mathematics teacher routes returned HTTP 200."
+                                        "Public GitHub Pages at commit 2cb8224 passed 138/138 browser scenarios with zero JavaScript runtime errors; teacher directory, Russian and mathematics teacher routes returned HTTP 200.",
+                                        "69/69 automated tests, TypeScript and lint passed; local browser QA passed 148/148 and the GitHub-subpath static export passed 149/149 with no JavaScript runtime errors or mobile overflow."
                                     ],
                        "note":  "Local and public static release verified."
                    },

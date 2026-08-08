@@ -42,7 +42,11 @@ test("every teacher playbook joins acquisition sources, tagged task links and co
   assert.match(component, /playbook\.referralPaths\.map/);
   assert.match(component, /playbook\.messages\.map/);
   assert.match(component, /Скопировать сообщение/);
-  assert.match(component, /Кому писать и что предлагать/);
+  assert.match(component, /Точные площадки для/);
+  assert.match(component, /type CabinetPage = "today" \| "channels" \| "messages" \| "reels" \| "strategy" \| "money"/);
+  assert.match(component, /data-cabinet-page="channels"/);
+  assert.match(data, /buildPersonalSources/);
+  assert.match(data, /verifiedAt: "8 августа 2026 года"/);
 });
 
 test("teacher reels are shoot-ready and class-teacher partnerships have a legal stop gate", async () => {

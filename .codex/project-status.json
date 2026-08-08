@@ -1,8 +1,8 @@
 ﻿{
     "schema_version":  1,
     "project_path":  "C:\\Users\\GIGA\\Documents\\Codex\\2026-07-22\\c-1-wb",
-    "current_stage":  "handoff",
-    "updated_at":  "2026-08-08T12:20:17.3069973Z",
+    "current_stage":  "qa",
+    "updated_at":  "2026-08-08T13:40:04.2749941Z",
     "stages":  [
                    {
                        "name":  "intake",
@@ -23,9 +23,11 @@
                                         "User clarified the next release must provide a separate acquisition ecosystem for every existing teacher, beginning with Russian and class-teacher partnerships.",
                                         "Audited the 27-teacher registry, public acquisition sources, parent pain evidence, class-teacher conflict-of-interest boundary and GitHub Pages runtime.",
                                         "Re-opened the verified 27-teacher acquisition release for a forum-topic research layer; existing public sources are too generic and require topic-level source, rule, freshness, pain and ethical reply guidance.",
-                                        "Researched current and evergreen public education discussions plus official u-mama and BabyBlog rules; identified 26 topic-level sources and separated expert reply, special listing and research-only states."
+                                        "Researched current and evergreen public education discussions plus official u-mama and BabyBlog rules; identified 26 topic-level sources and separated expert reply, special listing and research-only states.",
+                                        "New request: rebuild 27 teacher pages as separate acquisition mini-sites modeled on mika-oracle-growth with teacher-specific public channels and conversion routes.",
+                                        "Audited mika-oracle-growth interaction model and verified 40 public acquisition URLs: 36 direct HTTP responses and four public-search confirmations."
                                     ],
-                       "note":  "No outreach occurred; ordinary forum advertising is explicitly blocked."
+                       "note":  "Research and drafts only; no contact with minors, members or channel audiences."
                    },
                    {
                        "name":  "plan",
@@ -49,7 +51,8 @@
                                         "Added /growth with per-task teacher filming briefs across 15 EGE and 14 OGE subject routes, six verified popularity references, twelve public partners, six message flows, paid-media gates and high-ticket offer boundaries.",
                                         "Implemented 27 static teacher acquisition pages, 81 detailed Reels with 486 timed scenes, source filters, copy-ready messages, UTM routes and a local progress tracker.",
                                         "Added topic-level forum research model and interactive teacher-page section; tests and responsive QA are in progress.",
-                                        "Implemented 27 topic-level forum sources and seven personalized ethical forum routes on each of 27 teacher pages; Next static export generated 55/55 pages."
+                                        "Implemented 27 topic-level forum sources and seven personalized ethical forum routes on each of 27 teacher pages; Next static export generated 55/55 pages.",
+                                        "Rebuilt 27 teacher profiles as six-page acquisition cabinets with personalized channel selections, message drafts, Reels, 14-day plan and offer ladder."
                                     ],
                        "note":  "No outreach or automated posting occurred."
                    },
@@ -81,7 +84,8 @@
                                         "Typecheck, targeted lint and local desktop/mobile browser regression passed 123/123 after visual CSS variable repair.",
                                         "67/67 automated tests, 123/123 local browser scenarios and 124/124 public GitHub Pages scenarios passed with zero JavaScript runtime errors; desktop and 390 px screenshots inspected.",
                                         "68/68 automated tests and 133/133 local GitHub-subpath browser scenarios passed with zero JavaScript runtime errors; desktop and 390 px forum screenshots inspected.",
-                                        "Public GitHub Pages at commit 6542377 passed 133/133 browser scenarios with zero JavaScript runtime errors."
+                                        "Public GitHub Pages at commit 6542377 passed 133/133 browser scenarios with zero JavaScript runtime errors.",
+                                        "Next static export 55/55; 68/68 unit tests; 137 dev-browser and 138 static-browser scenarios; mobile 390 px no overflow or runtime errors."
                                     ],
                        "note":  "Local and public static release verified."
                    },

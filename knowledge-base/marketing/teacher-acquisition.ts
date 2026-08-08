@@ -14,6 +14,8 @@ export type AcquisitionSource = {
   contactLabel: string;
   offer: string;
   rule: string;
+  verifiedAt?: string;
+  evidence?: string;
 };
 
 export type ReelShot = {
@@ -272,6 +274,180 @@ export const teacherAcquisitionSources: AcquisitionSource[] = [
     contactLabel: "@S_english_teacher",
     offer: "Совместная микро-практика на аудирование, лексику или устную часть.",
     rule: "Проверить права на аудио и не использовать чужие экзаменационные записи.",
+  },
+  {
+    id: "ege-100-all",
+    name: "ЕГЭ 100БАЛЛОВ",
+    segment: "subject",
+    subjectSlugs: ["all"],
+    access: "paid-catalog",
+    audience: "выпускники, которые выбирают предметные материалы для ЕГЭ",
+    sourceUrl: "https://t.me/egeoge100ballov",
+    contactUrl: "https://telega.in/c/egeoge100ballov",
+    contactLabel: "официальная карточка размещения",
+    offer: "Тестовая нативная публикация: один сложный тип задания, самостоятельный ответ и бесплатный разбор без обещания балла.",
+    rule: "До оплаты запросить свежие охваты, долю нужного возраста и правила маркировки; использовать отдельную ссылку.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "В описании канала опубликованы рекламный каталог и контакт по рекламе.",
+  },
+  {
+    id: "ege-russian-100",
+    name: "Русский язык ЕГЭ 100БАЛЛОВ",
+    segment: "subject",
+    subjectSlugs: ["russian", "literature"],
+    access: "public-contact",
+    audience: "ученики, готовящиеся к ЕГЭ по русскому языку",
+    sourceUrl: "https://t.me/rus_ege100ballov",
+    contactUrl: "https://t.me/stanislava_dombrovskaya",
+    contactLabel: "@stanislava_dombrovskaya — контакт по рекламе",
+    offer: "Размещение авторской ловушки одного номера с переходом на три новые попытки и разбор причины ошибки.",
+    rule: "Согласовать рекламную маркировку, формат задания и право использовать имя преподавателя до публикации.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичное описание канала содержит отдельный контакт по рекламе.",
+  },
+  {
+    id: "russian-teachers-crosspromo",
+    name: "Взаимореклама учителей",
+    segment: "subject",
+    subjectSlugs: ["russian", "literature"],
+    access: "research-only",
+    audience: "небольшие авторские каналы учителей русского языка и литературы",
+    sourceUrl: "https://t.me/vzaimoreklama_teacher",
+    contactLabel: "сначала проверить закреп и действующие правила",
+    offer: "Найти один дополняющий, а не конкурирующий канал и предложить взаимный авторский разбор с раскрытием партнёрства.",
+    rule: "Не писать участникам списка массово; выбрать один канал, изучить его контент и обратиться только по опубликованному контакту.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичная лента содержит подборки каналов преподавателей русского языка.",
+  },
+  {
+    id: "russian-study-together",
+    name: "Русский язык. Учим вместе",
+    segment: "subject",
+    subjectSlugs: ["russian", "literature"],
+    access: "public-contact",
+    audience: "ученики и учителя, которые готовятся к ОГЭ и ЕГЭ",
+    sourceUrl: "https://t.me/uchimvmeste100",
+    contactUrl: "https://t.me/okhlopkovamarina",
+    contactLabel: "@okhlopkovamarina — публичный контакт",
+    offer: "Совместный мини-разбор критерия или взаимная предметная проверка одного авторского задания.",
+    rule: "Не предлагать копировать материалы друг друга; заранее определить авторство, CTA и рекламную маркировку.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "В описании канала указан прямой контакт автора.",
+  },
+  {
+    id: "russian-elena-aleksandrova",
+    name: "Русский язык с Еленой Александровой",
+    segment: "subject",
+    subjectSlugs: ["russian", "literature"],
+    access: "public-contact",
+    audience: "ученики ОГЭ, ЕГЭ и итогового сочинения",
+    sourceUrl: "https://t.me/ege_russ_elena_aleksandrova",
+    contactUrl: "https://t.me/egeAleks",
+    contactLabel: "@egeAleks — публичный контакт автора",
+    offer: "Предложить взаимную экспертную проверку и совместный открытый разбор одной сложной формулировки.",
+    rule: "Это коллега и возможный конкурент: писать только с конкретной профессиональной пользой, без переманивания аудитории.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичное описание канала указывает автора и контакт для связи.",
+  },
+  {
+    id: "chem-bio-boomstudy",
+    name: "Химия | Биология от BoomStudy",
+    segment: "subject",
+    subjectSlugs: ["chemistry", "biology"],
+    access: "public-contact",
+    audience: "ученики ОГЭ и ЕГЭ по химии и биологии",
+    sourceUrl: "https://t.me/boomstudy",
+    contactUrl: "https://t.me/boomstudyhelp",
+    contactLabel: "@boomstudyhelp — служба заботы",
+    offer: "Предложить только прозрачное рекламное размещение или взаимную предметную проверку авторского тренажёра.",
+    rule: "Не выдавать обращение за дружескую рекомендацию и не использовать задания канала без письменного разрешения.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Канал публикует экзаменационные разборы и официальный контакт службы заботы.",
+  },
+  {
+    id: "informatics-public",
+    name: "Информатика ЕГЭ | ОГЭ",
+    segment: "subject",
+    subjectSlugs: ["informatics"],
+    access: "research-only",
+    audience: "ученики, которые решают задачи экзамена на Python",
+    sourceUrl: "https://t.me/egeinformatiks",
+    contactLabel: "изучить формат и найти разрешённый контакт в закрепе",
+    offer: "Предложить автору взаимную проверку одного алгоритмического тренажёра, только если открыт контакт сотрудничества.",
+    rule: "Не использовать бот канала как рекламный контакт и не копировать опубликованные задачи.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичное описание подтверждает специализацию на задачах ЕГЭ и ОГЭ по информатике.",
+  },
+  {
+    id: "german-alles-klar",
+    name: "Немецкий с Ксенией Ш.",
+    segment: "subject",
+    subjectSlugs: ["german"],
+    access: "public-contact",
+    audience: "изучающие немецкий и готовящиеся к языковым экзаменам",
+    sourceUrl: "https://t.me/alles_klar",
+    contactUrl: "https://t.me/ksu_shashkova",
+    contactLabel: "@ksu_shashkova — публичный контакт автора",
+    offer: "Совместный мини-диалог: естественная реплика, экзаменационный критерий и новая ситуация для ответа.",
+    rule: "Обозначить коммерческую связь и не обещать соответствие ЕГЭ до предметной сверки формата.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Автор указывает опыт экзаменационной подготовки и прямой контакт.",
+  },
+  {
+    id: "language-teacher-listings",
+    name: "Репетиторы английского и других языков",
+    segment: "subject",
+    subjectSlugs: ["english", "german", "chinese"],
+    access: "research-only",
+    audience: "взрослые, которые ищут преподавателя английского, немецкого или китайского",
+    sourceUrl: "https://t.me/englishteachersboard",
+    contactLabel: "проверить правила размещения в закреплённом сообщении",
+    offer: "Подготовить честную карточку преподавателя с экзаменом, форматом, ценой и ссылкой на бесплатное демо.",
+    rule: "Публиковать только через разрешённую форму канала; не собирать телефоны из чужих объявлений.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичная лента регулярно размещает объявления преподавателей языков.",
+  },
+  {
+    id: "vpr-ege-paid",
+    name: "ВПР · ОГЭ · ЕГЭ · родители и учителя",
+    segment: "parent",
+    subjectSlugs: ["all"],
+    access: "paid-catalog",
+    audience: "родители и учителя 4–11 классов",
+    sourceUrl: "https://telega.in/channels/2Wx8Z6WL3fy1-jrJ_GbfXP_jXwXW7Ee2MjXFA48vMWE/card_max",
+    contactLabel: "официальное размещение через Telega.in",
+    offer: "Проверить нативный пост с бесплатной диагностикой одного экзаменационного навыка.",
+    rule: "Сначала запросить актуальные охваты и купить одно тестовое размещение с отдельной меткой.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "В рекламном каталоге площадка описана как аудитория родителей и учителей 4–11 классов.",
+  },
+  {
+    id: "cradle-to-exams-paid",
+    name: "От колыбели до экзаменов",
+    segment: "parent",
+    subjectSlugs: ["all"],
+    access: "paid-catalog",
+    audience: "родители школьников, включая семьи выпускников ОГЭ и ЕГЭ",
+    sourceUrl: "https://telega.in/channels/%2BrD0_-sIGyMU4MjJi/card",
+    contactLabel: "официальное размещение через Telega.in",
+    offer: "Родительский кейс без выдуманного отзыва: ошибка, причина, самостоятельная повторная попытка.",
+    rule: "Не покупать размещение без подтверждённого пути заявки и измерения завершённых диагностик.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Карточка рекламного каталога прямо указывает подготовку к экзаменам в интересах аудитории.",
+  },
+  {
+    id: "school-channel-paid",
+    name: "Школьный канал",
+    segment: "parent",
+    subjectSlugs: ["all"],
+    access: "paid-catalog",
+    audience: "родители и взрослые, следящие за школьной повесткой",
+    sourceUrl: "https://telega.in/channels/%2BOLWCjJ8ZgJI5ZTc6/card",
+    contactLabel: "официальное размещение через Telega.in",
+    offer: "Полезный материал к экзаменационной новости: как проверить один навык без покупки большого курса.",
+    rule: "Проверить совпадение реальной аудитории с 9–11 классами; не ориентироваться только на число подписчиков.",
+    verifiedAt: "8 августа 2026 года",
+    evidence: "Публичная карточка каталога показывает школьную тематику и рекламный формат.",
   },
 ];
 
@@ -584,9 +760,37 @@ function buildSprint(profile: TeacherGrowthProfile, strategy: SubjectStrategy) {
   ];
 }
 
+function stableTeacherOffset(value: string) {
+  return Array.from(value).reduce((sum, character) => sum + character.codePointAt(0)!, 0);
+}
+
+function rotateSelection<T>(items: T[], count: number, offset: number) {
+  if (items.length <= count) return items;
+  return Array.from({ length: count }, (_, index) => items[(offset + index) % items.length]);
+}
+
+function buildPersonalSources(profile: TeacherGrowthProfile) {
+  const offset = stableTeacherOffset(profile.id);
+  const common = teacherAcquisitionSources.filter((source) => source.subjectSlugs.includes("all"));
+  const exact = teacherAcquisitionSources.filter((source) => source.subjectSlugs.includes(profile.subjectSlug) && !source.subjectSlugs.includes("all"));
+  const selected = [
+    ...common.filter((source) => source.segment === "class-teacher"),
+    ...rotateSelection(common.filter((source) => source.segment === "parent"), 2, offset),
+    ...rotateSelection(common.filter((source) => source.segment === "forum"), 1, offset + 2),
+    ...rotateSelection(common.filter((source) => source.segment === "subject"), 1, offset + 4),
+    ...exact,
+  ];
+  const unique = Array.from(new Map(selected.map((source) => [source.id, source])).values());
+  return unique.map((source, index) => ({
+    ...source,
+    offer: `${profile.name}: ${source.offer}`,
+    evidence: source.evidence ?? `Маршрут №${index + 1} отобран под предмет «${profile.subjectName}» и аудиторию «${profile.targetAudiences[index % profile.targetAudiences.length]}».`,
+  }));
+}
+
 export function buildTeacherAcquisitionPlaybook(profile: TeacherGrowthProfile): TeacherAcquisitionPlaybook {
   const strategy = subjectStrategies[profile.subjectSlug] ?? defaultStrategy;
-  const sources = teacherAcquisitionSources.filter((source) => source.subjectSlugs.includes("all") || source.subjectSlugs.includes(profile.subjectSlug));
+  const sources = buildPersonalSources(profile);
   const practicePath = buildPracticePath(profile, strategy.taskNumber);
   return {
     ...profile,
